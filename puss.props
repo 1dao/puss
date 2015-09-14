@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="bin\gtk-win32\gtk+-3.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <PussConfigSuffix>$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `_d`))</PussConfigSuffix>
+    <PussBaseDir>$(MSBuildThisFileDirectory)</PussBaseDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <_PropertySheetDisplayName>puss environment</_PropertySheetDisplayName>
+    <OutDir>$(PussBaseDir)bin\modules\$(ProjectName)\</OutDir>
+    <TargetName>$(ProjectName)$(PussConfigSuffix)</TargetName>
+  </PropertyGroup>
+  <ItemGroup>
+    <BuildMacro Include="PussConfigSuffix">
+      <Value>$(PussConfigSuffix)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PussBaseDir">
+      <Value>$(PussBaseDir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile />
+    <Link />
+    <Link>
+      <AdditionalDependencies>SciLexer-gtk3-vs12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)3rd\lua53\;$(PussBaseDir)3rd\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

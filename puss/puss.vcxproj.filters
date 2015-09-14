@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+    <ClCompile Include="puss.c" />
+    <ClCompile Include="source_editor.c" />
+    <ClCompile Include="..\ks\async_mq.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\daemon.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\md5.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\mm.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\rb_tree.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\thread.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\timelib.c">
+      <Filter>ks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\vfs\vdisk_fs.c">
+      <Filter>ks\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\vfs\vfs.c">
+      <Filter>ks\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\vfs\vpath.c">
+      <Filter>ks\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\vfs\vutils.c">
+      <Filter>ks\vfs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ks\3rd\hashmap.c">
+      <Filter>ks\3rd</Filter>
+    </ClCompile>
+    <ClCompile Include="..\kslua\debug_console_lua.c">
+      <Filter>kslua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\kslua\debug_core.c">
+      <Filter>kslua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\kslua\ks_lua.c">
+      <Filter>kslua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\kslua\pickle_lua.c">
+      <Filter>kslua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\kslua\vfs_lua.c">
+      <Filter>kslua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksgtklua\gobject_lua_ffi.c">
+      <Filter>ksgtklua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksgtklua\gobject_lua.c">
+      <Filter>ksgtklua</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="puss.h" />
+    <ClInclude Include="source_editor.h" />
+    <ClInclude Include="puss_interface.h" />
+    <ClInclude Include="..\ks\async_mq.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\daemon.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\md5.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\mm.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\rb_tree.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\thread.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\timelib.h">
+      <Filter>ks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\vfs\vdisk_fs.h">
+      <Filter>ks\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\vfs\vfs.h">
+      <Filter>ks\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\vfs\vfs_priv.h">
+      <Filter>ks\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\vfs\vpath.h">
+      <Filter>ks\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\vfs\vutils.h">
+      <Filter>ks\vfs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ks\3rd\hashmap.h">
+      <Filter>ks\3rd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\debug_console_lua.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\debug_core.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\ffi_lua.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\ffi_lua_reg.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\ks_lua.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\pickle_lua.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\kslua\vfs_lua.h">
+      <Filter>kslua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ksgtklua\gobject_lua.h">
+      <Filter>ksgtklua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ksgtklua\gobject_lua_ffi.h">
+      <Filter>ksgtklua</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source_editor_scintilla_iface.inl" />
+    <None Include="..\bin\modules\puss\puss.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\kslua\ffi_lua.inl">
+      <Filter>kslua</Filter>
+    </None>
+    <None Include="..\ksgtklua\gboxed_glib_lua.inl">
+      <Filter>ksgtklua</Filter>
+    </None>
+    <None Include="..\ksgtklua\gobject_lua_extra_gtk.inl">
+      <Filter>ksgtklua</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{3fa0c748-ac78-42ad-9436-6cb1c84faff7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ks">
+      <UniqueIdentifier>{f9b58ef7-7aeb-48f7-b76f-7374282b0d57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ks\vfs">
+      <UniqueIdentifier>{a93b9e7f-fc47-4ae2-8cf6-c0463df36a8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ks\3rd">
+      <UniqueIdentifier>{8ad53b2e-8f36-4d28-8b9b-99b6633b1ea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="kslua">
+      <UniqueIdentifier>{af4ef86d-9292-43f9-8536-123b90fcc8f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ksgtklua">
+      <UniqueIdentifier>{a8298558-1ef7-4c26-ab5f-c93a92c0460d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

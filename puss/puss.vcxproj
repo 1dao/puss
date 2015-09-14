@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{64D458C2-7328-4221-80B8-6DFCD15F1E53}</ProjectGuid>
+    <RootNamespace>_puss</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\puss.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\puss.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent />
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>NOT_USE_ZPKG_VFS;WIN32;_DEBUG;_WINDOWS;_USRDLL;_PUSS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent />
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NOT_USE_ZPKG_VFS;WIN32;NDEBUG;_WINDOWS;_USRDLL;_PUSS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ksgtklua\gobject_lua.c" />
+    <ClCompile Include="..\ksgtklua\gobject_lua_ffi.c" />
+    <ClCompile Include="..\kslua\debug_console_lua.c" />
+    <ClCompile Include="..\kslua\debug_core.c" />
+    <ClCompile Include="..\kslua\ks_lua.c" />
+    <ClCompile Include="..\kslua\pickle_lua.c" />
+    <ClCompile Include="..\kslua\vfs_lua.c" />
+    <ClCompile Include="..\ks\3rd\hashmap.c" />
+    <ClCompile Include="..\ks\async_mq.c" />
+    <ClCompile Include="..\ks\daemon.c" />
+    <ClCompile Include="..\ks\md5.c" />
+    <ClCompile Include="..\ks\mm.c" />
+    <ClCompile Include="..\ks\rb_tree.c" />
+    <ClCompile Include="..\ks\thread.c" />
+    <ClCompile Include="..\ks\timelib.c" />
+    <ClCompile Include="..\ks\vfs\vdisk_fs.c" />
+    <ClCompile Include="..\ks\vfs\vfs.c" />
+    <ClCompile Include="..\ks\vfs\vpath.c" />
+    <ClCompile Include="..\ks\vfs\vutils.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="puss.c" />
+    <ClCompile Include="source_editor.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ksgtklua\gobject_lua.h" />
+    <ClInclude Include="..\ksgtklua\gobject_lua_ffi.h" />
+    <ClInclude Include="..\kslua\debug_console_lua.h" />
+    <ClInclude Include="..\kslua\debug_core.h" />
+    <ClInclude Include="..\kslua\ffi_lua.h" />
+    <ClInclude Include="..\kslua\ffi_lua_reg.h" />
+    <ClInclude Include="..\kslua\ks_lua.h" />
+    <ClInclude Include="..\kslua\pickle_lua.h" />
+    <ClInclude Include="..\kslua\vfs_lua.h" />
+    <ClInclude Include="..\ks\3rd\hashmap.h" />
+    <ClInclude Include="..\ks\async_mq.h" />
+    <ClInclude Include="..\ks\daemon.h" />
+    <ClInclude Include="..\ks\md5.h" />
+    <ClInclude Include="..\ks\mm.h" />
+    <ClInclude Include="..\ks\rb_tree.h" />
+    <ClInclude Include="..\ks\thread.h" />
+    <ClInclude Include="..\ks\timelib.h" />
+    <ClInclude Include="..\ks\vfs\vdisk_fs.h" />
+    <ClInclude Include="..\ks\vfs\vfs.h" />
+    <ClInclude Include="..\ks\vfs\vfs_priv.h" />
+    <ClInclude Include="..\ks\vfs\vpath.h" />
+    <ClInclude Include="..\ks\vfs\vutils.h" />
+    <ClInclude Include="puss.h" />
+    <ClInclude Include="puss_interface.h" />
+    <ClInclude Include="source_editor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\bin\modules\puss\puss.lua" />
+    <None Include="..\ksgtklua\gboxed_glib_lua.inl" />
+    <None Include="..\ksgtklua\gobject_lua_extra_gtk.inl" />
+    <None Include="..\kslua\ffi_lua.inl" />
+    <None Include="source_editor_scintilla_iface.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\3rd\libffi-3.2.1\build\win32\vs12\libffi.vcxproj">
+      <Project>{c8e92153-23da-4e17-af2b-dd8158eb60df}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\3rd\lua53\lua53.vcxproj">
+      <Project>{edbce0c7-c22f-467b-88da-ee93c89a135a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\scintilla\gtk\scintilla.vcxproj">
+      <Project>{fbe04237-9c7b-4973-9c60-505975998b39}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
