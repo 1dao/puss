@@ -20,6 +20,9 @@ int			lua_gtype_register_metatable_index(lua_State* L);	// [-2,+0,e] reg(GType, 
 void		lua_gtype_register_index_table(lua_State* L, GType type, luaL_Reg* methods);
 void		lua_gtype_register_index_function(lua_State* L, GType type, lua_CFunction func);
 
+void		lua_gerror_push(lua_State* L, GError* v);
+GError*		lua_gerror_test(lua_State* L, int idx);
+
 void		lua_gboxedvalue_push(lua_State* L, const GValue* v);
 GValue*		lua_gboxedvalue_check(lua_State* L, int idx);
 GValue*		lua_gboxedvalue_test(lua_State* L, int idx);
@@ -27,6 +30,7 @@ GValue*		lua_gboxedvalue_test(lua_State* L, int idx);
 void		lua_gobject_push(lua_State* L, GObject* obj, gboolean weak_ref);	// [-0,+1,e] ref_sink or weak_ref obj
 GObject*	lua_gobject_check(lua_State* L, int idx);
 GObject*	lua_gobject_test(lua_State* L, int idx);
+int			lua_gobject_signal_connect(lua_State* L);	// [-3|4,+1,e]	connect(GObject* obj, const char* detailed_signal, function, gboolean after)
 
 #ifdef __cplusplus
 }

@@ -5,6 +5,21 @@
 
 #include "kslua/ffi_lua_reg.h"
 
+static void lua_ffi_check_gerror(lua_State* L, int idx, void* pval, const void* pdef) {
+	*((GError**)pval) = lua_gerror_test(L, idx);
+}
+
+static int lua_ffi_push_gerror(lua_State* L, const void* pval) {
+	lua_gerror_push(L, *(GError**)pval);
+	return 1;
+}
+
+static void kslua_ffi_return_gerror(lua_State* L, int idx, void* pval) {
+	*((GError**)pval) = lua_gerror_test(L, idx);
+}
+
+KSLUA_FFI_TYPEDEF(gerror, GError*, FFI_TYPE_POINTER, KS_FFI_VA_ARG_POINTER);
+
 static void lua_ffi_check_gvalue(lua_State* L, int idx, void* pval, const void* pdef) {
 	*((GValue**)pval) = (pdef==NULL) ? lua_gboxedvalue_check(L, idx) : lua_gboxedvalue_test(L, idx);
 }
@@ -36,6 +51,29 @@ static void kslua_ffi_return_gobject(lua_State* L, int idx, void* pval) {
 KSLUA_FFI_TYPEDEF(gobject, GObject*, FFI_TYPE_POINTER, KS_FFI_VA_ARG_POINTER);
 
 void gobject_ffi_type_register(lua_State* L) {
+	kslua_ffi_va_type_register_basic();
+
+	if( sizeof(gint)==sizeof(int32_t) )
+		kslua_ffi_va_type_register('i', kslua_ffi_type_int32());
+	else
+		kslua_ffi_va_type_register('i', kslua_ffi_type_int64());
+
+	if( sizeof(guint)==sizeof(uint32_t) )
+		kslua_ffi_va_type_register('I', kslua_ffi_type_uint32());
+	else
+		kslua_ffi_va_type_register('I', kslua_ffi_type_uint64());
+
+	if( sizeof(gsize)==sizeof(uint32_t) )
+		kslua_ffi_va_type_register('z', kslua_ffi_type_uint32());
+	else
+		kslua_ffi_va_type_register('z', kslua_ffi_type_uint64());
+
+	if( sizeof(gsize)==sizeof(uint32_t) )
+		kslua_ffi_va_type_register('Z', kslua_ffi_type_uint32());
+	else
+		kslua_ffi_va_type_register('Z', kslua_ffi_type_uint64());
+
+	kslua_ffi_va_type_register(GERROR_FFI_TYPE_CHAR, &_kslua_ffi_type_gerror);
 	kslua_ffi_va_type_register(GVALUE_FFI_TYPE_CHAR, &_kslua_ffi_type_gvalue);
 	kslua_ffi_va_type_register(GOBJECT_FFI_TYPE_CHAR, &_kslua_ffi_type_gobject);
 }

@@ -8,6 +8,7 @@
 #include <string.h>
 
 static const char*	GOBJECT_LUA_NAME = "__GOBJECT__";
+static const char*	GERROR_LUA_NAME = "__GERROR__";
 static const char*	GBOXEDVALUE_LUA_NAME = "__GBOXEDVALUE__";
 static const char*	GPARAMSPEC_LUA_NAME = "__GPARAMSPEC__";
 static const char*	GSIGNAL_HANDLE_LUA_NAME = "__GSIGNAL_HANDLE__";
@@ -29,10 +30,6 @@ static GObject* _gobject_test(lua_State* L, int idx) {
 	return ud ? ud->obj : NULL;
 }
 
-typedef struct _GParamSpecLua {
-	GParamSpec*	spec;
-} GParamSpecLua;
-
 typedef struct _SingalHandleLua {
 	lua_State*	L;
 	int			ref;
@@ -45,6 +42,45 @@ typedef struct _MarshalLuaCallEnv {
 	guint			n_param_values;
 	const GValue*	param_values;
 } MarshalLuaCallEnv;
+
+static int lua_gerror_gc(lua_State* L) {
+	GError** ud = luaL_checkudata(L, 1, GERROR_LUA_NAME);
+	if( *ud ) {
+		g_error_free(*ud);
+		*ud = NULL;
+	}
+	return 0;
+}
+
+static int lua_gerror_tostring(lua_State* L) {
+	GError** ud = luaL_checkudata(L, 1, GERROR_LUA_NAME);
+	lua_pushstring(L, (*ud) ? (*ud)->message : "<no error>");
+	return 1;
+}
+
+static luaL_Reg gerror_methods[] =
+	{ {"__gc",			lua_gerror_gc}
+	, {"__tostring",	lua_gerror_tostring}
+	, {NULL, NULL}
+	};
+
+void lua_gerror_push(lua_State* L, GError* v) {
+	if( v ) {
+		GError** ud = lua_newuserdata(L, sizeof(GError*));
+		if( luaL_newmetatable(L, GERROR_LUA_NAME) ) {
+			luaL_setfuncs(L, gerror_methods, 0);
+		}
+		lua_setmetatable(L, -2);
+		*ud = v;
+	} else {
+		lua_pushnil(L);
+	}
+}
+
+GError* lua_gerror_test(lua_State* L, int idx) {
+	GError** ud = luaL_testudata(L, sizeof(GError*), GERROR_LUA_NAME);
+	return ud ? *ud : NULL;
+}
 
 GValue* lua_gboxedvalue_check(lua_State* L, int idx) {
 	return luaL_checkudata(L, 1, GBOXEDVALUE_LUA_NAME);
@@ -130,32 +166,32 @@ void lua_gboxedvalue_push(lua_State* L, const GValue* v) {
 }
 
 static int lua_param_sepc_unref(lua_State* L) {
-	GParamSpecLua* ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
-	if( ud->spec ) {
-		g_param_spec_unref(ud->spec);
-		ud->spec = NULL;
+	GParamSpec** ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
+	if( *ud ) {
+		g_param_spec_unref(*ud);
+		*ud = NULL;
 	}
 	return 0;
 }
 
 static int lua_param_sepc_tostring(lua_State* L) {
-	GParamSpecLua* ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
+	GParamSpec** ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
 	lua_pushfstring(L, "%s:%p {valuetype='%s', name='%s', nick='%s', blurb='%s'}"
 		, GPARAMSPEC_LUA_NAME
-		, ud->spec
-		, g_type_name(G_PARAM_SPEC_VALUE_TYPE(ud->spec))
-		, g_param_spec_get_name(ud->spec)
-		, g_param_spec_get_nick(ud->spec)
-		, g_param_spec_get_blurb(ud->spec)
+		, *ud
+		, g_type_name(G_PARAM_SPEC_VALUE_TYPE(*ud))
+		, g_param_spec_get_name(*ud)
+		, g_param_spec_get_nick(*ud)
+		, g_param_spec_get_blurb(*ud)
 		);
 	return 1;
 }
 
 static GParamSpec* lua_param_check(lua_State* L, int idx) {
-	GParamSpecLua* ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
-	if( ud->spec==NULL )
+	GParamSpec** ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
+	if( *ud==NULL )
 		luaL_argerror(L, idx, "GParamSpec already free");
-	return ud->spec;
+	return *ud;
 }
 
 static int lua_param_sepc_name(lua_State* L) {
@@ -186,19 +222,19 @@ static luaL_Reg param_spec_methods[] =
 	};
 
 static void lua_gparamspec_push(lua_State* L, GParamSpec* spec) {
-	GParamSpecLua* ud = lua_newuserdata(L, sizeof(GParamSpecLua));
+	GParamSpec** ud = lua_newuserdata(L, sizeof(GParamSpec*));
 	if( luaL_newmetatable(L, GPARAMSPEC_LUA_NAME) ) {
 		luaL_setfuncs(L, param_spec_methods, 0);
 		lua_pushvalue(L, -1);
 		lua_setfield(L, -2, "__index");
 	}
 	lua_setmetatable(L, -2);
-	ud->spec = g_param_spec_ref_sink(spec);
+	*ud = g_param_spec_ref_sink(spec);
 }
 
 static GParamSpec* lua_gparamspec_test(lua_State* L, int idx) {
-	GParamSpecLua* ud = luaL_testudata(L, 1, GPARAMSPEC_LUA_NAME);
-	return ud ? ud->spec : NULL;
+	GParamSpec** ud = luaL_testudata(L, 1, GPARAMSPEC_LUA_NAME);
+	return ud ? *ud : NULL;
 }
 
 static void lua_param_gvalue_push(lua_State* L, const GValue* v) {
@@ -543,7 +579,7 @@ static int lua_gobject_set(lua_State* L) {
 	return 0;
 }
 
-static int lua_gobject_signal_connect(lua_State* L) {
+int lua_gobject_signal_connect(lua_State* L) {
 	GObject* obj = _gobject_check(L, 1);
 	const char* detailed_signal = luaL_checkstring(L, 2);
 	luaL_checktype(L, 3, LUA_TFUNCTION);

@@ -557,7 +557,6 @@ static void puss_init(Puss* app) {
 	lua_gobject_open(L);
 	assert( lua_gettop(L)==0 );
 
-	kslua_ffi_va_type_register_basic();
 	gobject_ffi_type_register(L);
 	kslua_ffi_va_type_register('$', &_kslua_ffi_type_puss_module);
 
