@@ -147,6 +147,15 @@
     <None Include="..\ksgtklua\gobject_lua_extra_gtk.inl">
       <Filter>ksgtklua</Filter>
     </None>
+    <None Include="..\ksgtklua\luaproxy_fill.inl">
+      <Filter>ksgtklua</Filter>
+    </None>
+    <None Include="..\ksgtklua\luaproxy_wrap.inl">
+      <Filter>ksgtklua</Filter>
+    </None>
+    <None Include="..\ksgtklua\luaproxy_decl.inl">
+      <Filter>ksgtklua</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scripts">

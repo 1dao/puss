@@ -24,9 +24,7 @@
   <ItemDefinitionGroup>
     <ClCompile />
     <Link />
-    <Link>
-      <AdditionalDependencies>SciLexer-gtk3-vs12.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
+    <Link />
     <ClCompile>
       <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)3rd\lua53\;$(PussBaseDir)3rd\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

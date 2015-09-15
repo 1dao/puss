@@ -28,7 +28,7 @@ KS_DECLS_BEGIN
 //	$		PussModule*					PussModule**
 
 typedef struct lua_State	lua_State;
-
+typedef struct _LuaProxy	LuaProxy;
 typedef struct _PussModule	PussModule;
 
 typedef struct _IPuss {
@@ -37,7 +37,7 @@ typedef struct _IPuss {
 
 typedef void (*PussModuleRegFFI)(lua_State* L, const char* method, const void* func, char rtype, const char* atypes);
 
-typedef void (*PussModuleInit)(IPuss* iface, lua_State* L, PussModuleRegFFI puss_module_reg_ffi);
+typedef void (*PussModuleInit)(IPuss* iface, LuaProxy* proxy, lua_State* L, PussModuleRegFFI puss_module_reg_ffi);
 typedef void (*PussModuleUninit)(void);
 
 #define	PUSS_MODULE_SYMBOL_INIT		"puss_module_init"

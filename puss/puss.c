@@ -87,6 +87,8 @@ const char script_system_default_script[] = "-- __builtins__/__script_system__.l
 #include "ksgtklua/gboxed_glib_lua.inl"
 #include "ksgtklua/gobject_lua_extra_gtk.inl"
 
+#include "kslua/luaproxy/luaproxy_export.inl"
+
 #ifdef _WIN32
 	#ifdef _DEBUG
 		#define MODULE_SUFFIX	"_d.dll"
@@ -304,7 +306,7 @@ static int puss_module_create(lua_State* L) {
 
 	PussModule* pm = puss_module_new(L, name);
 	lua_getuservalue(L, -1);
-	init(&_puss_iface, L, puss_module_reg_ffi);
+	init(&_puss_iface, __lua_proxy_export__(), L, puss_module_reg_ffi);
 	lua_pop(L, 1);
 	return 1;
 }

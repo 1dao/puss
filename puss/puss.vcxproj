@@ -151,6 +151,9 @@
     <None Include="..\bin\modules\puss\puss.lua" />
     <None Include="..\ksgtklua\gboxed_glib_lua.inl" />
     <None Include="..\ksgtklua\gobject_lua_extra_gtk.inl" />
+    <None Include="..\ksgtklua\luaproxy_decl.inl" />
+    <None Include="..\ksgtklua\luaproxy_fill.inl" />
+    <None Include="..\ksgtklua\luaproxy_wrap.inl" />
     <None Include="..\kslua\ffi_lua.inl" />
     <None Include="source_editor_scintilla_iface.inl" />
   </ItemGroup>

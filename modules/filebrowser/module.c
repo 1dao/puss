@@ -11,6 +11,12 @@
 #include "puss/puss_interface.h"
 #include <gio/gio.h>
 
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
+#include "kslua/luaproxy/luaproxy_import.inl"
+
 typedef struct {
 	GtkBuilder*			builder;
 	GVolumeMonitor*		vm;
@@ -485,11 +491,16 @@ static void on_switch_page(GtkNotebook* nb, GtkWidget* page, guint page_num, gpo
 	//	locate_to_file(self, filepath->str, TRUE);
 }
 
-G_MODULE_EXPORT void puss_module_init(IPuss* iface, lua_State* L, PussModuleRegFFI puss_module_reg_ffi) {
+G_MODULE_EXPORT void puss_module_init(IPuss* iface, LuaProxy* proxy, lua_State* L, PussModuleRegFFI puss_module_reg_ffi) {
 	PussFileBrowser* self = &_self;
 	memset(self, 0, sizeof(PussFileBrowser));
 
+	__lua_proxy_import__(proxy);
+
 	puss = iface;
+
+	//lua_pushliteral(L, "hello module");
+	//lua_setglobal(L, "XXX");
 
 	//build_ui(self, "modules/filebrowser/");
 
