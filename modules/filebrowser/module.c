@@ -15,7 +15,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
-#include "kslua/luaproxy/luaproxy_import.inl"
+#include "glua/luaproxy/luaproxy_import.inl"
 
 typedef struct {
 	GtkBuilder*			builder;

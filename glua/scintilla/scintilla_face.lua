@@ -101,7 +101,7 @@ local iface = ScintillaFaceReadFromFile('scintilla.iface')
 
 local function iface_type(tp) return tp=='' and 'void' or tp end
 
-local output = io.open('source_editor_scintilla_iface.inl', 'w')
+local output = io.open('scintilla_iface.inl', 'w')
 output:write('// NOTICE : generate by scintilla_face.lua\n')
 
 -- fun/get/set

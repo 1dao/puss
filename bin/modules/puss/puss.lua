@@ -1,25 +1,51 @@
 -- puss.lua
 -- 
 
+local argc, argv = ...
+local glua = __glua__
+local gsci = __gsci__
+
 do
-	local enums = __sci__.enums
+	local enums = __gsci__.enums
 	setmetatable( _ENV, { __index = function(t,k) return rawget(t,k) or rawget(enums,k) end })
 end
 
-local gobject = __gobject__
-local gobject_metatables = gobject.gtype_get_metatables()
+local G_APPLICATION_HANDLES_OPEN = (1<<2)
 
-gobject_metatables.GObject =
-	{ get = gobject.get
-	, set = gobject.set
-	, connect = gobject.signal_connect
-	}
+app = glua.new('GtkApplication')
+app:set('application-id', 'puss.org')
+app:set('flags', G_APPLICATION_HANDLES_OPEN)
+--app:set_defalut()
 
--- for k,v in pairs(gobject.gtype_get_metatables()) do print(k,v) end
+main_window = nil
 
-setmetatable(gobject_metatables.GtkWidget, { __index = gobject_metatables.GObject } )
-setmetatable(gobject_metatables.GtkContainer, { __index = gobject_metatables.GtkWidget } )
-setmetatable(gobject_metatables.GtkNotebook, { __index = gobject_metatables.GtkContainer } )
+function puss_main_window_open()
+	if not main_window then
+		main_window = glua.new('GtkApplicationWindow')
+		main_window:set('visible', true)
+		app:add_window(main_window)
+	end
+	return main_window
+end
+
+function puss_app_activate(...)
+	print('activate', ...)
+	puss_main_window_open()
+end
+
+function puss_app_open(...)
+	print('open', ...)
+	puss_main_window_open()
+end
+
+app:signal_connect('activate', puss_app_activate)
+app:signal_connect('open', puss_app_open)
+
+-- glua.types.GStrv.new({'aaa','bbb','ccc'})
+
+app:run(argc, argv)
+
+--[===[
 
 do
 	local source_editor_gtypename = __sci__.__SOURCE_EDITOR_TYPENAME__
@@ -109,4 +135,7 @@ __script_system__.open = function(files, hint)
 	-- for _,v in ipairs(gobject.gtype_list_properties('SourceEditor')) do print(v:name(), ed[v:name()]) end
 	-- print('editor visible = ' .. tostring(ed.visible))
 end
+
+--]===]
+
 

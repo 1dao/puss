@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libffi", "3rd\libffi-3.2.1\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scintilla", "scintilla\gtk\scintilla.vcxproj", "{FBE04237-9C7B-4973-9C60-505975998B39}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glua", "glua\glua.vcxproj", "{CD784BE6-CDB2-4D98-9DA3-F89725092A19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -50,6 +52,10 @@ Global
 		{FBE04237-9C7B-4973-9C60-505975998B39}.Debug|Win32.Build.0 = Debug|Win32
 		{FBE04237-9C7B-4973-9C60-505975998B39}.Release|Win32.ActiveCfg = Release|Win32
 		{FBE04237-9C7B-4973-9C60-505975998B39}.Release|Win32.Build.0 = Release|Win32
+		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Debug|Win32.Build.0 = Debug|Win32
+		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Release|Win32.ActiveCfg = Release|Win32
+		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
