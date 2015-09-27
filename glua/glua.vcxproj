@@ -39,7 +39,14 @@
     <Import Project="..\gtk+-3.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
+    <OutDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
+    <OutDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDIr)..\3rd\lua53\;$(ProjectDIr)..\3rd\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
