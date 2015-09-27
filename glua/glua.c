@@ -8,10 +8,11 @@
 #include <string.h>
 
 static const char*	GOBJECT_MASTER_TABLE_NAME  = "__gobject_master__";
+static const char*	GOBJECT_ENUMS_TABLE_NAME   = "__gobject_enums__";
 static const char*	GOBJECT_TYPES_TABLE_NAME   = "__gobject_types__";
 static const char*	GOBJECT_G_TYPES_TABLE_NAME = "__gobject_gtypes__";
 
-static const char*	GOBJECT_LUA_NAME = "__GOBJECT__";
+static const char*	GOBJECT_LUA_NAME = "__glua__";
 static const char*	GERROR_LUA_NAME = "__GERROR__";
 static const char*	GBOXEDVALUE_LUA_NAME = "__GBOXEDVALUE__";
 static const char*	GPARAMSPEC_LUA_NAME = "__GPARAMSPEC__";
@@ -48,6 +49,17 @@ typedef struct _MarshalLuaCallEnv {
 } MarshalLuaCallEnv;
 
 static void _fundamental_types_register(lua_State* L);
+
+static void _lua_push_enums_table(lua_State* L) {
+	// types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
+	if( lua_getfield(L, LUA_REGISTRYINDEX, GOBJECT_ENUMS_TABLE_NAME)!=LUA_TTABLE ) {
+		lua_pop(L, 1);
+		lua_newtable(L);
+
+		lua_pushvalue(L, -1);
+		lua_setfield(L, LUA_REGISTRYINDEX, GOBJECT_ENUMS_TABLE_NAME);
+	}
+}
 
 static void _lua_push_types_table(lua_State* L) {
 	// types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
@@ -559,6 +571,41 @@ static int lua_gtype_from_name(lua_State* L) {
 	return 1;
 }
 
+static void _lua_enums_push_by_type(lua_State* L, GType gtype) {
+	if( G_TYPE_IS_ENUM(gtype) ) {
+		GEnumClass* klass = G_ENUM_CLASS(g_type_class_ref(gtype));
+		GEnumValue* ps = klass->values;
+		GEnumValue* pe = ps + klass->n_values;
+		lua_createtable(L, 0, klass->n_values);
+		for( ; ps<pe; ++ps ) {
+			lua_pushinteger(L, (lua_Integer)(ps->value));
+			lua_setfield(L, -2, ps->value_name);
+		}
+		g_type_class_unref(klass);
+
+	} else if( G_TYPE_IS_FLAGS(gtype) ) {
+		GFlagsClass* klass = G_FLAGS_CLASS(g_type_class_ref(gtype));
+		GFlagsValue* ps = klass->values;
+		GFlagsValue* pe = ps + klass->n_values;
+		lua_createtable(L, 0, klass->n_values);
+		for( ; ps<pe; ++ps ) {
+			lua_pushinteger(L, (lua_Integer)(ps->value));
+			lua_setfield(L, -2, ps->value_name);
+		}
+		g_type_class_unref(klass);
+
+	} else {
+		lua_pushnil(L);
+	}
+}
+
+static int lua_gtype_fetch_enum_values(lua_State* L) {
+	const char* gtypename = luaL_checkstring(L, 1);
+	GType gtype = g_type_from_name(gtypename);
+	_lua_enums_push_by_type(L, gtype);
+	return 1;
+}
+
 static int lua_gtype_name_from_instance(lua_State* L) {
 	GType tp = G_TYPE_INVALID;
 	if( lua_isuserdata(L, 1) ) {
@@ -633,7 +680,7 @@ static int lua_gobject_set(lua_State* L) {
 	return 0;
 }
 
-int glua_singal_connect(lua_State* L) {
+int glua_signal_connect(lua_State* L) {
 	GObject* obj = _gobject_check(L, 1);
 	const char* detailed_signal = luaL_checkstring(L, 2);
 	luaL_checktype(L, 3, LUA_TFUNCTION);
@@ -668,6 +715,7 @@ static luaL_Reg _gobject_module_methods[] =
 	{ {"gtype_list_properties",			lua_gtype_list_properties}
 	, {"gtype_from_instance",			lua_gtype_from_instance}
 	, {"gtype_from_name",				lua_gtype_from_name}
+	, {"gtype_fetch_enum_values",		lua_gtype_fetch_enum_values}
 	, {"gtype_name_from_instance",		lua_gtype_name_from_instance}
 	, {"new",							lua_gobject_new}
 	, {NULL, NULL}
@@ -676,7 +724,7 @@ static luaL_Reg _gobject_module_methods[] =
 static luaL_Reg _gobject_metatable_methods[] = 
 	{ {"get",							lua_gobject_get}
 	, {"set",							lua_gobject_set}
-	, {"signal_connect",				glua_singal_connect}
+	, {"signal_connect",				glua_signal_connect}
 	, {"signal_handle_disconnect",		lua_signal_handle_disconnect}
 	, {NULL, NULL}
 	};
@@ -684,10 +732,6 @@ static luaL_Reg _gobject_metatable_methods[] =
 static void _fundamental_types_register(lua_State* L) {
 	glua_reg_gtype_index_table(L, G_TYPE_OBJECT, _gobject_metatable_methods);
 	glua_reg_gtype_index_table(L, G_TYPE_INITIALLY_UNOWNED, NULL);
-}
-
-static int _lua_gobject_empty_metatable(lua_State* L) {
-	return 0;
 }
 
 void glua_push_master_table(lua_State* L) {
@@ -701,6 +745,10 @@ void glua_push_master_table(lua_State* L) {
 
 		luaL_setfuncs(L, _gobject_module_methods, 0);
 
+		// master.enums = { GTypeName : EnumValuesTable }
+		_lua_push_enums_table(L);
+		lua_setfield(L, -2, "enums");
+
 		// master.types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
 		_lua_push_types_table(L);
 		lua_setfield(L, -2, "types");
@@ -709,6 +757,34 @@ void glua_push_master_table(lua_State* L) {
 		_lua_push_g_types_table(L);
 		lua_setfield(L, -2, "__gtypes__");
 	}
+}
+
+void glua_enum_types_register(lua_State* L) {
+	_lua_push_enums_table(L);
+
+	// enums
+	{
+		guint n = 0;
+		GType* ps = g_type_children(G_TYPE_ENUM, &n);
+		GType* pe = ps + n;
+		for( ; ps<pe; ++ps ) {
+			_lua_enums_push_by_type(L, *ps);
+			lua_setfield(L, -2, g_type_name(*ps));
+		}
+	}
+
+	// flags
+	{
+		guint n = 0;
+		GType* ps = g_type_children(G_TYPE_FLAGS, &n);
+		GType* pe = ps + n;
+		for( ; ps<pe; ++ps ) {
+			_lua_enums_push_by_type(L, *ps);
+			lua_setfield(L, -2, g_type_name(*ps));
+		}
+	}
+
+	lua_pop(L, 1);
 }
 
 void glua_object_push(lua_State* L, GObject* obj, gboolean weak_ref) {

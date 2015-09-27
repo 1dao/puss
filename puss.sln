@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "puss", "puss\puss.vcxproj", "{64D458C2-7328-4221-80B8-6DFCD15F1E53}"
 EndProject
@@ -9,10 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "puss_win32", "puss\puss_win
 	ProjectSection(ProjectDependencies) = postProject
 		{64D458C2-7328-4221-80B8-6DFCD15F1E53} = {64D458C2-7328-4221-80B8-6DFCD15F1E53}
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{7228FBAB-3411-4666-88AF-855F2E301859}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filebrowser", "modules\filebrowser\filebrowser.vcxproj", "{43F803E1-2E28-34F4-1FAB-3DC8FE8B7AE4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua53", "3rd\lua53\lua53.vcxproj", "{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}"
 EndProject
@@ -36,10 +32,6 @@ Global
 		{69646FCD-CCD2-4FC2-A92A-EAA02F9A671E}.Debug|Win32.Build.0 = Debug|Win32
 		{69646FCD-CCD2-4FC2-A92A-EAA02F9A671E}.Release|Win32.ActiveCfg = Release|Win32
 		{69646FCD-CCD2-4FC2-A92A-EAA02F9A671E}.Release|Win32.Build.0 = Release|Win32
-		{43F803E1-2E28-34F4-1FAB-3DC8FE8B7AE4}.Debug|Win32.ActiveCfg = Debug|Win32
-		{43F803E1-2E28-34F4-1FAB-3DC8FE8B7AE4}.Debug|Win32.Build.0 = Debug|Win32
-		{43F803E1-2E28-34F4-1FAB-3DC8FE8B7AE4}.Release|Win32.ActiveCfg = Release|Win32
-		{43F803E1-2E28-34F4-1FAB-3DC8FE8B7AE4}.Release|Win32.Build.0 = Release|Win32
 		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Debug|Win32.Build.0 = Debug|Win32
 		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Release|Win32.ActiveCfg = Release|Win32
@@ -59,8 +51,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{43F803E1-2E28-34F4-1FAB-3DC8FE8B7AE4} = {7228FBAB-3411-4666-88AF-855F2E301859}
 	EndGlobalSection
 EndGlobal

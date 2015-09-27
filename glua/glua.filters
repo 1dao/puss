@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="gobject_lua.c" />
+    <ClCompile Include="gobject_lua_ffi.c" />
+    <ClCompile Include="ksgtklua.c" />
+    <ClCompile Include="gtk_lua.c" />
+    <ClCompile Include="gboxed_lua.c" />
+    <ClCompile Include="script_view.c" />
+    <ClCompile Include="script_view_lua.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gobject_lua.h" />
+    <ClInclude Include="gobject_lua_ffi.h" />
+    <ClInclude Include="script_view.h" />
+  </ItemGroup>
+</Project>

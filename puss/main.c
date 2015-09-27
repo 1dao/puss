@@ -2,6 +2,10 @@
 
 #ifdef _WIN32
 	#include <Windows.h>
+
+	#ifdef _MSC_VER
+		#define inline	__inline
+	#endif
 #endif
 
 #include <assert.h>
@@ -123,14 +127,14 @@ int main(int argc, char* argv[]) {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 
+	gffi_init();
+		gtypes_glib_register(L);
+		gtypes_gtk_register(L);
+		gtypes_scintilla_register(L);
+	glua_enum_types_register(L);
+
 	glua_push_master_table(L);
 	lua_setglobal(L, "__glua__");
-
-	gffi_init();
-
-	gtypes_glib_register(L);
-	gtypes_gtk_register(L);
-	gtypes_scintilla_register(L);
 
 	if( lua_load_main_script(L, argv[0]) ) {
 		g_error("load script error : %s", lua_tostring(L, -1));

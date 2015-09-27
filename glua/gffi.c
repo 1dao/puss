@@ -310,15 +310,20 @@ static GFFIType* _gtype_get(GType gtype) {
 		case G_TYPE_OBJECT:
 		case G_TYPE_INTERFACE:
 			tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_object, ffi_lua_push_object);
-			if( tp )
-				break;
+			break;
 		case G_TYPE_BOXED:
 			tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_boxed, ffi_lua_push_boxed);
-			if( tp )
-				break;
+			break;
+		case G_TYPE_FLAGS:
+		case G_TYPE_ENUM:
+			tp = _gtype_reg(gtype, ffi_type_uint32, ffi_lua_check_uint, ffi_lua_push_uint);
+			break;
 		default:
-			g_error("gtype(%s) not register as ffi type!", g_type_name(gtype));
+			break;
 		}
+
+		if( !tp )
+			g_error("gtype(%s) not register as ffi type!", g_type_name(gtype));
 	}
 	return tp;
 }

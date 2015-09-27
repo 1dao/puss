@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets">
-    <Import Project="bin\gtk-win32\gtk+-3.props" />
+    <Import Project="gtk+-3.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <PussConfigSuffix>$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `_d`))</PussConfigSuffix>
@@ -26,7 +26,7 @@
     <Link />
     <Link />
     <ClCompile>
-      <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)3rd\lua53\;$(PussBaseDir)3rd\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)3rd\lua53\;$(PussBaseDir)3rd\libffi-3.2.1\src\x86\;$(PussBaseDir)scintilla\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 </Project>

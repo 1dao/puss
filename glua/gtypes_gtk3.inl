@@ -59,7 +59,7 @@ static void gtypes_gtk_interface_register(lua_State* L) {
 static void _gtk_builder_connect_wrapper(GtkBuilder* builder, GObject* object, const gchar* signal_name, const gchar* handler_name, GObject* connect_object, GConnectFlags flags, gpointer user_data) {
 	lua_State* L = (lua_State*)user_data;
 	if( lua_istable(L, 2) ) {
-		lua_pushcfunction(L, glua_singal_connect);
+		lua_pushcfunction(L, glua_signal_connect);
 		glua_object_push(L, object, TRUE);
 		lua_pushstring(L, signal_name);
 		lua_getfield(L, 2, handler_name);
@@ -395,7 +395,7 @@ static void gtypes_gtk_object_register(lua_State* L) {
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOLTIP, NULL);
 
 	gtype_reg_start(GTK_TYPE_APPLICATION, gtk_application);
-		gtype_reg_ffi(GTK_TYPE_APPLICATION, gtk_application_new, G_TYPE_STRING, G_TYPE_UINT);
+		gtype_reg_ffi(GTK_TYPE_APPLICATION, gtk_application_new, G_TYPE_STRING, G_TYPE_APPLICATION_FLAGS);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_application_add_window, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_application_remove_window, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW);
 
@@ -405,15 +405,12 @@ static void gtypes_gtk_object_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_MENU_MODEL, gtk_application_get_menubar, GTK_TYPE_APPLICATION);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_application_set_menubar, GTK_TYPE_APPLICATION, G_TYPE_MENU_MODEL);
 
-		gtype_reg_ffi(G_TYPE_UINT, gtk_application_inhibit, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW, G_TYPE_UINT, G_TYPE_STRING);
-		gtype_reg_ffi(G_TYPE_UINT, gtk_application_uninhibit, GTK_TYPE_APPLICATION, G_TYPE_UINT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_is_inhibited, GTK_TYPE_APPLICATION, G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_application_inhibit, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW, GTK_TYPE_APPLICATION_INHIBIT_FLAGS, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_uninhibit, GTK_TYPE_APPLICATION, G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_is_inhibited, GTK_TYPE_APPLICATION, GTK_TYPE_APPLICATION_INHIBIT_FLAGS);
 
 		gtype_reg_ffi(GTK_TYPE_WINDOW, gtk_application_get_window_by_id, GTK_TYPE_APPLICATION, G_TYPE_UINT);
 		gtype_reg_ffi(GTK_TYPE_WINDOW, gtk_application_get_active_window, GTK_TYPE_APPLICATION);
-
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_prefers_app_menu, GTK_TYPE_APPLICATION);
-		gtype_reg_ffi(GTK_TYPE_MENU, gtk_application_get_menu_by_id, GTK_TYPE_APPLICATION, G_TYPE_STRING);
 	gtype_reg_end();
 }
 

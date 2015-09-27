@@ -2,15 +2,20 @@
 -- 
 
 local argc, argv = ...
+
 local glua = __glua__
 local gsci = __gsci__
 
 do
-	local enums = __gsci__.enums
-	setmetatable( _ENV, { __index = function(t,k) return rawget(t,k) or rawget(enums,k) end })
+	local enums = {}
+	for etype, values in pairs(glua.enums) do
+		for k,v in pairs(values) do enums[k]=v end
+	end
+	local gsci_enums = gsci.enums
+	setmetatable( _ENV, { __index = function(t,k) return rawget(t,k) or rawget(enums,k) or rawget(gsci_enums,k) end })
 end
 
-local G_APPLICATION_HANDLES_OPEN = (1<<2)
+-- local G_APPLICATION_HANDLES_OPEN = (1<<2)
 
 app = glua.new('GtkApplication')
 app:set('application-id', 'puss.org')
@@ -137,5 +142,3 @@ __script_system__.open = function(files, hint)
 end
 
 --]===]
-
-

@@ -24,7 +24,7 @@ static void set_3rd_dll_path(void) {
 #ifdef WIN64
 		wcscpy(path+i, L"\\gtk-x64\\bin\\");
 #else
-		wcscpy(path+i, L"\\gtk-win32\\bin\\");
+		wcscpy(path+i, L"\\gtk-x86\\bin\\");
 #endif
 		SetDllDirectoryW(path);
 	}
