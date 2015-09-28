@@ -1,7 +1,7 @@
 -- puss.lua
 -- 
 
-local argc, argv = ...
+local root_path, args = ...
 
 local glua = __glua__
 local gsci = __gsci__
@@ -20,17 +20,24 @@ end
 app = glua.new('GtkApplication')
 app:set('application-id', 'puss.org')
 app:set('flags', G_APPLICATION_HANDLES_OPEN)
---app:set_defalut()
+app:set_default()
 
+main_builder = nil
 main_window = nil
 
+function puss_modules_open()
+	
+end
+
 function puss_main_window_open()
-	if not main_window then
-		main_window = glua.new('GtkApplicationWindow')
-		main_window:set('visible', true)
+	if not main_builder then
+		main_builder = glua.new('GtkBuilder')
+		main_builder:add_from_file(root_path .. '/modules/puss/puss_main_window.ui')
+		main_window = main_builder:get_object('main_window')
 		app:add_window(main_window)
+		puss_modules_open()
+		main_window:show_all()
 	end
-	return main_window
 end
 
 function puss_app_activate(...)
@@ -48,7 +55,7 @@ app:signal_connect('open', puss_app_open)
 
 -- glua.types.GStrv.new({'aaa','bbb','ccc'})
 
-app:run(argc, argv)
+app:run(args:len(), args)
 
 --[===[
 

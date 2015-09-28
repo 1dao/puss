@@ -307,16 +307,16 @@ static GFFIType* _gtype_get(GType gtype) {
 	if( !tp ) {
 		GType fundamental_type = G_TYPE_IS_FUNDAMENTAL(gtype) ? gtype : g_type_fundamental(gtype);
 		switch( fundamental_type ) {
-		case G_TYPE_OBJECT:
+		case G_TYPE_ENUM:
+		case G_TYPE_FLAGS:
+			tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_uint, ffi_lua_push_uint);
+			break;
 		case G_TYPE_INTERFACE:
+		case G_TYPE_OBJECT:
 			tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_object, ffi_lua_push_object);
 			break;
 		case G_TYPE_BOXED:
 			tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_boxed, ffi_lua_push_boxed);
-			break;
-		case G_TYPE_FLAGS:
-		case G_TYPE_ENUM:
-			tp = _gtype_reg(gtype, ffi_type_uint32, ffi_lua_check_uint, ffi_lua_push_uint);
 			break;
 		default:
 			break;

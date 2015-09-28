@@ -60,10 +60,18 @@ static int strv_new(lua_State* L) {
 	return 1;
 }
 
+static int strv_len(lua_State* L) {
+	GValue* v = gboxedvalue_check(L, 1, G_TYPE_STRV);
+	const GStrv gstrv = (const GStrv)g_value_get_boxed(v);
+	lua_pushinteger(L, (lua_Integer)g_strv_length(gstrv));
+	return 1;
+}
+
 static luaL_Reg strv_methods[] =
 	{ {"new",		strv_new}
 	, {"get",		strv_get}
 	, {"set",		strv_set}
+	, {"len",		strv_len}
 	, {NULL, NULL}
 	};
 
