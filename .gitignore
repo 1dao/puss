@@ -8,6 +8,7 @@
 *.ilk
 *.opensdf
 *.sdf
+*.suo
 *.vcxproj.user
 bin/gtk-x86
 bin/gtk-x64

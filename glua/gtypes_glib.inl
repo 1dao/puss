@@ -111,7 +111,7 @@ static void gtypes_glib_register(lua_State* L) {
 	glua_reg_gtype_index_table(L, G_TYPE_FILE_INFO, NULL);
 
 	gtype_reg_start(G_TYPE_APPLICATION, g_application);
-		gtype_reg_ffi(G_TYPE_NONE, g_application_id_is_valid, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, g_application_id_is_valid, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_APPLICATION, g_application_new, G_TYPE_STRING, G_TYPE_APPLICATION_FLAGS);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_application_get_is_registered, G_TYPE_APPLICATION);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_application_get_is_remote, G_TYPE_APPLICATION);
