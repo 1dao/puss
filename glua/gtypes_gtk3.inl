@@ -116,7 +116,7 @@ static int lua_gtk_builder_add_from_file(lua_State* L) {
 	return 1;
 }
 
-static int lua_gtk_builder_connect(lua_State* L) {
+static int lua_gtk_builder_connect_signals(lua_State* L) {
 	GObject* obj = glua_object_check(L, 1);
 	GtkBuilder* builder = GTK_BUILDER(obj);
 	if( !builder )
@@ -341,7 +341,7 @@ static void gtypes_gtk_object_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_INT, gtk_builder_get_type_from_name, GTK_TYPE_BUILDER, G_TYPE_STRING);
 		gtype_reg_lua("add_from_string", lua_gtk_builder_add_from_string);
 		gtype_reg_lua("add_from_file", lua_gtk_builder_add_from_file);
-		gtype_reg_lua("connect_signals", lua_gtk_builder_connect);
+		gtype_reg_lua("connect_signals", lua_gtk_builder_connect_signals);
 	gtype_reg_end();
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_CLIPBOARD, NULL);

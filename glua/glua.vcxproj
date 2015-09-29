@@ -40,21 +40,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
-    <OutDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
-    <OutDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDIr)..\3rd\lua53\;$(ProjectDIr)..\3rd\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDIr)..\lua53\;$(ProjectDIr)..\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDIr)..\3rd\lua53\;$(ProjectDIr)..\3rd\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDIr)..\lua53\;$(ProjectDIr)..\libffi-3.2.1\src\x86\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

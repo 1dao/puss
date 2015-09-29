@@ -15,82 +15,26 @@ do
 	setmetatable( _ENV, { __index = function(t,k) return rawget(t,k) or rawget(enums,k) or rawget(gsci_enums,k) end })
 end
 
+do
+	local g_types = glua.types
+	local g_new = glua.new
+
+	local function glua_index(t,k)
+		local tp = g_types[k]
+		if tp and tp.new then return tp.new end			-- use glua.types.SomeType.new
+		return function(...) return g_new(k, ...) end	-- use glua.new('SomeType') 
+	end
+
+	setmetatable(glua, { __index=glua_index })
+end
+
 -- local G_APPLICATION_HANDLES_OPEN = (1<<2)
 
-app = glua.new('GtkApplication')
-app:set('application-id', 'puss.org')
-app:set('flags', G_APPLICATION_HANDLES_OPEN)
+app = glua.GtkApplication('puss.org', G_APPLICATION_HANDLES_OPEN)
 app:set_default()
 
 main_builder = nil
 main_window = nil
-
-function puss_modules_open()
-	
-end
-
-function puss_main_window_open()
-	if not main_builder then
-		main_builder = glua.new('GtkBuilder')
-		main_builder:add_from_file(root_path .. '/modules/puss/puss_main_window.ui')
-		main_window = main_builder:get_object('main_window')
-		app:add_window(main_window)
-		puss_modules_open()
-		main_window:show_all()
-	end
-end
-
-function puss_app_activate(...)
-	print('activate', ...)
-	puss_main_window_open()
-end
-
-function puss_app_open(...)
-	print('open', ...)
-	puss_main_window_open()
-end
-
-app:signal_connect('activate', puss_app_activate)
-app:signal_connect('open', puss_app_open)
-
--- glua.types.GStrv.new({'aaa','bbb','ccc'})
-
-app:run(args:len(), args)
-
---[===[
-
-do
-	local source_editor_gtypename = __sci__.__SOURCE_EDITOR_TYPENAME__
-	local source_editor_metatable = __sci__.functions
-	gobject_metatables[source_editor_gtypename] = source_editor_metatable
-	setmetatable(source_editor_metatable, { __index = gobject_metatables.GtkWidget } )
-end
-
--- for k,v in pairs(gobject.gtype_get_metatables()) do print(k,v) end
-
-local puss = __script_system__.__puss__
-
-__script_system__.__modules__ = { puss = __script_system__.puss }
-
-__script_system__.load_module = function(name)
-	local pm = __script_system__.__modules__[name]
-	if not pm then
-		local pth = 'modules/' .. name
-		pm = puss.module_create(name, pth .. '/' .. name)
-	end
-	return pm
-end
-
-__script_system__.load_plugin = function(name)
-	local pg = __script_system__.__plugins__[name]
-	if not pg then
-		local pth = 'modules/' .. name
-		pg = {}
-		setmetatable(pg, { __index=_ENV })
-		__script_system__.dofile(pth .. '/' .. name .. '.plugin', pg)
-	end
-	return pg
-end
 
 local function source_editor_set_language(editor, lang)
 	editor:set_lexer_language(nil, lang)
@@ -119,33 +63,83 @@ local function source_editor_set_language(editor, lang)
 	end
 end
 
-local function source_editor_new(label, lang)
-	local editor = puss.source_editor_page_new(label)
+function puss_modules_open()
+	local editor = glua.Scintilla()
 	editor:set_code_page(SC_CP_UTF8)
 	editor:style_set_font(STYLE_DEFAULT, "monospace")
-	source_editor_set_language(editor, lang)
-	return editor
+	source_editor_set_language(editor, 'cpp')
+editor:set_text(nil, [[
+#include <stdio.h>
+
+void main(int argc, char* argv[]) {
+	return 0;
+}
+]])
+
+	local sw = glua.GtkScrolledWindow()
+	sw:add(editor)
+	local doc_panel = main_builder:get_object('doc_panel')
+	local label = glua.GtkLabel()
+	label:set('label', "test")
+	doc_panel:append_page(sw, label)
+
+	editor:grab_focus()
 end
 
-__script_system__.activate = function()
-	local editor = source_editor_new('noname.c', 'cpp')
+function on_main_window_destroy(w, ...)
+	print('main window destroy signal handle!')
+	return true
 end
 
-__script_system__.open = function(files, hint)
-	m = __script_system__.load_module('filebrowser')
-
-	for _, f in ipairs(files) do
-		-- local cxt = __script_system__.__root_vfs__:load_utf8(f)
-		local editor = source_editor_new(f, 'cpp')
-		editor:source_editor_load(f)
-		h = editor:connect('focus-in-event', function(w, event, a,b,c,d)
-				print('XXXXX', editor, w, event, a,b,c,d)
-			end)
-		ed = editor
+function puss_main_window_open()
+	if not main_builder then
+		main_builder = glua.GtkBuilder()
+		main_builder:add_from_file(root_path .. '/modules/puss/puss_main_window.ui')
+		main_window = main_builder:get_object('main_window')
+		app:add_window(main_window)
+		main_builder:connect_signals(_ENV)
+		puss_modules_open()
+		main_window:show_all()
 	end
+end
 
-	-- for _,v in ipairs(gobject.gtype_list_properties('SourceEditor')) do print(v:name(), ed[v:name()]) end
-	-- print('editor visible = ' .. tostring(ed.visible))
+function puss_app_activate(...)
+	print('activate', ...)
+	puss_main_window_open()
+end
+
+function puss_app_open(...)
+	print('open', ...)
+	puss_main_window_open()
+end
+
+app:signal_connect('activate', puss_app_activate)
+app:signal_connect('open', puss_app_open)
+
+-- glua.types.GStrv.new({'aaa','bbb','ccc'})
+
+app:run(args:len(), args)
+
+--[===[
+
+__script_system__.load_module = function(name)
+	local pm = __script_system__.__modules__[name]
+	if not pm then
+		local pth = 'modules/' .. name
+		pm = puss.module_create(name, pth .. '/' .. name)
+	end
+	return pm
+end
+
+__script_system__.load_plugin = function(name)
+	local pg = __script_system__.__plugins__[name]
+	if not pg then
+		local pth = 'modules/' .. name
+		pg = {}
+		setmetatable(pg, { __index=_ENV })
+		__script_system__.dofile(pth .. '/' .. name .. '.plugin', pg)
+	end
+	return pg
 end
 
 --]===]

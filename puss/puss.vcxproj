@@ -49,10 +49,10 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(ProjectDir)..\$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent />
@@ -108,14 +108,14 @@
     <None Include="..\bin\modules\puss\puss.lua" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\3rd\libffi-3.2.1\build\win32\vs12\libffi.vcxproj">
-      <Project>{c8e92153-23da-4e17-af2b-dd8158eb60df}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\3rd\lua53\lua53.vcxproj">
-      <Project>{edbce0c7-c22f-467b-88da-ee93c89a135a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\glua\glua.vcxproj">
       <Project>{cd784be6-cdb2-4d98-9da3-f89725092a19}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\libffi-3.2.1\build\win32\vs12\libffi.vcxproj">
+      <Project>{c8e92153-23da-4e17-af2b-dd8158eb60df}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\lua53\lua53.vcxproj">
+      <Project>{edbce0c7-c22f-467b-88da-ee93c89a135a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\scintilla\gtk\scintilla.vcxproj">
       <Project>{fbe04237-9c7b-4973-9c60-505975998b39}</Project>

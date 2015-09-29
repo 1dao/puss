@@ -26,7 +26,7 @@
     <Link />
     <Link />
     <ClCompile>
-      <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)3rd\lua53\;$(PussBaseDir)3rd\libffi-3.2.1\src\x86\;$(PussBaseDir)scintilla\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)lua53\;$(PussBaseDir)libffi-3.2.1\src\x86\;$(PussBaseDir)scintilla\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 </Project>

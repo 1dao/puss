@@ -10,13 +10,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "puss_win32", "puss\puss_win
 		{64D458C2-7328-4221-80B8-6DFCD15F1E53} = {64D458C2-7328-4221-80B8-6DFCD15F1E53}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua53", "3rd\lua53\lua53.vcxproj", "{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libffi", "3rd\libffi-3.2.1\build\win32\vs12\libffi.vcxproj", "{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scintilla", "scintilla\gtk\scintilla.vcxproj", "{FBE04237-9C7B-4973-9C60-505975998B39}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glua", "glua\glua.vcxproj", "{CD784BE6-CDB2-4D98-9DA3-F89725092A19}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua53", "lua53\lua53.vcxproj", "{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libffi", "libffi-3.2.1\build\win32\vs12\libffi.vcxproj", "{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,14 +32,6 @@ Global
 		{69646FCD-CCD2-4FC2-A92A-EAA02F9A671E}.Debug|Win32.Build.0 = Debug|Win32
 		{69646FCD-CCD2-4FC2-A92A-EAA02F9A671E}.Release|Win32.ActiveCfg = Release|Win32
 		{69646FCD-CCD2-4FC2-A92A-EAA02F9A671E}.Release|Win32.Build.0 = Release|Win32
-		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Debug|Win32.Build.0 = Debug|Win32
-		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Release|Win32.ActiveCfg = Release|Win32
-		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Release|Win32.Build.0 = Release|Win32
-		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Debug|Win32.ActiveCfg = Release|Win32
-		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Debug|Win32.Build.0 = Release|Win32
-		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Release|Win32.ActiveCfg = Release|Win32
-		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Release|Win32.Build.0 = Release|Win32
 		{FBE04237-9C7B-4973-9C60-505975998B39}.Debug|Win32.ActiveCfg = Debug|Win32
 		{FBE04237-9C7B-4973-9C60-505975998B39}.Debug|Win32.Build.0 = Debug|Win32
 		{FBE04237-9C7B-4973-9C60-505975998B39}.Release|Win32.ActiveCfg = Release|Win32
@@ -48,6 +40,14 @@ Global
 		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Debug|Win32.Build.0 = Debug|Win32
 		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Release|Win32.ActiveCfg = Release|Win32
 		{CD784BE6-CDB2-4D98-9DA3-F89725092A19}.Release|Win32.Build.0 = Release|Win32
+		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Debug|Win32.Build.0 = Debug|Win32
+		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Release|Win32.ActiveCfg = Release|Win32
+		{EDBCE0C7-C22F-467B-88DA-EE93C89A135A}.Release|Win32.Build.0 = Release|Win32
+		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Debug|Win32.ActiveCfg = Release|Win32
+		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Debug|Win32.Build.0 = Release|Win32
+		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Release|Win32.ActiveCfg = Release|Win32
+		{C8E92153-23DA-4E17-AF2B-DD8158EB60DF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
