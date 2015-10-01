@@ -78,6 +78,7 @@ int CALLBACK WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine
 	}
 
 	AllocConsole();
+	ShowWindow(GetConsoleWindow(), SW_SHOW);	// in SW_HIDE mode ignore first ShowWindow 
 
 	*stdin = *_fdopen( _open_osfhandle((long)GetStdHandle(STD_INPUT_HANDLE), _O_TEXT), "r" );
 	*stdout = *_fdopen( _open_osfhandle((long)GetStdHandle(STD_OUTPUT_HANDLE), _O_TEXT), "w" );

@@ -74,27 +74,6 @@
 
 #endif
 
-static int debug_traceback(lua_State* L) {
-	const char *msg = lua_tostring(L, 1);
-	if (msg)
-		luaL_traceback(L, L, msg, 1);
-	else if (!lua_isnoneornil(L, 1)) {  /* is there an error object? */
-		if (!luaL_callmeta(L, 1, "__tostring"))  /* try its 'tostring' metamethod */
-			lua_pushliteral(L, "(no error message)");
-	}
-	return 1;
-}
-
-static int lua_pcall_stacktrace(lua_State* L, int narg, int nres) {
-	int status;
-	int base = lua_gettop(L) - narg;  /* function index */
-	lua_pushcfunction(L, debug_traceback);  /* push traceback function */
-	lua_insert(L, base);  /* put it under chunk and args */
-	status = lua_pcall(L, narg, nres, base);
-	lua_remove(L, base);  /* remove traceback function */
-	return status;
-}
-
 static int lua_load_main_script(lua_State* L, const char* arg0) {
 	int res = 0;
 	gsize len = 0;
@@ -157,11 +136,10 @@ int main(int argc, char* argv[]) {
 			for( ; i<argc; ++i ) {
 				v[i] = g_strdup(argv[i]);
 			}
-			glua_boxed_push(L, G_TYPE_STRV, v);
-			g_strfreev(v);
+			glua_boxed_push(L, G_TYPE_STRV, v, TRUE);
 		}
 
-		if( lua_pcall_stacktrace(L, 2, 0) ) {
+		if( glua_pcall(L, 2, 0) ) {
 			g_error("pcall error : %s", lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}

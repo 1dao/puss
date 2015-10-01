@@ -4,13 +4,37 @@
 // #include <gtk/gtk.h>
 // #include "gffireg.h"
 
+static gboolean lua_gdk_event_get_keycode(const GdkEvent *event, guint *keycode) {
+	guint16 code = 0;
+	gboolean res = gdk_event_get_keycode(event, &code);
+	*keycode = code;
+	return res;
+}
+
 static void gtypes_gtk_boxed_register(lua_State* L) {
 	gtype_reg_env_declare();
 
 	gtype_reg_start(GDK_TYPE_EVENT, gdk_event);
+		gtype_reg_ffi(GDK_TYPE_WINDOW, gdk_event_get_window, GDK_TYPE_EVENT);
 		gtype_reg_ffi(G_TYPE_UINT, gdk_event_get_time, GDK_TYPE_EVENT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_state, GDK_TYPE_EVENT, out GDK_TYPE_MODIFIER_TYPE);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_coords, GDK_TYPE_EVENT, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_root_coords, GDK_TYPE_EVENT, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_button, GDK_TYPE_EVENT, out G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_click_count, GDK_TYPE_EVENT, out G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_keyval, GDK_TYPE_EVENT, out G_TYPE_UINT);
+		gtype_reg_ffi_rename("get_keycode", G_TYPE_BOOLEAN, lua_gdk_event_get_keycode, GDK_TYPE_EVENT, out G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_scroll_direction, GDK_TYPE_EVENT, out GDK_TYPE_SCROLL_DIRECTION);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_scroll_deltas, GDK_TYPE_EVENT, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_axis, GDK_TYPE_EVENT, GDK_TYPE_AXIS_USE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_device, GDK_TYPE_EVENT, GDK_TYPE_DEVICE);
+		gtype_reg_ffi(GDK_TYPE_DEVICE, gdk_event_get_device, GDK_TYPE_EVENT);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_source_device, GDK_TYPE_EVENT, GDK_TYPE_DEVICE);
+		gtype_reg_ffi(GDK_TYPE_DEVICE, gdk_event_get_source_device, GDK_TYPE_EVENT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_triggers_context_menu, GDK_TYPE_EVENT);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_screen, GDK_TYPE_EVENT, GDK_TYPE_SCREEN);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_get_screen, GDK_TYPE_EVENT, out GDK_TYPE_SCREEN);
+		gtype_reg_ffi(GDK_TYPE_EVENT_TYPE, gdk_event_get_event_type, GDK_TYPE_EVENT);
 	gtype_reg_end();
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_PAPER_SIZE, NULL);
@@ -29,6 +53,8 @@ static void gtypes_gtk_boxed_register(lua_State* L) {
 }
 
 static void gtypes_gtk_interface_register(lua_State* L) {
+	gtype_reg_env_declare();
+
 	glua_reg_gtype_index_table(L, GTK_TYPE_BUILDABLE, NULL);
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_ORIENTABLE, NULL);
@@ -41,7 +67,22 @@ static void gtypes_gtk_interface_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_FILE_CHOOSER, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_TREE_MODEL, NULL);
+	gtype_reg_start(GTK_TYPE_TREE_MODEL, gtk_type_tree);
+		gtype_reg_ffi(GTK_TYPE_TREE_MODEL_FLAGS, gtk_tree_model_get_flags, GTK_TYPE_TREE_MODEL);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_model_get_n_columns, GTK_TYPE_TREE_MODEL);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_model_get_column_type, GTK_TYPE_TREE_MODEL, G_TYPE_INT);
+
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter_from_string, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, G_TYPE_STRING);
+
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_tree_model_get_string_from_iter, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
+
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter_first, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
+
+		gtype_reg_ffi_rnew(GTK_TYPE_TREE_PATH, gtk_tree_model_get_iter_first, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
+
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_model_get_value, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
+	gtype_reg_end();
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TREE_DRAG_SOURCE, NULL);
 
@@ -60,7 +101,7 @@ static void _gtk_builder_connect_wrapper(GtkBuilder* builder, GObject* object, c
 	lua_State* L = (lua_State*)user_data;
 	if( lua_istable(L, 2) ) {
 		lua_pushcfunction(L, glua_signal_connect);
-		glua_object_push(L, object, TRUE);
+		glua_object_push(L, object);
 		lua_pushstring(L, signal_name);
 		lua_getfield(L, 2, handler_name);
 		if( lua_isfunction(L,-1) ) {
@@ -73,7 +114,7 @@ static void _gtk_builder_connect_wrapper(GtkBuilder* builder, GObject* object, c
 	} else {
 		assert( lua_isfunction(L, 2) );
 		lua_pushvalue(L, 2);
-		glua_object_push(L, object, TRUE);
+		glua_object_push(L, object);
 		lua_pushstring(L, signal_name);
 		lua_pushstring(L, handler_name);
 		lua_pushboolean(L, ((flags&G_CONNECT_AFTER) != 0));
@@ -276,7 +317,38 @@ static void gtypes_gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOL_ITEM_GROUP, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_TREE_VIEW, NULL);
+	gtype_reg_start(GTK_TYPE_TREE_VIEW, gtk_tree_view);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_tree_view_new);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_tree_view_new_with_model, GTK_TYPE_TREE_MODEL);
+		gtype_reg_ffi(GTK_TYPE_TREE_SELECTION, gtk_tree_view_get_selection, GTK_TYPE_TREE_VIEW);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_columns_autosize, GTK_TYPE_TREE_VIEW);
+
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_append_column, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_remove_column, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_insert_column, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_view_get_n_columns, GTK_TYPE_TREE_VIEW);
+		gtype_reg_ffi(GTK_TYPE_TREE_VIEW_COLUMN, gtk_tree_view_get_column, GTK_TYPE_TREE_VIEW, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_move_column_after, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_TREE_VIEW_COLUMN);
+
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_scroll_to_point, GTK_TYPE_TREE_VIEW, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_scroll_to_cell, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN, G_TYPE_FLOAT, G_TYPE_FLOAT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_row_activated, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_all, GTK_TYPE_TREE_VIEW);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_collapse_all, GTK_TYPE_TREE_VIEW);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_to_path, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_row, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_collapse_row, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_row_expanded, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH);
+
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor_on_cell, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_CELL_RENDERER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_get_cursor, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_get_path_at_pos, GTK_TYPE_TREE_VIEW, G_TYPE_INT, G_TYPE_INT, GTK_TYPE_TREE_PATH
+				, out GTK_TYPE_TREE_VIEW_COLUMN
+				, out G_TYPE_INT
+				, out G_TYPE_INT
+				);
+	gtype_reg_end();
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_LABEL, NULL);
 

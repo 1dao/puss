@@ -23,18 +23,21 @@ void		glua_reg_gtype_index_table(lua_State* L, GType type, luaL_Reg* methods);
 
 GValue*		glua_boxed_check(lua_State* L, int idx);
 GValue*		glua_boxed_test(lua_State* L, int idx);
-GValue*		glua_boxed_push(lua_State* L, GType tp, gconstpointer ptr);
+GValue*		glua_boxed_push(lua_State* L, GType tp, gconstpointer ptr, gboolean isnew);
 
+GValue*		glua_value_new(lua_State* L, GType init_type);
 void		glua_value_push(lua_State* L, const GValue* v);
 void		glua_value_from_lua(lua_State* L, int idx, GValue* v);
 
-void		glua_object_push(lua_State* L, GObject* obj, gboolean weak_ref);	// [-0,+1,e] ref_sink or weak_ref obj
+void		glua_object_push(lua_State* L, GObject* obj);	// [-0,+1,e]
 GObject*	glua_object_check(lua_State* L, int idx);
 GObject*	glua_object_test(lua_State* L, int idx);
 
 gpointer	glua_object_check_type(lua_State* L, int idx, GType type);
 
 int			glua_signal_connect(lua_State* L);	// [-3|4,+1,e]	connect(GObject* obj, const char* detailed_signal, function, gboolean after)
+
+int			glua_pcall(lua_State* L, int narg, int nres);
 
 #endif//__PUSS_INC_GOBJECT_LUA_H__
 

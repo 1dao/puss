@@ -3,8 +3,8 @@
 
 local root_path, args = ...
 
-local glua = __glua__
-local gsci = __gsci__
+glua = __glua__
+gsci = __gsci__
 
 do
 	local enums = {}
@@ -35,6 +35,31 @@ app:set_default()
 
 main_builder = nil
 main_window = nil
+
+local function debug_script_invoke(script)
+	load(script)()
+end
+
+local function puss_debug_panel_open()
+	local tv = glua.GtkTextView()
+	tv.buffer.text = '-- press ctrl+enter run script, do not forget add environ PUSS_DEBUG=1\nfor k,v in pairs(glua.types) do print(k,v) end\n'
+
+	tv:signal_connect('key-release-event', function(view, ev)
+		local st, kc = select(2, ev:get_state()), select(2, ev:get_keycode())
+		if st==GDK_CONTROL_MASK and (kc==string.byte('\r') or kc==string.byte('\n')) then
+			local text = view.buffer.text
+			local ok,err = xpcall(debug_script_invoke, function(e) return debug.traceback(e,2) end, text)
+			if not ok then print(err) end
+		end
+	end)
+
+	local sw = glua.GtkScrolledWindow()
+	sw:add(tv)
+	local bottom_panel = main_builder:get_object('bottom_panel')
+	local label = glua.GtkLabel()
+	label.label = 'debug'
+	bottom_panel:append_page(sw, label)
+end
 
 local function source_editor_set_language(editor, lang)
 	editor:set_lexer_language(nil, lang)
@@ -80,7 +105,7 @@ void main(int argc, char* argv[]) {
 	sw:add(editor)
 	local doc_panel = main_builder:get_object('doc_panel')
 	local label = glua.GtkLabel()
-	label:set('label', "test")
+	label.label = 'test'
 	doc_panel:append_page(sw, label)
 
 	editor:grab_focus()
@@ -98,6 +123,9 @@ function puss_main_window_open()
 		main_window = main_builder:get_object('main_window')
 		app:add_window(main_window)
 		main_builder:connect_signals(_ENV)
+		if os.getenv('PUSS_DEBUG') then
+			puss_debug_panel_open()
+		end
 		puss_modules_open()
 		main_window:show_all()
 	end

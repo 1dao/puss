@@ -49,9 +49,7 @@ static int strv_set(lua_State* L) {
 }
 
 static int strv_new(lua_State* L) {
-	GValue v = G_VALUE_INIT;
-	g_value_init(&v, G_TYPE_STRV);
-	glua_value_push(L, &v);
+	GValue* v = glua_value_new(L, G_TYPE_STRV);
 	lua_pushvalue(L, 1);
 	lua_insert(L, 0);
 	if( lua_istable(L, 2) )
