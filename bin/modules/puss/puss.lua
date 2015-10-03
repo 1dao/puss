@@ -28,8 +28,6 @@ do
 	setmetatable(glua, { __index=glua_index })
 end
 
--- local G_APPLICATION_HANDLES_OPEN = (1<<2)
-
 app = glua.GtkApplication('puss.org', G_APPLICATION_HANDLES_OPEN)
 app:set_default()
 
@@ -88,27 +86,31 @@ local function source_editor_set_language(editor, lang)
 	end
 end
 
-function puss_modules_open()
+function puss_editor_new(label)
 	local editor = glua.Scintilla()
 	editor:set_code_page(SC_CP_UTF8)
 	editor:style_set_font(STYLE_DEFAULT, "monospace")
-	source_editor_set_language(editor, 'cpp')
-editor:set_text(nil, [[
-#include <stdio.h>
-
-void main(int argc, char* argv[]) {
-	return 0;
-}
-]])
-
 	local sw = glua.GtkScrolledWindow()
 	sw:add(editor)
 	local doc_panel = main_builder:get_object('doc_panel')
-	local label = glua.GtkLabel()
-	label.label = 'test'
-	doc_panel:append_page(sw, label)
+	local label_widget = glua.GtkLabel()
+	label_widget.label = label
+	doc_panel:append_page(sw, label_widget)
+	sw:show_all()
+	return editor
+end
 
-	editor:grab_focus()
+function puss_open_from_gfile(gfile)
+	local editor = puss_editor_new(gfile:get_basename())
+	source_editor_set_language(editor, 'cpp')
+	local f = io.open(gfile:get_path(), 'r')
+	local cxt = f:read('*a')
+	f:close()
+	editor:set_text(nil, cxt)
+	return editor
+end
+
+function puss_modules_open()
 end
 
 function on_main_window_destroy(w, ...)
@@ -132,13 +134,29 @@ function puss_main_window_open()
 end
 
 function puss_app_activate(...)
-	print('activate', ...)
+	-- print('activate', ...)
 	puss_main_window_open()
+
+	local editor = puss_editor_new('noname')
+	source_editor_set_language(editor, 'cpp')
+
+editor:set_text(nil, [[
+#include <stdio.h>
+
+void main(int argc, char* argv[]) {
+	return 0;
+}
+]])
+
 end
 
-function puss_app_open(...)
-	print('open', ...)
+function puss_app_open(app, files, nfiles, hint)
+	-- print('open', app, files, nfiles, hint, #hint)
 	puss_main_window_open()
+	local t = glua.gobject_array_pointer_parse(files, nfiles)
+	for i,v in ipairs(t) do
+		puss_open_from_gfile(v)
+	end
 end
 
 app:signal_connect('activate', puss_app_activate)

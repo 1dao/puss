@@ -80,6 +80,36 @@ static void gtypes_glib_register(lua_State* L) {
 	glua_reg_gtype_index_table(L, G_TYPE_STRV, strv_methods);
 
 	// gio
+	gtype_reg_start(G_TYPE_FILE, g_file);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_new_for_path, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_new_for_uri, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_new_for_commandline_arg, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_new_for_commandline_arg_and_cwd, G_TYPE_STRING, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_parse_name, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_dup, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_equal, G_TYPE_FILE, G_TYPE_FILE);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_basename, G_TYPE_FILE);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_path, G_TYPE_FILE);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_uri, G_TYPE_FILE);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_parse_name, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_get_parent, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_parent, G_TYPE_FILE, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_get_child, G_TYPE_FILE, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_get_child_for_display_name, G_TYPE_FILE, G_TYPE_STRING, out G_TYPE_ERROR);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_prefix, G_TYPE_FILE, G_TYPE_FILE);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_relative_path, G_TYPE_FILE, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_FILE, g_file_resolve_relative_path, G_TYPE_FILE, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_is_native, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_uri_scheme, G_TYPE_FILE, G_TYPE_STRING);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_uri_scheme, G_TYPE_FILE);
+	gtype_reg_end();
+
+	gtype_reg_start(G_TYPE_FILE_ICON, g_file_icon);
+		gtype_reg_ffi(G_TYPE_FILE_ICON, g_file_icon_new, G_TYPE_FILE);
+	gtype_reg_end();
+
+	glua_reg_gtype_index_table(L, G_TYPE_FILE_INFO, NULL);
+
 	gtype_reg_start(G_TYPE_APPLICATION, g_application);
 		gtype_reg_ffi(G_TYPE_NONE, g_application_id_is_valid, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_APPLICATION, g_application_new, G_TYPE_STRING, G_TYPE_APPLICATION_FLAGS);

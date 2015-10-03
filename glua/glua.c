@@ -136,7 +136,7 @@ static void _lua_fetch_g_type_all_methods_table(lua_State* L, GType tp) {
 			GType* p;
 			for( p=interfaces; *p; ++p ) {
 				// fetch type methods from types table & copy to all methods table
-				_lua_fetch_g_type_all_methods_table(L, parent);
+				_lua_fetch_g_type_all_methods_table(L, *p);
 				assert( lua_istable(L, -1) );
 				_lua_hash_table_copy_top_table_into_target_table(L, gtype_table_index);
 				lua_pop(L, 1);
@@ -147,8 +147,14 @@ static void _lua_fetch_g_type_all_methods_table(lua_State* L, GType tp) {
 		// copy self type methods
 		// fprintf(stderr, "fetch type : %s\n", g_type_name(tp));
 		_lua_push_types_table(L);	// types table
-		if( lua_getfield(L, -1, g_type_name(tp))==LUA_TTABLE )	// type table
-			_lua_hash_table_copy_top_table_into_target_table(L, gtype_table_index);
+		const gchar* tpname = g_type_name(tp);
+		if( lua_getfield(L, -1, tpname)!=LUA_TTABLE ) {	// type table
+			lua_pop(L, 1);
+			lua_newtable(L);
+			lua_pushvalue(L, -1);
+			lua_setfield(L, -3, tpname);
+		}
+		_lua_hash_table_copy_top_table_into_target_table(L, gtype_table_index);
 		lua_pop(L, 2);			// pop type table & types table
 
 		assert( lua_gettop(L)==gtype_table_index );
@@ -538,7 +544,7 @@ static int _lua_gobject_index(lua_State* L) {
 		const char* prop = lua_tostring(L, 2);
 		GParamSpec* spec = g_object_class_find_property(klass, prop);
 		if( !spec )
-			return luaL_error(L, "gobject prop(%s) not found!", prop);
+			return luaL_error(L, "gobject method or prop (%s) not found!", prop);
 		GValue* v = glua_value_new(L, spec->value_type);
 		g_object_get_property(obj, prop, v);
 		glua_value_push(L, v);
@@ -685,6 +691,18 @@ static int lua_gobject_new(lua_State* L) {
 	return 1;
 }
 
+static int lua_gobject_array_pointer_parse(lua_State* L) {
+	GObject** objs = (GObject**)lua_touserdata(L, 1);
+	int n = (int)luaL_checkinteger(L, 2);
+	int i;
+	lua_createtable(L, n, 0);
+	for( i=0; i<n; ++i ) {
+		glua_object_push(L, objs[i]);
+		lua_rawseti(L, -2, (i+1));
+	}
+	return 1;
+}
+
 static int lua_gobject_get(lua_State* L) {
 	GObject* obj = _gobject_check(L, 1);
 	gpointer klass = G_OBJECT_GET_CLASS(obj);
@@ -763,6 +781,7 @@ static luaL_Reg _gobject_module_methods[] =
 	, {"gtype_fetch_enum_values",		lua_gtype_fetch_enum_values}
 	, {"gtype_name_from_instance",		lua_gtype_name_from_instance}
 	, {"new",							lua_gobject_new}
+	, {"gobject_array_pointer_parse",	lua_gobject_array_pointer_parse}
 	, {NULL, NULL}
 	};
 
