@@ -42,12 +42,19 @@ local function puss_debug_panel_open()
 	local tv = glua.GtkTextView()
 	tv.buffer.text = '-- press ctrl+enter run script, do not forget add environ PUSS_DEBUG=1\nfor k,v in pairs(glua.types) do print(k,v) end\n'
 
+	local function puss_debug_panel_output(s)
+		local txt = tv.buffer.text
+		txt = txt .. tostring(s) .. '\n'
+		tv.buffer.text = txt
+	end
+	print = puss_debug_panel_output
+
 	tv:signal_connect('key-release-event', function(view, ev)
 		local st, kc = select(2, ev:get_state()), select(2, ev:get_keycode())
 		if st==GDK_CONTROL_MASK and (kc==string.byte('\r') or kc==string.byte('\n')) then
 			local text = view.buffer.text
 			local ok,err = xpcall(debug_script_invoke, function(e) return debug.traceback(e,2) end, text)
-			if not ok then print(err) end
+			if not ok then puss_debug_panel_output('ERROR : ' .. err .. '\n\n') end
 		end
 	end)
 
