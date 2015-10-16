@@ -18,14 +18,11 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
-#include <glib.h>
-#include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "glua/gtklua.h"
 #include "glua/gffireg.h"
-#include "glua/gtypes_glib.inl"
-#include "glua/gtypes_gtk3.inl"
-#include "glua/gtypes_scintilla.inl"
+#include "glua/scintilla/gtypes_scintilla.inl"
 
 #ifdef G_OS_WIN32
 	static gchar* find_root_filepath(const char* argv0) {

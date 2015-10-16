@@ -4,14 +4,14 @@
     <Import Project="gtk+-3.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <PussConfigSuffix>$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `_d`))</PussConfigSuffix>
+    <PussConfigSuffix>$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `d`))</PussConfigSuffix>
     <PussBaseDir>$(MSBuildThisFileDirectory)</PussBaseDir>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <_PropertySheetDisplayName>puss environment</_PropertySheetDisplayName>
     <OutDir>$(PussBaseDir)bin\modules\$(ProjectName)\</OutDir>
-    <TargetName>$(ProjectName)$(PussConfigSuffix)</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformTarget)$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `-d`))</TargetName>
   </PropertyGroup>
   <ItemGroup>
     <BuildMacro Include="PussConfigSuffix">

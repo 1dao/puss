@@ -15,17 +15,27 @@
 #include <stdio.h>
 #include <io.h>
 
+#ifdef _DEBUG
+	#define _PUSS_DEBUG_DLL_SUFFIX	L"-d.dll"
+#else
+	#define _PUSS_DEBUG_DLL_SUFFIX	L".dll"
+#endif
+
+#ifdef WIN64
+	#define GTK_PUB_PATH	L"\\gtk-x64\\bin\\"
+	#define PUSS_DLL_SUFFIX	L"-x64" _PUSS_DEBUG_DLL_SUFFIX
+#else
+	#define GTK_PUB_PATH	L"\\gtk-x86\\bin\\"
+	#define PUSS_DLL_SUFFIX	L"-x86" _PUSS_DEBUG_DLL_SUFFIX
+#endif
+
 static void set_3rd_dll_path(void) {
 	wchar_t path[8192];
 	DWORD i = GetModuleFileNameW(0, path, 8192);
 	for( --i; i>0; --i ) {
 		if( path[i]==L'\\' || path[i]==L'/' )
 			break;
-#ifdef WIN64
-		wcscpy(path+i, L"\\gtk-x64\\bin\\");
-#else
-		wcscpy(path+i, L"\\gtk-x86\\bin\\");
-#endif
+		wcscpy(path+i, GTK_PUB_PATH);
 		SetDllDirectoryW(path);
 	}
 }
@@ -38,11 +48,7 @@ int proxy_main(int argc, char* argv[]) {
 
 	set_3rd_dll_path();
 
-#ifdef _DEBUG
-	hInstance = LoadLibraryW(L"modules\\puss\\puss_d.dll");
-#else
-	hInstance = LoadLibraryW(L"modules\\puss\\puss.dll");
-#endif
+	hInstance = LoadLibraryW(L"modules\\puss\\puss" PUSS_DLL_SUFFIX);
 	if( !hInstance ) {
 		MessageBoxW(NULL, L"not find puss dll or DLL dependence error", L"Puss Error", MB_ICONERROR);
 		return 1;

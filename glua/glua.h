@@ -12,6 +12,7 @@
 	#define inline	__inline
 #endif
 
+#include <glib.h>
 #include <glib-object.h>
 
 void		glua_push_master_table(lua_State* L);	// [-0,+1,-]

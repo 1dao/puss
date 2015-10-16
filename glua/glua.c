@@ -775,13 +775,18 @@ int glua_signal_connect(lua_State* L) {
 }
 
 static luaL_Reg _gobject_module_methods[] = 
-	{ {"gtype_list_properties",			lua_gtype_list_properties}
+	{ {"new",							lua_gobject_new}
+
+	// gtype utils
+	, {"gtype_list_properties",			lua_gtype_list_properties}
 	, {"gtype_from_instance",			lua_gtype_from_instance}
 	, {"gtype_from_name",				lua_gtype_from_name}
 	, {"gtype_fetch_enum_values",		lua_gtype_fetch_enum_values}
 	, {"gtype_name_from_instance",		lua_gtype_name_from_instance}
-	, {"new",							lua_gobject_new}
+
+	// misc
 	, {"gobject_array_pointer_parse",	lua_gobject_array_pointer_parse}
+
 	, {NULL, NULL}
 	};
 

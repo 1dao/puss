@@ -162,6 +162,7 @@ function puss_app_open(app, files, nfiles, hint)
 	puss_main_window_open()
 	local t = glua.gobject_array_pointer_parse(files, nfiles)
 	for i,v in ipairs(t) do
+		print('open', app, files, nfiles, hint, #hint)
 		puss_open_from_gfile(v)
 	end
 end
