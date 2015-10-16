@@ -418,7 +418,7 @@ static int _lua_ffi_wrapper(lua_State* L) {
 	for( i=0; i<narg; ++i ) {
 		tp = up->atypes[i];
 		pvalues[i] = (void*)pv;
-		pv += align_size(tp->ffitp.alignment);
+		pv += tp->ffitp.alignment;
 
 		if( up->amodes[i] & GFFI_ARG_MODE_IN ) {
 			values[i] = pvalues[i];
@@ -454,7 +454,7 @@ static size_t _lua_ffi_types_calc_data_size(size_t narg, GFFIType** atypes) {
 	size_t i;
 
 	for( i=0; i<narg; ++i ) {
-		values_size += align_size(atypes[i]->ffitp.alignment);
+		values_size += atypes[i]->ffitp.alignment;
 	}
 
 	return values_size;
