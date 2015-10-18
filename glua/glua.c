@@ -892,11 +892,14 @@ gpointer glua_object_check_type(lua_State* L, int idx, GType type) {
 }
 
 void glua_new_gtype_index_table(lua_State* L, GType type) {
-	lua_newtable(L);
 	_lua_push_types_table(L);
-	lua_pushvalue(L, -2);
-	lua_setfield(L, -2, g_type_name(type));
-	lua_pop(L, 1);
+	if( lua_getfield(L, -1, g_type_name(type))!=LUA_TTABLE ) {
+		lua_pop(L, 1);
+		lua_newtable(L);
+		lua_pushvalue(L, -1);
+		lua_setfield(L, -3, g_type_name(type));
+	}
+	lua_remove(L, -2);
 }
 
 void glua_reg_gtype_index_table(lua_State* L, GType type, luaL_Reg* methods) {

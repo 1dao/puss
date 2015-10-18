@@ -3,6 +3,8 @@
 #include "glua.h"
 
 #include <assert.h>
+
+#define GTK_DISABLE_DEPRECATED
 #include <gtk/gtk.h>
 
 #include "gffireg.h"
@@ -19,7 +21,23 @@ static void gtk_globals_register(lua_State* L) {
 		lua_setfield(L, -2, #func)
 
 	{
+		_reg_ffi(G_TYPE_STRING, gtk_check_version, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_UINT);
+		_reg_ffi(G_TYPE_NONE, gtk_disable_setlocale);
+		_reg_ffi(PANGO_TYPE_LANGUAGE, gtk_get_default_language);
+#if GTK_CHECK_VERSION(3,12,0)
+		_reg_ffi(GTK_TYPE_TEXT_DIRECTION, gtk_get_locale_direction);
+#endif
+		_reg_ffi(G_TYPE_NONE, gtk_main_do_event, GDK_TYPE_EVENT);
 		_reg_ffi(G_TYPE_NONE, gtk_main);
+		_reg_ffi(G_TYPE_UINT, gtk_main_level);
+		_reg_ffi(G_TYPE_NONE, gtk_main_quit);
+		_reg_ffi(G_TYPE_BOOLEAN, gtk_main_iteration);
+		_reg_ffi(G_TYPE_BOOLEAN, gtk_main_iteration_do, G_TYPE_BOOLEAN);
+		_reg_ffi(G_TYPE_BOOLEAN, gtk_true);
+		_reg_ffi(G_TYPE_BOOLEAN, gtk_false);
+		_reg_ffi(G_TYPE_NONE, gtk_grab_add, GTK_TYPE_WIDGET);
+		_reg_ffi(GTK_TYPE_WIDGET, gtk_grab_get_current);
+		_reg_ffi(G_TYPE_NONE, gtk_grab_remove, GTK_TYPE_WIDGET);
 	}
 
 	#undef _reg_ffi
@@ -27,15 +45,13 @@ static void gtk_globals_register(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-#if GTK_MAJOR_VERSION==3
+#if GTK_CHECK_VERSION(3,2,0)
 	static gboolean lua_gdk_event_get_keycode(const GdkEvent *event, guint *keycode) {
 		guint16 code = 0;
 		gboolean res = gdk_event_get_keycode(event, &code);
 		*keycode = code;
 		return res;
 	}
-#else
-	// gtk2
 #endif
 
 static void gtk_boxed_register(lua_State* L) {
@@ -49,7 +65,7 @@ static void gtk_boxed_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_axis, GDK_TYPE_EVENT, GDK_TYPE_AXIS_USE, out G_TYPE_DOUBLE);
 		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_screen, GDK_TYPE_EVENT, GDK_TYPE_SCREEN);
 		gtype_reg_ffi(G_TYPE_NONE, gdk_event_get_screen, GDK_TYPE_EVENT, out GDK_TYPE_SCREEN);
-#if GTK_MAJOR_VERSION==3
+#if GTK_CHECK_VERSION(3,0,0)
 		gtype_reg_ffi(GDK_TYPE_WINDOW, gdk_event_get_window, GDK_TYPE_EVENT);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_button, GDK_TYPE_EVENT, out G_TYPE_UINT);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_click_count, GDK_TYPE_EVENT, out G_TYPE_UINT);
@@ -91,7 +107,9 @@ static void gtk_interface_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_BUILDABLE, NULL);
 
+#ifdef GTK_TYPE_ACTIVATABLE
 	glua_reg_gtype_index_table(L, GTK_TYPE_ACTIVATABLE, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_ORIENTABLE, NULL);
 
@@ -138,8 +156,7 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, G_TYPE_INITIALLY_UNOWNED, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_OBJECT
 	glua_reg_gtype_index_table(L, GTK_TYPE_OBJECT, NULL);
 #endif
 
@@ -182,7 +199,7 @@ static void gtk_object_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_window_activate_default, GTK_TYPE_WINDOW);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_modal, GTK_TYPE_WINDOW, G_TYPE_BOOLEAN);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_size, GTK_TYPE_WINDOW, G_TYPE_INT, G_TYPE_INT);
-#if GTK_MAJOR_VERSION==3
+#if GTK_CHECK_VERSION(3,0,0)
 		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_geometry, GTK_TYPE_WINDOW, G_TYPE_INT, G_TYPE_INT);
 #endif
 	gtype_reg_end();
@@ -191,22 +208,25 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_ABOUT_DIALOG, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_COLOR_SELECTION_DIALOG, NULL);
-
 	glua_reg_gtype_index_table(L, GTK_TYPE_FILE_CHOOSER_DIALOG, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_FONT_SELECTION_DIALOG, NULL);
-
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_INPUT_DIALOG
 	glua_reg_gtype_index_table(L, GTK_TYPE_INPUT_DIALOG, NULL);
+#endif
+
+#ifdef GTK_TYPE_COLOR_SELECTION_DIALOG
+	glua_reg_gtype_index_table(L, GTK_TYPE_COLOR_SELECTION_DIALOG, NULL);
+#endif
+
+#ifdef GTK_TYPE_FONT_SELECTION_DIALOG
+	glua_reg_gtype_index_table(L, GTK_TYPE_FONT_SELECTION_DIALOG, NULL);
 #endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_MESSAGE_DIALOG, NULL);
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_RECENT_CHOOSER_DIALOG, NULL);
 
-#if GTK_MAJOR_VERSION==3
+#ifdef GTK_TYPE_APPLICATION_WINDOW
 	gtype_reg_start(GTK_TYPE_APPLICATION_WINDOW, gtk_application_window);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_application_window_set_show_menubar, GTK_TYPE_APPLICATION_WINDOW, G_TYPE_BOOLEAN);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_window_get_show_menubar, GTK_TYPE_APPLICATION_WINDOW);
@@ -217,8 +237,10 @@ static void gtk_object_register(lua_State* L) {
 	glua_reg_gtype_index_table(L, GTK_TYPE_ASSISTANT, NULL);
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_OFFSCREEN_WINDOW, NULL);
-
+	
+#ifdef GTK_TYPE_ALIGNMENT
 	glua_reg_gtype_index_table(L, GTK_TYPE_ALIGNMENT, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_FRAME, NULL);
 
@@ -238,8 +260,7 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_LINK_BUTTON, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_OPTION_MENU
 	glua_reg_gtype_index_table(L, GTK_TYPE_OPTION_MENU, NULL);
 #endif
 
@@ -247,8 +268,7 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_VOLUME_BUTTON, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_ITEM
 	glua_reg_gtype_index_table(L, GTK_TYPE_ITEM, NULL);
 #endif
 
@@ -258,21 +278,23 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_RADIO_MENU_ITEM, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_IMAGE_MENU_ITEM, NULL);
-
 	glua_reg_gtype_index_table(L, GTK_TYPE_SEPARATOR_MENU_ITEM, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_TEAROFF_MENU_ITEM, NULL);
-
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_LIST_ITEM
 	glua_reg_gtype_index_table(L, GTK_TYPE_LIST_ITEM, NULL);
+#endif
+
+#ifdef GTK_TYPE_IMAGE_MENU_ITEM
+	glua_reg_gtype_index_table(L, GTK_TYPE_IMAGE_MENU_ITEM, NULL);
+#endif
+
+#ifdef GTK_TYPE_TEAROFF_MENU_ITEM
+	glua_reg_gtype_index_table(L, GTK_TYPE_TEAROFF_MENU_ITEM, NULL);
 #endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_COMBO_BOX, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_COMBO_BOX_ENTRY
 	glua_reg_gtype_index_table(L, GTK_TYPE_COMBO_BOX_ENTRY, NULL);
 #endif
 
@@ -282,7 +304,9 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_EXPANDER, NULL);
 
+#ifdef GTK_TYPE_HANDLE_BOX
 	glua_reg_gtype_index_table(L, GTK_TYPE_HANDLE_BOX, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOL_ITEM, NULL);
 
@@ -304,12 +328,15 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_BUTTON_BOX, NULL);
 
+#ifdef GTK_TYPE_VBOX
 	glua_reg_gtype_index_table(L, GTK_TYPE_VBOX, NULL);
+#endif
 
+#ifdef GTK_TYPE_HBOX
 	glua_reg_gtype_index_table(L, GTK_TYPE_HBOX, NULL);
+#endif
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_CLIST
 	glua_reg_gtype_index_table(L, GTK_TYPE_CLIST, NULL);
 #endif
 
@@ -321,8 +348,7 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_LAYOUT, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_LIST
 	glua_reg_gtype_index_table(L, GTK_TYPE_LIST, NULL);
 #endif
 
@@ -376,32 +402,32 @@ static void gtk_object_register(lua_State* L) {
 				, out G_TYPE_INT
 				);
 
-#if GTK_MAJOR_VERSION==3
+#if GTK_CHECK_VERSION(3,4,0)
 		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_view_get_n_columns, GTK_TYPE_TREE_VIEW);
-#else
 #endif
 	gtype_reg_end();
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TEXT_VIEW, NULL);
 
+#ifdef GTK_TYPE_TABLE
 	glua_reg_gtype_index_table(L, GTK_TYPE_TABLE, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOLBAR, NULL);
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOL_ITEM_GROUP, NULL);
 
-	glua_reg_gtype_index_table(L, GTK_TYPE_TREE_VIEW, NULL);
-
 	glua_reg_gtype_index_table(L, GTK_TYPE_MISC, NULL);
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_LABEL, NULL);
 
+#ifdef GTK_TYPE_ARROW
 	glua_reg_gtype_index_table(L, GTK_TYPE_ARROW, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_IMAGE, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_PIXMAP
 	glua_reg_gtype_index_table(L, GTK_TYPE_PIXMAP, NULL);
 #endif
 
@@ -411,8 +437,7 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_DRAWING_AREA, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_CURVE
 	glua_reg_gtype_index_table(L, GTK_TYPE_CURVE, NULL);
 #endif
 
@@ -422,12 +447,15 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_SPIN_BUTTON, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_RULER
 	glua_reg_gtype_index_table(L, GTK_TYPE_RULER, NULL);
+#endif
 
+#ifdef GTK_TYPE_HRULER
 	glua_reg_gtype_index_table(L, GTK_TYPE_HRULER, NULL);
+#endif
 
+#ifdef GTK_TYPE_VRULER
 	glua_reg_gtype_index_table(L, GTK_TYPE_VRULER, NULL);
 #endif
 
@@ -435,30 +463,45 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_SCALE, NULL);
 
+#ifdef GTK_TYPE_HSCALE
 	glua_reg_gtype_index_table(L, GTK_TYPE_HSCALE, NULL);
+#endif
 
+#ifdef GTK_TYPE_VSCALE
 	glua_reg_gtype_index_table(L, GTK_TYPE_VSCALE, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_SCROLLBAR, NULL);
 
+#ifdef GTK_TYPE_HSCROLLBAR
 	glua_reg_gtype_index_table(L, GTK_TYPE_HSCROLLBAR, NULL);
+#endif
 
+#ifdef GTK_TYPE_VSCROLLBAR
 	glua_reg_gtype_index_table(L, GTK_TYPE_VSCROLLBAR, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_SEPARATOR, NULL);
 
+#ifdef GTK_TYPE_HSEPARATOR
 	glua_reg_gtype_index_table(L, GTK_TYPE_HSEPARATOR, NULL);
+#endif
 
+#ifdef GTK_TYPE_VSEPARATOR
 	glua_reg_gtype_index_table(L, GTK_TYPE_VSEPARATOR, NULL);
+#endif
 
+#ifdef GTK_TYPE_HSV
 	glua_reg_gtype_index_table(L, GTK_TYPE_HSV, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_INVISIBLE, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_PREVIEW
 	glua_reg_gtype_index_table(L, GTK_TYPE_PREVIEW, NULL);
+#endif
 
+#ifdef GTK_TYPE_PROGRESS
 	glua_reg_gtype_index_table(L, GTK_TYPE_PROGRESS, NULL);
 #endif
 
@@ -486,10 +529,11 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_FILE_FILTER, NULL);
 
-#if GTK_MAJOR_VERSION==3
-#else
+#ifdef GTK_TYPE_ITEM_FACTORY
 	glua_reg_gtype_index_table(L, GTK_TYPE_ITEM_FACTORY, NULL);
+#endif
 
+#ifdef GTK_TYPE_TOOLTIPS
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOLTIPS, NULL);
 #endif
 
@@ -501,15 +545,25 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_ACCEL_MAP, NULL);
 
+#ifdef GTK_TYPE_ACTION
 	glua_reg_gtype_index_table(L, GTK_TYPE_ACTION, NULL);
+#endif
 
+#ifdef GTK_TYPE_TOGGLE_ACTION
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOGGLE_ACTION, NULL);
+#endif
 
+#ifdef GTK_TYPE_RADIO_ACTION
 	glua_reg_gtype_index_table(L, GTK_TYPE_RADIO_ACTION, NULL);
+#endif
 
+#ifdef GTK_TYPE_RECENT_ACTION
 	glua_reg_gtype_index_table(L, GTK_TYPE_RECENT_ACTION, NULL);
-
+#endif
+	
+#ifdef GTK_TYPE_ACTION_GROUP
 	glua_reg_gtype_index_table(L, GTK_TYPE_ACTION_GROUP, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_CLIPBOARD, NULL);
 
@@ -533,7 +587,9 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_MOUNT_OPERATION, NULL);
 
+#ifdef GTK_TYPE_RC_STYLE
 	glua_reg_gtype_index_table(L, GTK_TYPE_RC_STYLE, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_RECENT_MANAGER, NULL);
 
@@ -541,9 +597,13 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_SIZE_GROUP, NULL);
 
+#ifdef GTK_TYPE_STATUS_ICON
 	glua_reg_gtype_index_table(L, GTK_TYPE_STATUS_ICON, NULL);
+#endif
 
+#ifdef GTK_TYPE_STYLE
 	glua_reg_gtype_index_table(L, GTK_TYPE_STYLE, NULL);
+#endif
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TEXT_BUFFER, NULL);
 
@@ -567,7 +627,7 @@ static void gtk_object_register(lua_State* L) {
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOLTIP, NULL);
 
-#if GTK_MAJOR_VERSION==3
+#ifdef GTK_TYPE_APPLICATION
 	gtype_reg_start(GTK_TYPE_APPLICATION, gtk_application);
 		gtype_reg_ffi(GTK_TYPE_APPLICATION, gtk_application_new, G_TYPE_STRING, G_TYPE_APPLICATION_FLAGS);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_application_add_window, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW);

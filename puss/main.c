@@ -18,9 +18,6 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
-#include <glib.h>
-#include <gtk/gtk.h>
-
 #include "glua/gtklua.h"
 #include "glua/gffireg.h"
 #include "glua/scintilla/gtypes_scintilla.inl"

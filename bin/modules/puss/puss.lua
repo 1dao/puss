@@ -107,11 +107,15 @@ end
 function puss_modules_open()
 end
 
-function on_main_window_destroy(w, ...)
-	print('main window destroy signal handle!')
-	return true
+function on_main_window_delete(w, ...)
+	print('on_main_window_delete signal handle!')
+	glua.gtk_main_quit()
 end
 
+function on_main_window_destroy(w, ...)
+	print('on_main_window_destroy signal handle!')
+	return true
+end
 
 function puss_main_window_open(ui_file)
 	if not main_builder then

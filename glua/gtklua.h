@@ -4,6 +4,9 @@
 #ifndef __PUSS_INC_GTK_LUA_H__
 #define __PUSS_INC_GTK_LUA_H__
 
+#define GTK_DISABLE_DEPRECATED
+#include <gtk/gtk.h>
+
 #include "glua.h"
 
 void gffi_init(void);
