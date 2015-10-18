@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <GtkBase>$(MSBuildThisFileDirectory)bin\gtk-$(PlatformTarget)\</GtkBase>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile />
+    <Link>
+      <AdditionalDependencies>gio-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gthread-2.0.lib;atk-1.0.lib;glib-2.0.lib;gtk-win32-2.0.lib;gdk-win32-2.0.lib;gdk_pixbuf-2.0.lib;pango-1.0.lib;pangocairo-1.0.lib;cairo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(GtkBase)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(GtkBase)include\gtk-2.0\;$(GtkBase)lib\gtk-2.0\include\;$(GtkBase)include\atk-1.0\;$(GtkBase)include\glib-2.0\;$(GtkBase)lib\glib-2.0\include\;$(GtkBase)include\cairo\;$(GtkBase)include\pango-1.0\;$(GtkBase)include\gdk-pixbuf-2.0\;$(GtkBase)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>
+      </PreprocessorDefinitions>
+      <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="GtkBase">
+      <Value>$(GtkBase)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

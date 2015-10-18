@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="gtk+-2.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <PussConfigSuffix>$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `d`))</PussConfigSuffix>
+    <PussBaseDir>$(MSBuildThisFileDirectory)</PussBaseDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(PussBaseDir)bin\modules\$(ProjectName)\</OutDir>
+    <TargetName>$(ProjectName)-$(PlatformTarget)$(Configuration.Replace(`Release`, ``).Replace(`Debug`, `-d`))</TargetName>
+  </PropertyGroup>
+  <ItemGroup>
+    <BuildMacro Include="PussConfigSuffix">
+      <Value>$(PussConfigSuffix)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PussBaseDir">
+      <Value>$(PussBaseDir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <ClCompile />
+    <Link />
+    <Link />
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(PussBaseDir);$(PussBaseDir)lua53\;$(PussBaseDir)libffi-3.2.1\src\x86\;$(PussBaseDir)scintilla\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

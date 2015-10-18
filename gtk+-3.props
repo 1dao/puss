@@ -4,9 +4,6 @@
   <PropertyGroup Label="UserMacros">
     <GtkBase>$(MSBuildThisFileDirectory)bin\gtk-$(PlatformTarget)\</GtkBase>
   </PropertyGroup>
-  <PropertyGroup>
-    <_PropertySheetDisplayName>gtk+-3.env</_PropertySheetDisplayName>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile />
     <Link>

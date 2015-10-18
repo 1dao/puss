@@ -18,6 +18,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+#include <glib.h>
 #include <gtk/gtk.h>
 
 #include "glua/gtklua.h"
@@ -108,6 +109,8 @@ static int lua_load_main_script(lua_State* L, const char* arg0) {
 int main(int argc, char* argv[]) {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
+
+	gtk_init(&argc, &argv);
 
 	gffi_init();
 		gtypes_glib_register(L);

@@ -5,7 +5,10 @@
 #include <assert.h>
 #include <gtk/gtk.h>
 
+#if GTK_MAJOR_VERSION==3
+
 #include "gffireg.h"
+#include "gtypes_gtk_common.inl"
 
 static gboolean lua_gdk_event_get_keycode(const GdkEvent *event, guint *keycode) {
 	guint16 code = 0;
@@ -98,77 +101,6 @@ static void gtypes_gtk_interface_register(lua_State* L) {
 	glua_reg_gtype_index_table(L, GTK_TYPE_RECENT_CHOOSER, NULL);
 
 	glua_reg_gtype_index_table(L, GTK_TYPE_TOOL_SHELL, NULL);
-}
-
-static void _gtk_builder_connect_wrapper(GtkBuilder* builder, GObject* object, const gchar* signal_name, const gchar* handler_name, GObject* connect_object, GConnectFlags flags, gpointer user_data) {
-	lua_State* L = (lua_State*)user_data;
-	if( lua_istable(L, 2) ) {
-		lua_pushcfunction(L, glua_signal_connect);
-		glua_object_push(L, object);
-		lua_pushstring(L, signal_name);
-		lua_getfield(L, 2, handler_name);
-		if( lua_isfunction(L,-1) ) {
-			lua_pushboolean(L, ((flags&G_CONNECT_AFTER) != 0));
-			lua_call(L, 4, 0);
-		} else {
-			lua_pop(L, 4);
-			fprintf(stderr, "not find signal handle(%s)\n", handler_name);
-		}
-	} else {
-		assert( lua_isfunction(L, 2) );
-		lua_pushvalue(L, 2);
-		glua_object_push(L, object);
-		lua_pushstring(L, signal_name);
-		lua_pushstring(L, handler_name);
-		lua_pushboolean(L, ((flags&G_CONNECT_AFTER) != 0));
-		lua_call(L, 4, 0);
-	}
-}
-
-static int lua_gtk_builder_add_from_string(lua_State* L) {
-	GObject* obj = glua_object_check(L, 1);
-	GtkBuilder* builder = GTK_BUILDER(obj);
-	if( !builder )
-		return luaL_argerror(L, 1, "need GtkBuilder");
-	size_t len = 0;
-	const char* str = luaL_checklstring(L, 2, &len);
-	GError* err = NULL;
-	guint res = gtk_builder_add_from_string(builder, str, (gsize)len, &err);
-	if( err ) {
-		lua_pushstring(L, err->message);
-		g_error_free(err);
-		return lua_error(L);
-	}
-	lua_pushinteger(L, (lua_Integer)res);
-	return 1;
-}
-
-static int lua_gtk_builder_add_from_file(lua_State* L) {
-	GObject* obj = glua_object_check(L, 1);
-	GtkBuilder* builder = GTK_BUILDER(obj);
-	if( !builder )
-		return luaL_argerror(L, 1, "need GtkBuilder");
-	const char* fname = luaL_checkstring(L, 2);
-	GError* err = NULL;
-	guint res = gtk_builder_add_from_file(builder, fname, &err);
-	if( err ) {
-		lua_pushstring(L, err->message);
-		g_error_free(err);
-		return lua_error(L);
-	}
-	lua_pushinteger(L, (lua_Integer)res);
-	return 1;
-}
-
-static int lua_gtk_builder_connect_signals(lua_State* L) {
-	GObject* obj = glua_object_check(L, 1);
-	GtkBuilder* builder = GTK_BUILDER(obj);
-	if( !builder )
-		return luaL_argerror(L, 1, "need GtkBuilder");
-	if( !(lua_istable(L, 2) || lua_isfunction(L, 2)) )
-		return luaL_argerror(L, 2, "need table or function");
-	gtk_builder_connect_signals_full(builder, _gtk_builder_connect_wrapper, L);
-	return 0;
 }
 
 static void gtypes_gtk_object_register(lua_State* L) {
@@ -490,8 +422,11 @@ static void gtypes_gtk_object_register(lua_State* L) {
 }
 
 void gtypes_gtk_register(lua_State* L) {
+	gtk_globals_register(L);
 	gtypes_gtk_boxed_register(L);
 	gtypes_gtk_interface_register(L);
 	gtypes_gtk_object_register(L);
 }
+
+#endif//GTK_MAJOR_VERSION==3
 

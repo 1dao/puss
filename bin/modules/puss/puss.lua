@@ -28,9 +28,6 @@ do
 	setmetatable(glua, { __index=glua_index })
 end
 
-app = glua.GtkApplication('puss.org', G_APPLICATION_HANDLES_OPEN)
-app:set_default()
-
 main_builder = nil
 main_window = nil
 
@@ -107,16 +104,6 @@ function puss_editor_new(label)
 	return editor
 end
 
-function puss_open_from_gfile(gfile)
-	local editor = puss_editor_new(gfile:get_basename())
-	source_editor_set_language(editor, 'cpp')
-	local f = io.open(gfile:get_path(), 'r')
-	local cxt = f:read('*a')
-	f:close()
-	editor:set_text(nil, cxt)
-	return editor
-end
-
 function puss_modules_open()
 end
 
@@ -125,12 +112,12 @@ function on_main_window_destroy(w, ...)
 	return true
 end
 
-function puss_main_window_open()
+
+function puss_main_window_open(ui_file)
 	if not main_builder then
 		main_builder = glua.GtkBuilder()
-		main_builder:add_from_file(root_path .. '/modules/puss/puss_main_window.ui')
+		main_builder:add_from_file(ui_file)
 		main_window = main_builder:get_object('main_window')
-		app:add_window(main_window)
 		main_builder:connect_signals(_ENV)
 		if os.getenv('PUSS_DEBUG') then
 			puss_debug_panel_open()
@@ -140,60 +127,82 @@ function puss_main_window_open()
 	end
 end
 
-function puss_app_activate(...)
-	-- print('activate', ...)
-	puss_main_window_open()
+if glua.GTK_MAJOR_VERSION==3 then
 
-	local editor = puss_editor_new('noname')
-	source_editor_set_language(editor, 'cpp')
+	local function puss_app_activate(...)
+		-- print('activate', ...)
+		puss_main_window_open(root_path .. '/modules/puss/puss_main_window_gtk3.ui')
+		app:add_window(main_window)
 
-editor:set_text(nil, [[
-#include <stdio.h>
+		local editor = puss_editor_new('noname')
+		source_editor_set_language(editor, 'cpp')
 
-void main(int argc, char* argv[]) {
-	return 0;
-}
-]])
-
-end
-
-function puss_app_open(app, files, nfiles, hint)
-	-- print('open', app, files, nfiles, hint, #hint)
-	puss_main_window_open()
-	local t = glua.gobject_array_pointer_parse(files, nfiles)
-	for i,v in ipairs(t) do
-		print('open', app, files, nfiles, hint, #hint)
-		puss_open_from_gfile(v)
+		editor:set_text(nil, '#include <stdio.h>' ..
+				'' ..
+				'void main(int argc, char* argv[]) {' .. 
+				'	return 0;' .. 
+				'}' .. 
+				'')
 	end
+
+	local function puss_app_open(app, files, nfiles, hint)
+		-- print('open', app, files, nfiles, hint, #hint)
+		puss_main_window_open(root_path .. '/modules/puss/puss_main_window_gtk3.ui')
+		app:add_window(main_window)
+
+		local t = glua.gobject_array_pointer_parse(files, nfiles)
+		for i,v in ipairs(t) do
+			print('open', app, files, nfiles, hint, #hint)
+			puss_open_from_gfile(v)
+		end
+	end
+
+	function puss_open_from_gfile(gfile)
+		local editor = puss_editor_new(gfile:get_basename())
+		source_editor_set_language(editor, 'cpp')
+		local f = io.open(gfile:get_path(), 'r')
+		local cxt = f:read('*a')
+		f:close()
+		editor:set_text(nil, cxt)
+		return editor
+	end
+
+	app = glua.GtkApplication('puss.org', G_APPLICATION_HANDLES_OPEN)
+	app:set_default()
+	app:signal_connect('activate', puss_app_activate)
+	app:signal_connect('open', puss_app_open)
+	app:run(args:len(), args)
+
+else
+	-- gtk2 demo
+	puss_main_window_open(root_path .. '/modules/puss/puss_main_window_gtk2.ui')
+	glua.gtk_main()
 end
 
-app:signal_connect('activate', puss_app_activate)
-app:signal_connect('open', puss_app_open)
 
--- glua.types.GStrv.new({'aaa','bbb','ccc'})
-
-app:run(args:len(), args)
 
 --[===[
 
-__script_system__.load_module = function(name)
-	local pm = __script_system__.__modules__[name]
-	if not pm then
-		local pth = 'modules/' .. name
-		pm = puss.module_create(name, pth .. '/' .. name)
-	end
-	return pm
-end
+	-- glua.types.GStrv.new({'aaa','bbb','ccc'})
 
-__script_system__.load_plugin = function(name)
-	local pg = __script_system__.__plugins__[name]
-	if not pg then
-		local pth = 'modules/' .. name
-		pg = {}
-		setmetatable(pg, { __index=_ENV })
-		__script_system__.dofile(pth .. '/' .. name .. '.plugin', pg)
+	__script_system__.load_module = function(name)
+		local pm = __script_system__.__modules__[name]
+		if not pm then
+			local pth = 'modules/' .. name
+			pm = puss.module_create(name, pth .. '/' .. name)
+		end
+		return pm
 	end
-	return pg
-end
+
+	__script_system__.load_plugin = function(name)
+		local pg = __script_system__.__plugins__[name]
+		if not pg then
+			local pth = 'modules/' .. name
+			pg = {}
+			setmetatable(pg, { __index=_ENV })
+			__script_system__.dofile(pth .. '/' .. name .. '.plugin', pg)
+		end
+		return pg
+	end
 
 --]===]
