@@ -130,7 +130,7 @@ static void gtypes_scintilla_register(lua_State* L) {
 
 	// __gsci__.functions & also scintilla_get_type() metatable
 	// 
-	glua_new_gtype_index_table(L, scintilla_get_type());
+	glua_new_gtype_index_table(L, scintilla_get_type(), "gtk_scintilla");
 	{
 		IFaceDecl* p;
 

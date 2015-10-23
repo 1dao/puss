@@ -1,32 +1,61 @@
 -- puss.lua
 -- 
 
-local root_path, args = ...
+-- init
+
+local g_capis = {}
+local g_enums = {}
+local gsci_enums = __gsci__.enums
 
 glua = __glua__
-gsci = __gsci__
 
+-- overwrite methods
 do
-	local enums = {}
-	for etype, values in pairs(glua.enums) do
-		for k,v in pairs(values) do enums[k]=v end
+	local tree_model_get_value = glua.capis.gtk_tree_model_get_value
+	glua.capis.gtk_tree_model_get_value = function(model, iter, column)
+		local v = glua.gnew_uninit_value()
+		tree_model_get_value(model, iter, column, v)
+		return v()
 	end
-	local gsci_enums = gsci.enums
-	setmetatable( _ENV, { __index = function(t,k) return rawget(t,k) or rawget(enums,k) or rawget(gsci_enums,k) end })
+	glua.types.GtkTreeModel.get_value = glua.capis.gtk_tree_model_get_value
 end
 
-do
-	local g_types = glua.types
-	local g_new = glua.new
-
-	local function glua_index(t,k)
-		local tp = g_types[k]
-		if tp and tp.new then return tp.new end			-- use glua.types.SomeType.new
-		return function(...) return g_new(k, ...) end	-- use glua.new('SomeType') 
-	end
-
-	setmetatable(glua, { __index=glua_index })
+-- load enums
+for etype, values in pairs(glua.enums) do
+	for k,v in pairs(values) do g_enums[k]=v end
 end
+
+-- load capis
+g_capis = glua.capis
+
+-- utils
+glua.list_methods = function(o)
+	ks.log_debug('list methods, gtype name =', glua.gtype_name_from_instance(o) )
+	local tp = glua.gtype_from_instance(o)
+	if tp then
+		local tp = glua.__gtypes__[tp]
+		local keys = {}
+		for k,v in pairs(tp) do table.insert(keys, k) end
+		table.sort(keys)
+		for _, k in ipairs(keys) do print('', k, tp[k]) end
+	end
+end
+
+glua.list_properties = function(o)
+	local gtypename = glua.gtype_name_from_instance(o)
+	ks.log_debug('list properties, gtype name =', gtypename)
+	local props = glua.gtype_list_properties(gtypename) or {}
+	local keys = {}
+	for _,p in pairs(props) do table.insert(keys, p:name()) end
+	table.sort(keys)
+	for _, k in ipairs(keys) do print('', k, o:get(k)) end
+end
+
+setmetatable( _ENV, {__index=function(t,k) return rawget(g_capis,k) or rawget(g_enums,k) or rawget(gsci_enums,k) end} )
+
+-- start
+
+local root_path, args = ...
 
 main_builder = nil
 main_window = nil
@@ -36,7 +65,7 @@ local function debug_script_invoke(script)
 end
 
 local function puss_debug_panel_open()
-	local tv = glua.GtkTextView()
+	local tv = gtk_text_view_new()
 	tv.buffer.text = '-- press ctrl+enter run script, do not forget add environ PUSS_DEBUG=1\nfor k,v in pairs(glua.types) do print(k,v) end\n'
 
 	local function puss_debug_panel_output(s)
@@ -55,10 +84,10 @@ local function puss_debug_panel_open()
 		end
 	end)
 
-	local sw = glua.GtkScrolledWindow()
+	local sw = gtk_scrolled_window_new()
 	sw:add(tv)
 	local bottom_panel = main_builder:get_object('bottom_panel')
-	local label = glua.GtkLabel()
+	local label = gtk_label_new()
 	label.label = 'debug'
 	bottom_panel:append_page(sw, label)
 end
@@ -91,13 +120,13 @@ local function source_editor_set_language(editor, lang)
 end
 
 function puss_editor_new(label)
-	local editor = glua.Scintilla()
+	local editor = gtk_scintilla_new()
 	editor:set_code_page(SC_CP_UTF8)
 	editor:style_set_font(STYLE_DEFAULT, "monospace")
-	local sw = glua.GtkScrolledWindow()
+	local sw = gtk_scrolled_window_new()
 	sw:add(editor)
 	local doc_panel = main_builder:get_object('doc_panel')
-	local label_widget = glua.GtkLabel()
+	local label_widget = gtk_label_new()
 	label_widget.label = label
 	doc_panel:append_page(sw, label_widget)
 	sw:show_all()
@@ -109,7 +138,7 @@ end
 
 function on_main_window_delete(w, ...)
 	print('on_main_window_delete signal handle!')
-	glua.gtk_main_quit()
+	gtk_main_quit()
 end
 
 function on_main_window_destroy(w, ...)
@@ -119,7 +148,7 @@ end
 
 function puss_main_window_open(ui_file)
 	if not main_builder then
-		main_builder = glua.GtkBuilder()
+		main_builder = gtk_builder_new()
 		main_builder:add_from_file(ui_file)
 		main_window = main_builder:get_object('main_window')
 		main_builder:connect_signals(_ENV)
@@ -131,7 +160,7 @@ function puss_main_window_open(ui_file)
 	end
 end
 
-if glua.GTK_MAJOR_VERSION==3 then
+if GTK_MAJOR_VERSION==3 then
 
 	local function puss_app_activate(...)
 		-- print('activate', ...)
@@ -156,7 +185,7 @@ if glua.GTK_MAJOR_VERSION==3 then
 
 		local t = glua.gobject_array_pointer_parse(files, nfiles)
 		for i,v in ipairs(t) do
-			print('open', app, files, nfiles, hint, #hint)
+			-- print('open', app, files, nfiles, hint, #hint)
 			puss_open_from_gfile(v)
 		end
 	end
@@ -171,7 +200,7 @@ if glua.GTK_MAJOR_VERSION==3 then
 		return editor
 	end
 
-	app = glua.GtkApplication('puss.org', G_APPLICATION_HANDLES_OPEN)
+	app = gtk_application_new('puss.org', G_APPLICATION_HANDLES_OPEN)
 	app:set_default()
 	app:signal_connect('activate', puss_app_activate)
 	app:signal_connect('open', puss_app_open)
@@ -180,33 +209,6 @@ if glua.GTK_MAJOR_VERSION==3 then
 else
 	-- gtk2 demo
 	puss_main_window_open(root_path .. '/modules/puss/puss_main_window_gtk2.ui')
-	glua.gtk_main()
+	gtk_main()
 end
 
-
-
---[===[
-
-	-- glua.types.GStrv.new({'aaa','bbb','ccc'})
-
-	__script_system__.load_module = function(name)
-		local pm = __script_system__.__modules__[name]
-		if not pm then
-			local pth = 'modules/' .. name
-			pm = puss.module_create(name, pth .. '/' .. name)
-		end
-		return pm
-	end
-
-	__script_system__.load_plugin = function(name)
-		local pg = __script_system__.__plugins__[name]
-		if not pg then
-			local pth = 'modules/' .. name
-			pg = {}
-			setmetatable(pg, { __index=_ENV })
-			__script_system__.dofile(pth .. '/' .. name .. '.plugin', pg)
-		end
-		return pg
-	end
-
---]===]

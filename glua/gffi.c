@@ -228,7 +228,8 @@ static int ffi_lua_push_pointer(lua_State* L, gconstpointer pval, GFFIType* tp, 
 }
 
 static void ffi_lua_check_gvalue(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((GValue**)pval) = glua_value_new(L, G_TYPE_NONE);
+	GValue* v = opt ? glua_value_test(L, idx) : glua_value_check(L, idx);
+	*((GValue**)pval) = v ? v : glua_value_new(L, G_TYPE_INVALID);
 }
 
 static int ffi_lua_push_gvalue(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -240,28 +241,28 @@ static int ffi_lua_push_gvalue(lua_State* L, gconstpointer pval, GFFIType* tp, g
 }
 
 static void ffi_lua_check_boxed(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	GValue* v = opt ? glua_boxed_test(L, idx) : glua_boxed_check(L, idx);
+	GValue* v = opt ? glua_value_test(L, idx) : glua_value_check_type(L, idx, tp->gtype);
+	(*((gpointer*)pval)) = NULL;
+
 	if( !opt ) {
 		GType vtp = G_VALUE_TYPE(v);
-		if( vtp!=tp->gtype ) {
+		if( g_type_is_a(vtp, tp->gtype) ) {
+			(*((gpointer*)pval)) = g_value_get_boxed(v);
+		} else {
 			char err[512];
 			sprintf(err, "need(%s) but got(%s)", g_type_name(tp->gtype), g_type_name(vtp));
 			luaL_argerror(L, idx, err);
-		} else {
-			(*((gpointer*)pval)) = g_value_get_boxed(v);
 		}
 	} else if( v ) {
 		GType vtp = G_VALUE_TYPE(v);
-		if( vtp!=tp->gtype ) {
-			v = NULL;
-		} else {
+		if( g_type_is_a(vtp, tp->gtype) ) {
 			(*((gpointer*)pval)) = g_value_get_boxed(v);
 		}
 	}
 }
 
 static int ffi_lua_push_boxed(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
-	glua_boxed_push(L, tp->gtype, (*((gconstpointer*)pval)), isnew);
+	glua_value_push_boxed(L, tp->gtype, (*((gconstpointer*)pval)), isnew);
 	return 1;
 }
 
@@ -342,7 +343,6 @@ static GFFIType* _gtype_get(GType gtype) {
 			break;
 		case G_TYPE_BOXED:
 			if( gtype==G_TYPE_VALUE ) {
-				// NOTICE : G_TYPE_VALUE always in-out argument
 				tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_gvalue, ffi_lua_push_gvalue);
 			} else {
 				tp = _gtype_reg(gtype, ffi_type_pointer, ffi_lua_check_boxed, ffi_lua_push_boxed);
@@ -424,6 +424,7 @@ static int _lua_ffi_wrapper(lua_State* L) {
 			values[i] = pvalues[i];
 			(*(tp->check))(L, i+1, pvalues[i], (up->amodes[i] & GFFI_ARG_MODE_OPT), tp);
 		} else {
+			// basic type, use pointer as memory
 			values[i] = (void*)&(pvalues[i]);
 		}
 
@@ -484,9 +485,6 @@ static size_t _fetch_narg(GType* at, GFFIType* atypes[GFFI_FUNCTION_ARG_MAX], gu
 			} else if( (amodes[n] & GFFI_ARG_MODE_OUT)==0 ) {
 				amodes[n] |= GFFI_ARG_MODE_IN;
 			}
-
-			if( *at==G_TYPE_VALUE )
-				amodes[n] = GFFI_ARG_MODE_INOUT;
 
 			atypes[n] = _gtype_get(*at);
 			amodes[++n] = 0;

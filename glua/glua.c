@@ -9,12 +9,12 @@
 
 static const char*	GOBJECT_MASTER_TABLE_NAME  = "__gobject_master__";
 static const char*	GOBJECT_ENUMS_TABLE_NAME   = "__gobject_enums__";
+static const char*	GOBJECT_CAPIS_TABLE_NAME   = "__gobject_capis__";
 static const char*	GOBJECT_TYPES_TABLE_NAME   = "__gobject_types__";
 static const char*	GOBJECT_G_TYPES_TABLE_NAME = "__gobject_gtypes__";
 
 static const char*	GOBJECT_LUA_NAME = "__glua__";
 static const char*	GERROR_LUA_NAME = "__GERROR__";
-static const char*	GBOXEDVALUE_LUA_NAME = "__GBOXEDVALUE__";
 static const char*	GVALUE_LUA_NAME = "__GVALUE__";
 static const char*	GPARAMSPEC_LUA_NAME = "__GPARAMSPEC__";
 static const char*	GSIGNAL_HANDLE_LUA_NAME = "__GSIGNAL_HANDLE__";
@@ -22,6 +22,8 @@ static const char*	GSIGNAL_HANDLE_LUA_NAME = "__GSIGNAL_HANDLE__";
 typedef struct _GObjectLua {
 	GObject*	obj;
 } GObjectLua;
+
+static int _lua_gobject_index(lua_State* L);
 
 static GObject* _gobject_check(lua_State* L, int idx) {
 	GObjectLua* ud = (GObjectLua*)luaL_checkudata(L, idx, GOBJECT_LUA_NAME);
@@ -48,7 +50,7 @@ typedef struct _MarshalLuaCallEnv {
 	const GValue*	param_values;
 } MarshalLuaCallEnv;
 
-static void _fundamental_types_register(lua_State* L);
+static void _lua_push_types_table(lua_State* L);
 
 static void _lua_push_enums_table(lua_State* L) {
 	// types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
@@ -58,19 +60,6 @@ static void _lua_push_enums_table(lua_State* L) {
 
 		lua_pushvalue(L, -1);
 		lua_setfield(L, LUA_REGISTRYINDEX, GOBJECT_ENUMS_TABLE_NAME);
-	}
-}
-
-static void _lua_push_types_table(lua_State* L) {
-	// types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
-	if( lua_getfield(L, LUA_REGISTRYINDEX, GOBJECT_TYPES_TABLE_NAME)!=LUA_TTABLE ) {
-		lua_pop(L, 1);
-		lua_newtable(L);
-
-		lua_pushvalue(L, -1);
-		lua_setfield(L, LUA_REGISTRYINDEX, GOBJECT_TYPES_TABLE_NAME);
-
-		_fundamental_types_register(L);
 	}
 }
 
@@ -164,69 +153,57 @@ static void _lua_fetch_g_type_all_methods_table(lua_State* L, GType tp) {
 	assert( lua_gettop(L)==(top+1) );
 }
 
-GValue* glua_boxed_check(lua_State* L, int idx) {
-	return luaL_checkudata(L, idx, GBOXEDVALUE_LUA_NAME);
-}
-
-GValue* glua_boxed_test(lua_State* L, int idx) {
-	return luaL_testudata(L, idx, GBOXEDVALUE_LUA_NAME);
-}
-
-static int lua_gboxed_unset(lua_State* L) {
-	GValue* v = glua_boxed_check(L, 1);
-	g_value_unset(v);
-	return 0;
-}
-
-static int lua_gboxed_tostring(lua_State* L) {
-	GValue* v = glua_boxed_check(L, 1);
-	lua_pushfstring(L, "%s(%s):%p", GBOXEDVALUE_LUA_NAME, G_VALUE_TYPE_NAME(v), v);
+static int lua_gvalue_tostring(lua_State* L) {
+	GValue* v = glua_value_check(L, 1);
+	lua_pushfstring(L, "%s(%s):%p", GVALUE_LUA_NAME, G_VALUE_TYPE_NAME(v), v);
 	return 1;
 }
-
-static int lua_gboxed_index(lua_State* L) {
-	GValue* v = glua_boxed_check(L, 1);
-	luaL_checkany(L, 2);
-
-	if( lua_getuservalue(L, 1)!=LUA_TTABLE ) {	// search cache
-		lua_pop(L, 1);
-		_lua_fetch_g_type_all_methods_table(L, G_VALUE_TYPE(v));
-		lua_pushvalue(L, -1);
-		lua_setuservalue(L, 1);
-	}
-
-	lua_pushvalue(L, 2);
-	lua_gettable(L, -2);
-	return 1;
-}
-
-static luaL_Reg gboxed_methods[] =
-	{ {"__gc",			lua_gboxed_unset}
-	, {"__tostring",	lua_gboxed_tostring}
-	, {"__index",		lua_gboxed_index}
-	, {NULL, NULL}
-	};
 
 static int lua_gvalue_unset(lua_State* L) {
-	GValue* v = luaL_checkudata(L, 1, GVALUE_LUA_NAME);
+	GValue* v = (GValue*)luaL_checkudata(L, 1, GVALUE_LUA_NAME);
 	g_value_unset(v);
 	return 0;
+}
+
+static int lua_gvalue_index(lua_State* L) {
+	GValue* v = (GValue*)luaL_checkudata(L, 1, GVALUE_LUA_NAME);
+	GType vt = G_VALUE_TYPE(v);
+	if( G_TYPE_IS_BOXED(vt) ) {
+		luaL_checkany(L, 2);
+
+		if( lua_getuservalue(L, 1)!=LUA_TTABLE ) {	// search cache
+			lua_pop(L, 1);
+			_lua_fetch_g_type_all_methods_table(L, G_VALUE_TYPE(v));
+			lua_pushvalue(L, -1);
+			lua_setuservalue(L, 1);
+		}
+
+		lua_pushvalue(L, 2);
+		lua_gettable(L, -2);
+		return 1;
+
+	} else if( G_TYPE_IS_OBJECT(v->g_type) ) {
+		glua_object_push(L, g_value_get_object(v));
+		lua_replace(L, 1);
+		return _lua_gobject_index(L);
+	}
+
+	return 0;
+}
+
+static int lua_gvalue_call(lua_State* L) {
+	const GValue* v = (const GValue*)luaL_checkudata(L, 1, GVALUE_LUA_NAME);
+	glua_value_push(L, v);
+	return 1;
 }
 
 static luaL_Reg gvalue_methods[] =
 	{ {"__gc",			lua_gvalue_unset}
+	, {"__index",		lua_gvalue_index}
+	, {"__call",		lua_gvalue_call}
+	, {"__tostring",	lua_gvalue_tostring}
 	, {NULL, NULL}
 	};
-
-void lua_gboxed_push(lua_State* L, const GValue* v) {
-	GValue* ud = lua_newuserdata(L, sizeof(GValue));
-	memset(ud, 0, sizeof(GValue));
-	g_value_init(ud, G_VALUE_TYPE(v));
-	g_value_copy(v, ud);
-	if( luaL_newmetatable(L, GBOXEDVALUE_LUA_NAME) )
-		luaL_setfuncs(L, gboxed_methods, 0);
-	lua_setmetatable(L, -2);
-}
 
 static int lua_param_sepc_unref(lua_State* L) {
 	GParamSpec** ud = luaL_checkudata(L, 1, GPARAMSPEC_LUA_NAME);
@@ -290,7 +267,7 @@ static luaL_Reg param_spec_methods[] =
 	};
 
 static void lua_gparamspec_push(lua_State* L, GParamSpec* spec) {
-	GParamSpec** ud = lua_newuserdata(L, sizeof(GParamSpec*));
+	GParamSpec** ud = (GParamSpec**)lua_newuserdata(L, sizeof(GParamSpec*));
 	if( luaL_newmetatable(L, GPARAMSPEC_LUA_NAME) ) {
 		luaL_setfuncs(L, param_spec_methods, 0);
 		lua_pushvalue(L, -1);
@@ -309,24 +286,23 @@ static void lua_param_gvalue_push(lua_State* L, const GValue* v) {
 	lua_gparamspec_push(L, g_value_get_param(v));
 }
 
-GValue* glua_boxed_push(lua_State* L, GType tp, gconstpointer ptr, gboolean isnew) {
-	GValue* v = lua_newuserdata(L, sizeof(GValue));
-	memset(v, 0, sizeof(GValue));
-	g_value_init(v, tp);
-	if( ptr ) {
-		if( isnew )
-			g_value_take_boxed(v, ptr);
-		else
-			g_value_set_boxed(v, ptr);
-	}
-	if( luaL_newmetatable(L, GBOXEDVALUE_LUA_NAME) )
-		luaL_setfuncs(L, gboxed_methods, 0);
-	lua_setmetatable(L, -2);
+GValue* glua_value_check(lua_State* L, int idx) {
+	return (GValue*)luaL_checkudata(L, idx, GVALUE_LUA_NAME);
+}
+
+GValue* glua_value_test(lua_State* L, int idx) {
+	return (GValue*)luaL_testudata(L, idx, GVALUE_LUA_NAME);
+}
+
+GValue* glua_value_check_type(lua_State* L, int idx, GType type) {
+	GValue* v = glua_value_check(L, idx);
+	if( v && (G_VALUE_TYPE(v) != type) )
+		luaL_error(L, "type(%s) not matched!", g_type_name(type));
 	return v;
 }
 
 GValue* glua_value_new(lua_State* L, GType init_type) {
-	GValue* v = lua_newuserdata(L, sizeof(GValue));
+	GValue* v = (GValue*)lua_newuserdata(L, sizeof(GValue));
 	memset(v, 0, sizeof(GValue));
 	g_value_init(v, init_type);
 	if( luaL_newmetatable(L, GVALUE_LUA_NAME) )
@@ -355,7 +331,7 @@ void glua_value_push(lua_State* L, const GValue* v) {
 	case G_TYPE_DOUBLE:		lua_pushnumber(L, g_value_get_double(v));	break;
 	case G_TYPE_STRING:		lua_pushstring(L, g_value_get_string(v));	break;
 	case G_TYPE_POINTER:	lua_pushlightuserdata(L, g_value_get_pointer(v));	break;
-	case G_TYPE_BOXED:		lua_gboxed_push(L, v);						break;
+	case G_TYPE_BOXED:		glua_value_push_boxed(L, G_VALUE_TYPE(v), g_value_get_boxed(v), FALSE);	break;
 	case G_TYPE_PARAM:		lua_param_gvalue_push(L, v);				break;	// derived
 	case G_TYPE_INTERFACE:
 	case G_TYPE_OBJECT:		glua_object_push(L, (GObject*)g_value_get_object(v));	break;
@@ -365,6 +341,22 @@ void glua_value_push(lua_State* L, const GValue* v) {
 		lua_pushnil(L);
 		break;
 	}
+}
+
+GValue* glua_value_push_boxed(lua_State* L, GType tp, gconstpointer ptr, gboolean isnew) {
+	GValue* v = (GValue*)lua_newuserdata(L, sizeof(GValue));
+	memset(v, 0, sizeof(GValue));
+	g_value_init(v, tp);
+	if( ptr ) {
+		if( isnew )
+			g_value_take_boxed(v, ptr);
+		else
+			g_value_set_boxed(v, ptr);
+	}
+	if( luaL_newmetatable(L, GVALUE_LUA_NAME) )
+		luaL_setfuncs(L, gvalue_methods, 0);
+	lua_setmetatable(L, -2);
+	return v;
 }
 
 static void _glua_value_from_lua(lua_State* L, int idx, GType fundamental_type, GValue* v) {
@@ -394,7 +386,7 @@ static void _glua_value_from_lua(lua_State* L, int idx, GType fundamental_type, 
 	case G_TYPE_DOUBLE:		g_value_set_double(v, (gdouble)lua_tonumber(L, idx));	break;
 	case G_TYPE_STRING:		g_value_set_string(v, lua_tostring(L, idx));			break;
 	case G_TYPE_POINTER:	g_value_set_pointer(v, (gpointer)lua_topointer(L, idx));break;
-	case G_TYPE_BOXED:		g_value_set_boxed(v, g_value_dup_boxed(glua_boxed_test(L, idx)));	break;
+	case G_TYPE_BOXED:		g_value_set_boxed(v, g_value_dup_boxed(glua_value_test(L, idx)));	break;
 	case G_TYPE_PARAM:		g_value_set_param(v, lua_gparamspec_test(L, idx));		break;	// derived
 	case G_TYPE_INTERFACE:
 	case G_TYPE_OBJECT:
@@ -601,7 +593,7 @@ static int lua_gtype_from_instance(lua_State* L) {
 		if( o ) {
 			tp = G_OBJECT_TYPE(o);
 		} else {
-			GValue* v = glua_boxed_test(L, 1);
+			GValue* v = glua_value_test(L, 1);
 			if( v ) {
 				tp = G_VALUE_TYPE(v);
 			}
@@ -665,7 +657,7 @@ static int lua_gtype_name_from_instance(lua_State* L) {
 		if( o ) {
 			tp = G_OBJECT_TYPE(o);
 		} else {
-			GValue* v = glua_boxed_test(L, 1);
+			GValue* v = glua_value_test(L, 1);
 			if( v ) {
 				tp = G_VALUE_TYPE(v);
 			}
@@ -679,15 +671,30 @@ static int lua_gtype_name_from_instance(lua_State* L) {
 	return 1;
 }
 
-static int lua_gobject_new(lua_State* L) {
+static int lua_gnew_from_typename(lua_State* L) {
 	const char* gtypename = luaL_checkstring(L, 1);
-	GType gtype = g_type_from_name(gtypename);
-	if( gtype==G_TYPE_INVALID )
-		return luaL_error(L, "not find GType(%s)", gtypename);
-	GObject* obj = g_object_new(gtype, NULL);
-	if( !obj )
-		return 0;
-	glua_object_push(L, obj);
+	GType tp = g_type_from_name(gtypename);
+
+	if( G_TYPE_IS_BOXED(tp) ) {
+		glua_value_new(L, tp);
+		return 1;
+	} else if( G_TYPE_IS_OBJECT(tp) ) {
+		GObject* obj = g_object_new(tp, NULL);
+		if( obj ) {
+			glua_object_push(L, obj);
+			return 1;
+		}
+	}
+
+	return luaL_error(L, "not support GType(%s)", gtypename);
+}
+
+static int lua_gnew_uninit_value(lua_State* L) {
+	GValue* v = (GValue*)lua_newuserdata(L, sizeof(GValue));
+	memset(v, 0, sizeof(GValue));
+	if( luaL_newmetatable(L, GVALUE_LUA_NAME) )
+		luaL_setfuncs(L, gvalue_methods, 0);
+	lua_setmetatable(L, -2);
 	return 1;
 }
 
@@ -775,7 +782,8 @@ int glua_signal_connect(lua_State* L) {
 }
 
 static luaL_Reg _gobject_module_methods[] = 
-	{ {"new",							lua_gobject_new}
+	{ {"gnew_from_typename",			lua_gnew_from_typename}
+	, {"gnew_uninit_value",				lua_gnew_uninit_value}
 
 	// gtype utils
 	, {"gtype_list_properties",			lua_gtype_list_properties}
@@ -798,9 +806,18 @@ static luaL_Reg _gobject_metatable_methods[] =
 	, {NULL, NULL}
 	};
 
-static void _fundamental_types_register(lua_State* L) {
-	glua_reg_gtype_index_table(L, G_TYPE_OBJECT, _gobject_metatable_methods);
-	glua_reg_gtype_index_table(L, G_TYPE_INITIALLY_UNOWNED, NULL);
+static void _lua_push_types_table(lua_State* L) {
+	// types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
+	if( lua_getfield(L, LUA_REGISTRYINDEX, GOBJECT_TYPES_TABLE_NAME)!=LUA_TTABLE ) {
+		lua_pop(L, 1);
+		lua_newtable(L);
+
+		lua_pushvalue(L, -1);
+		lua_setfield(L, LUA_REGISTRYINDEX, GOBJECT_TYPES_TABLE_NAME);
+
+		glua_reg_gtype_index_table(L, G_TYPE_OBJECT, "g_object", _gobject_metatable_methods);
+		glua_reg_gtype_index_table(L, G_TYPE_INITIALLY_UNOWNED, "g_initially_unowned", NULL);
+	}
 }
 
 void glua_push_master_table(lua_State* L) {
@@ -818,6 +835,10 @@ void glua_push_master_table(lua_State* L) {
 		_lua_push_enums_table(L);
 		lua_setfield(L, -2, "enums");
 
+		// master.capis = { apis }
+		glua_push_capis_table(L);
+		lua_setfield(L, -2, "capis");
+
 		// master.types = { GTypeName : TypeMethods }	-- ONLY type methods, not include parents or interfaces methods
 		_lua_push_types_table(L);
 		lua_setfield(L, -2, "types");
@@ -825,6 +846,44 @@ void glua_push_master_table(lua_State* L) {
 		// master.__gtypes__ = { GType : AllMethods }	-- all type methods, INCLUDE parents and interfaces methods
 		_lua_push_g_types_table(L);
 		lua_setfield(L, -2, "__gtypes__");
+	}
+}
+
+static int lua_g_fundamental_type_new(lua_State* L) {
+	GType tp = (GType)lua_tointeger(L, lua_upvalueindex(1));
+	GValue* v = glua_value_new(L, tp);
+	if( lua_gettop(L) > 1 )
+		glua_value_from_lua(L, 1, v);
+	return 1;
+}
+
+static void _lua_reg_g_fundamental_value_type(lua_State* L, GType tp) {
+	lua_pushinteger(L, (lua_Integer)tp);
+	lua_pushcclosure(L, lua_g_fundamental_type_new, 1);
+	lua_setfield(L, -2, g_type_name(tp));
+}
+
+void glua_push_capis_table(lua_State* L) {
+	if( lua_getfield(L, LUA_REGISTRYINDEX, GOBJECT_CAPIS_TABLE_NAME)!=LUA_TTABLE ) {
+		lua_pop(L, 1);
+		lua_newtable(L);
+
+		lua_pushvalue(L, -1);
+		lua_setfield(L, LUA_REGISTRYINDEX, GOBJECT_CAPIS_TABLE_NAME);
+
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_NONE);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_CHAR);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_UCHAR);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_BOOLEAN);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_INT);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_UINT);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_LONG);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_ULONG);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_INT64);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_UINT64);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_FLOAT);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_DOUBLE);
+		_lua_reg_g_fundamental_value_type(L, G_TYPE_STRING);
 	}
 }
 
@@ -891,22 +950,88 @@ gpointer glua_object_check_type(lua_State* L, int idx, GType type) {
 	return obj;
 }
 
-void glua_new_gtype_index_table(lua_State* L, GType type) {
+static int lua_gnew_boxed(lua_State* L) {
+	GType tp = (GType)lua_tointeger(L, lua_upvalueindex(1));
+	glua_value_new(L, tp);
+	return 1;
+}
+
+static int lua_gnew_object(lua_State* L) {
+	GType tp = (GType)lua_tointeger(L, lua_upvalueindex(1));
+	GObject* obj = g_object_new(tp, NULL);
+	if( obj ) {
+		glua_object_push(L, obj);
+		return 1;
+	}
+	return 0;
+}
+
+void glua_new_gtype_index_table(lua_State* L, GType type, const char* prefix) {
 	_lua_push_types_table(L);
 	if( lua_getfield(L, -1, g_type_name(type))!=LUA_TTABLE ) {
 		lua_pop(L, 1);
 		lua_newtable(L);
 		lua_pushvalue(L, -1);
 		lua_setfield(L, -3, g_type_name(type));
+
+		// add default new
+		if( G_TYPE_IS_BOXED(type) ) {
+			lua_pushinteger(L, (lua_Integer)type);
+			lua_pushcclosure(L, lua_gnew_boxed, 1);
+			if( prefix ) {
+				glua_push_capis_table(L);
+				lua_pushfstring(L, "%s_new", prefix);
+				lua_pushvalue(L, -3);
+				lua_settable(L, -3);
+				lua_pop(L, 1);
+			}
+			lua_setfield(L, -2, "new");	// new null boxed
+		} else if( G_TYPE_IS_OBJECT(type) ) {
+			lua_pushinteger(L, (lua_Integer)type);
+			lua_pushcclosure(L, lua_gnew_object, 1);
+			if( prefix ) {
+				glua_push_capis_table(L);
+				lua_pushfstring(L, "%s_new", prefix);
+				lua_pushvalue(L, -3);
+				lua_settable(L, -3);
+				lua_pop(L, 1);
+			}
+			lua_setfield(L, -2, "new");
+		}
 	}
 	lua_remove(L, -2);
 }
 
-void glua_reg_gtype_index_table(lua_State* L, GType type, luaL_Reg* methods) {
-	glua_new_gtype_index_table(L, type);
-	if( methods )
-		luaL_setfuncs(L, methods, 0);
-	lua_pop(L, 1);
+void glua_reg_gtype_index_table(lua_State* L, GType type, const char* prefix, const luaL_Reg* methods) {
+	glua_push_capis_table(L);
+	glua_new_gtype_index_table(L, type, prefix);
+	if( methods ) {
+		const luaL_Reg* l = methods;
+		for( ; l->name; ++l ) {
+			lua_pushcfunction(L, l->func);
+			if( prefix ) {
+				lua_pushfstring(L, "%s_%s", prefix, l->name);
+				lua_pushvalue(L, -2);
+				lua_settable(L, -5);
+			}
+			lua_setfield(L, -2, l->name);
+		}
+	}
+	lua_pop(L, 2);
+}
+	
+static int c_struct_boxed_type_new0_wrapper(lua_State* L) {
+	GType tp = lua_tointeger(L, lua_upvalueindex(1));
+	gsize sz = (gsize)lua_tointeger(L, lua_upvalueindex(2));
+	GValue* v = glua_value_new(L, tp);
+	g_value_take_boxed(v, g_malloc0(sz));
+	return 1;
+}
+
+void glua_reg_c_struct_boxed_type_new0_method(lua_State* L, GType type, gsize struct_size) {
+	lua_pushinteger(L, (lua_Integer)type);
+	lua_pushinteger(L, (lua_Integer)struct_size);
+	lua_pushcclosure(L, c_struct_boxed_type_new0_wrapper, 2);
 }
 
 static int debug_traceback(lua_State* L) {

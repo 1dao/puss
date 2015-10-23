@@ -6,15 +6,8 @@
 
 #include "gffireg.h"
 
-static GValue* gboxedvalue_check(lua_State* L, int idx, GType tp) {
-	GValue* v = glua_boxed_check(L, 1);
-	if( G_VALUE_TYPE(v) != tp )
-		luaL_error(L, "type(%s) not matched!", g_type_name(tp));
-	return v;
-}
-
 static int strv_get(lua_State* L) {
-	GValue* v = gboxedvalue_check(L, 1, G_TYPE_STRV);
+	GValue* v = glua_value_check_type(L, 1, G_TYPE_STRV);
 	const GStrv gstrv = (const GStrv)g_value_get_boxed(v);
 	int n = (int)g_strv_length(gstrv);
 	int i;
@@ -27,7 +20,7 @@ static int strv_get(lua_State* L) {
 }
 
 static int strv_set(lua_State* L) {
-	GValue* v = gboxedvalue_check(L, 1, G_TYPE_STRV);
+	GValue* v = glua_value_check_type(L, 1, G_TYPE_STRV);
 	GStrv strv = NULL;
 	if( lua_istable(L, 2) ) {
 		int n = (int)lua_rawlen(L, 1);
@@ -63,7 +56,7 @@ static int strv_new(lua_State* L) {
 }
 
 static int strv_len(lua_State* L) {
-	GValue* v = gboxedvalue_check(L, 1, G_TYPE_STRV);
+	GValue* v = glua_value_check_type(L, 1, G_TYPE_STRV);
 	const GStrv gstrv = (const GStrv)g_value_get_boxed(v);
 	lua_pushinteger(L, (lua_Integer)g_strv_length(gstrv));
 	return 1;
@@ -81,7 +74,7 @@ void gtypes_glib_register(lua_State* L) {
 	gtype_reg_env_declare();
 
 	// glib boxed
-	glua_reg_gtype_index_table(L, G_TYPE_STRV, strv_methods);
+	glua_reg_gtype_index_table(L, G_TYPE_STRV, "g_strv", strv_methods);
 
 	// gio
 	gtype_reg_start(G_TYPE_FILE, g_file);
@@ -112,7 +105,7 @@ void gtypes_glib_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_FILE_ICON, g_file_icon_new, G_TYPE_FILE);
 	gtype_reg_end();
 
-	glua_reg_gtype_index_table(L, G_TYPE_FILE_INFO, NULL);
+	gtype_reg_start(G_TYPE_FILE_INFO, g_file_info); gtype_reg_end();
 
 	gtype_reg_start(G_TYPE_APPLICATION, g_application);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_application_id_is_valid, G_TYPE_STRING);
@@ -127,5 +120,7 @@ void gtypes_glib_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_NONE, g_application_set_default, G_TYPE_APPLICATION);
 		gtype_reg_ffi(G_TYPE_INT, g_application_run, G_TYPE_APPLICATION, G_TYPE_UINT, G_TYPE_STRV);
 	gtype_reg_end();
+
+	gtype_reg_start(G_TYPE_MOUNT_OPERATION, g_mount_operation); gtype_reg_end();
 }
 

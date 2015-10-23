@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
 			for( ; i<argc; ++i ) {
 				v[i] = g_strdup(argv[i]);
 			}
-			glua_boxed_push(L, G_TYPE_STRV, v, TRUE);
+			glua_value_push_boxed(L, G_TYPE_STRV, v, TRUE);
 		}
 
 		if( glua_pcall(L, 2, 0) ) {

@@ -16,18 +16,20 @@
 #include <glib-object.h>
 
 void		glua_push_master_table(lua_State* L);	// [-0,+1,-]
+void		glua_push_capis_table(lua_State* L);	// [-0,+1,-]
 
 void		glua_enum_types_register(lua_State* L);	// NOTICE : must invoke after all other gtypes register finished
 
-void		glua_new_gtype_index_table(lua_State* L, GType type);
-void		glua_reg_gtype_index_table(lua_State* L, GType type, luaL_Reg* methods);
+void		glua_new_gtype_index_table(lua_State* L, GType type, const char* prefix);
+void		glua_reg_gtype_index_table(lua_State* L, GType type, const char* prefix, const luaL_Reg* methods);
+void		glua_reg_c_struct_boxed_type_new0_method(lua_State* L, GType type, gsize struct_size);
 
-GValue*		glua_boxed_check(lua_State* L, int idx);
-GValue*		glua_boxed_test(lua_State* L, int idx);
-GValue*		glua_boxed_push(lua_State* L, GType tp, gconstpointer ptr, gboolean isnew);
-
+GValue*		glua_value_check(lua_State* L, int idx);
+GValue*		glua_value_test(lua_State* L, int idx);
+GValue*		glua_value_check_type(lua_State* L, int idx, GType type);
 GValue*		glua_value_new(lua_State* L, GType init_type);
 void		glua_value_push(lua_State* L, const GValue* v);
+GValue*		glua_value_push_boxed(lua_State* L, GType tp, gconstpointer ptr, gboolean isnew);
 void		glua_value_from_lua(lua_State* L, int idx, GValue* v);
 
 void		glua_object_push(lua_State* L, GObject* obj);	// [-0,+1,e]
