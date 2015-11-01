@@ -76,21 +76,6 @@ static GFFIType* _gtype_reg(GType tp, ffi_type ffitp, GFFILuaCheck check, GFFILu
 	return t;
 }
 
-static GFFIType* _pesudo_gtype_reg(GType pesudo_tp, ffi_type ffitp, GFFILuaCheck check, GFFILuaPush push) {
-	GFFIType* t = &(__gtype_arr__[ __gtype_num__++ ]);
-	if( __gtype_num__ >= G_TYPE_MAX ) {
-		g_error("gtype ffi register out of range!");
-		abort();
-	}
-
-	t->ffitp = ffitp;
-	t->gtype = pesudo_tp;
-	t->check = check;
-	t->push = push;
-
-	return t;
-}
-
 static void ffi_lua_check_none(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
 }
 
@@ -149,24 +134,6 @@ static void ffi_lua_check_uint(lua_State* L, int idx, gpointer pval, gboolean op
 
 static int ffi_lua_push_uint(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
 	lua_pushinteger(L, *((guint*)pval));
-	return 1;
-}
-
-static void ffi_lua_check_long(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((glong*)pval) = (glong)( opt ? luaL_checkinteger(L, idx) : luaL_optinteger(L, idx, 0) );
-}
-
-static int ffi_lua_push_long(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
-	lua_pushinteger(L, *((glong*)pval));
-	return 1;
-}
-
-static void ffi_lua_check_ulong(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((gulong*)pval) = (gulong)( opt ? luaL_checkinteger(L, idx) : luaL_optinteger(L, idx, 0) );
-}
-
-static int ffi_lua_push_ulong(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
-	lua_pushinteger(L, *((gulong*)pval));
 	return 1;
 }
 

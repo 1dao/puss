@@ -46,7 +46,7 @@ static int strv_set(lua_State* L) {
 }
 
 static int strv_new(lua_State* L) {
-	GValue* v = glua_value_new(L, G_TYPE_STRV);
+	glua_value_new(L, G_TYPE_STRV);
 	lua_pushvalue(L, 1);
 	lua_insert(L, 0);
 	if( lua_istable(L, 2) )
@@ -116,7 +116,7 @@ void gtypes_glib_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_NONE, g_application_release, G_TYPE_APPLICATION);
 		gtype_reg_ffi(G_TYPE_NONE, g_application_activate, G_TYPE_APPLICATION);
 		gtype_reg_ffi(G_TYPE_NONE, g_application_quit, G_TYPE_APPLICATION);
-		gtype_reg_ffi(G_TYPE_APPLICATION, g_application_get_default);
+		gtype_reg_ffi(G_TYPE_APPLICATION, g_application_get_default, G_TYPE_INVALID);
 		gtype_reg_ffi(G_TYPE_NONE, g_application_set_default, G_TYPE_APPLICATION);
 		gtype_reg_ffi(G_TYPE_INT, g_application_run, G_TYPE_APPLICATION, G_TYPE_UINT, G_TYPE_STRV);
 	gtype_reg_end();

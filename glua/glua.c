@@ -14,7 +14,6 @@ static const char*	GOBJECT_TYPES_TABLE_NAME   = "__gobject_types__";
 static const char*	GOBJECT_G_TYPES_TABLE_NAME = "__gobject_gtypes__";
 
 static const char*	GOBJECT_LUA_NAME = "__glua__";
-static const char*	GERROR_LUA_NAME = "__GERROR__";
 static const char*	GVALUE_LUA_NAME = "__GVALUE__";
 static const char*	GPARAMSPEC_LUA_NAME = "__GPARAMSPEC__";
 static const char*	GSIGNAL_HANDLE_LUA_NAME = "__GSIGNAL_HANDLE__";
@@ -343,12 +342,12 @@ void glua_value_push(lua_State* L, const GValue* v) {
 	}
 }
 
-GValue* glua_value_push_boxed(lua_State* L, GType tp, gconstpointer ptr, gboolean isnew) {
+GValue* glua_value_push_boxed(lua_State* L, GType tp, gconstpointer ptr, gboolean take) {
 	GValue* v = (GValue*)lua_newuserdata(L, sizeof(GValue));
 	memset(v, 0, sizeof(GValue));
 	g_value_init(v, tp);
 	if( ptr ) {
-		if( isnew )
+		if( take )
 			g_value_take_boxed(v, ptr);
 		else
 			g_value_set_boxed(v, ptr);
@@ -510,7 +509,7 @@ static int _lua_gobject_eq(lua_State* L) {
 static int _lua_gobject_tostring(lua_State* L) {
 	GObjectLua* ud = (GObjectLua*)luaL_checkudata(L, 1, GOBJECT_LUA_NAME);
 	if( ud->obj ) {
-		lua_pushfstring(L, "%s(%s:%p)", G_OBJECT_TYPE_NAME(ud->obj), "ref", ud->obj);
+		lua_pushfstring(L, "%s(%p : ref(%d))", G_OBJECT_TYPE_NAME(ud->obj), ud->obj, ud->obj->ref_count);
 	} else {
 		lua_pushliteral(L, "GObject(null)");
 	}
@@ -1024,11 +1023,15 @@ static int c_struct_boxed_type_new0_wrapper(lua_State* L) {
 	GType tp = lua_tointeger(L, lua_upvalueindex(1));
 	gsize sz = (gsize)lua_tointeger(L, lua_upvalueindex(2));
 	GValue* v = glua_value_new(L, tp);
-	g_value_take_boxed(v, g_malloc0(sz));
+	char _cache[512];
+	char* src = (sz <= sizeof(_cache)) ? _cache : g_malloc(sz);
+	memset(src, 0, sz);
+	g_value_set_boxed(v, src);
+	if( src!=_cache ) g_free(src);
 	return 1;
 }
 
-void glua_reg_c_struct_boxed_type_new0_method(lua_State* L, GType type, gsize struct_size) {
+void glua_reg_c_struct0_boxed_type_new_method(lua_State* L, GType type, gsize struct_size) {
 	lua_pushinteger(L, (lua_Integer)type);
 	lua_pushinteger(L, (lua_Integer)struct_size);
 	lua_pushcclosure(L, c_struct_boxed_type_new0_wrapper, 2);

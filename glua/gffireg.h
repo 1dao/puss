@@ -40,7 +40,7 @@
 	gffi_function_va_create(L, "*" #func, rtype, func, __VA_ARGS__, G_TYPE_INVALID); \
 	_gtype_reg_setfield(func)
 
-#define gtype_reg_boxed_new_use_c_struct_new0(gtype, func, ctype) \
-	glua_reg_c_struct_boxed_type_new0_method(L, gtype, sizeof(ctype)); \
+#define gtype_reg_boxed_new_use_c_struct0(gtype, func, ctype) \
+	glua_reg_c_struct0_boxed_type_new_method(L, gtype, sizeof(ctype)); \
 	_gtype_reg_setfield(func)
 
