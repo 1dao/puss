@@ -4,16 +4,20 @@
 #ifndef __PUSS_INC_GOBJECT_LUA_H__
 #define __PUSS_INC_GOBJECT_LUA_H__
 
+#ifdef _MSC_VER
+	#define inline __inline
+#endif
+
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 
-#ifdef _MSC_VER
-	#define inline	__inline
-#endif
-
 #include <glib.h>
 #include <glib-object.h>
+
+#ifdef __cplusplus
+	extern "C" {
+#endif
 
 void		glua_push_master_table(lua_State* L);	// [-0,+1,-]
 void		glua_push_capis_table(lua_State* L);	// [-0,+1,-]
@@ -41,6 +45,10 @@ gpointer	glua_object_check_type(lua_State* L, int idx, GType type);
 int			glua_signal_connect(lua_State* L);	// [-3|4,+1,e]	connect(GObject* obj, const char* detailed_signal, function, gboolean after)
 
 int			glua_pcall(lua_State* L, int narg, int nres);
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif//__PUSS_INC_GOBJECT_LUA_H__
 

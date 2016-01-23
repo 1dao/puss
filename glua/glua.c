@@ -709,6 +709,12 @@ static int lua_gobject_array_pointer_parse(lua_State* L) {
 	return 1;
 }
 
+static int lua_gobject___raw(lua_State* L) {
+	GObject* obj = _gobject_check(L, 1);
+	lua_pushlightuserdata(L, obj);
+	return 1;
+}
+
 static int lua_gobject_get(lua_State* L) {
 	GObject* obj = _gobject_check(L, 1);
 	gpointer klass = G_OBJECT_GET_CLASS(obj);
@@ -798,10 +804,10 @@ static luaL_Reg _gobject_module_methods[] =
 	};
 
 static luaL_Reg _gobject_metatable_methods[] = 
-	{ {"get",							lua_gobject_get}
+	{ {"__raw",							lua_gobject___raw}
+	, {"get",							lua_gobject_get}
 	, {"set",							lua_gobject_set}
 	, {"signal_connect",				glua_signal_connect}
-	, {"signal_handle_disconnect",		lua_signal_handle_disconnect}
 	, {NULL, NULL}
 	};
 

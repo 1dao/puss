@@ -9,6 +9,10 @@
 
 #include "glua.h"
 
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 typedef struct _GFFIType		GFFIType;
 typedef struct _GFFIFunction	GFFIFunction;
 
@@ -20,17 +24,19 @@ void	gffi_init(void);
 // void	gtype_ffi_type_reg(GType tp);
 
 #define GFFI_PESUDO_TYPE_OUT_ARG		G_TYPE_MAKE_FUNDAMENTAL(G_TYPE_RESERVED_USER_FIRST + 1)
-#define GFFI_PESUDO_TYPE_INOUT_ARG		G_TYPE_MAKE_FUNDAMENTAL(G_TYPE_RESERVED_USER_FIRST + 2)
-#define GFFI_PESUDO_TYPE_OPT_ARG		G_TYPE_MAKE_FUNDAMENTAL(G_TYPE_RESERVED_USER_FIRST + 3)
+#define GFFI_PESUDO_TYPE_REF_OUT_ARG	G_TYPE_MAKE_FUNDAMENTAL(G_TYPE_RESERVED_USER_FIRST + 2)
+#define GFFI_PESUDO_TYPE_INOUT_ARG		G_TYPE_MAKE_FUNDAMENTAL(G_TYPE_RESERVED_USER_FIRST + 3)
+#define GFFI_PESUDO_TYPE_OPT_ARG		G_TYPE_MAKE_FUNDAMENTAL(G_TYPE_RESERVED_USER_FIRST + 4)
 
 // create lua C function & push to L
 // atypes :
 //	1 ends with G_TYPE_INVALID
 //	2 can use GFFI_PESUDO_TYPE_OUT_ARG for out argument
-//	3 can use GFFI_PESUDO_TYPE_INOUT_ARG for in-out argument
-//	4 can use GFFI_PESUDO_TYPE_OPT_ARG for opt input argument(can be null)
-//	5 if use pesudo type, MUST use it before real GType.
-//	6 name[0]=='*' means return value need free
+//	3 can use GFFI_PESUDO_TYPE_REF_OUT_ARG for out argument, ref(out value)
+//	4 can use GFFI_PESUDO_TYPE_INOUT_ARG for in-out argument
+//	5 can use GFFI_PESUDO_TYPE_OPT_ARG for opt input argument(can be null)
+//	6 if use pesudo type, MUST use it before real GType.
+//	7 name[0]=='*' means return value need free
 // 
 // for example : void add(gint* result, gint a, gint b);
 //		GType atypes[] = { GFFI_PESUDO_TYPE_OUT_ARG, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INVALID };
@@ -45,6 +51,10 @@ void	gffi_init(void);
 GFFIFunction*	gffi_function_create(lua_State* L, const char* name, GType rtype, const void* addr, GType* atypes);
 
 GFFIFunction*	gffi_function_va_create(lua_State* L, const char* name, GType rtype, const void* addr, ... /*GType atype ... */ );
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif//__PUSS_INC_GOBJECT_LUA_FFI_H__
 

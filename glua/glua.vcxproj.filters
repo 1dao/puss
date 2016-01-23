@@ -3,13 +3,26 @@
   <ItemGroup>
     <ClCompile Include="glua.c" />
     <ClCompile Include="gffi.c" />
-    <ClCompile Include="gtypes_glib.c" />
-    <ClCompile Include="gtypes_gtk.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glua.h" />
     <ClInclude Include="gffi.h" />
     <ClInclude Include="gffireg.h" />
-    <ClInclude Include="gtklua.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="modules">
+      <UniqueIdentifier>{4d9274ad-9082-40e9-9e4f-cfe36b11cb6e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="modules\gtypes_scintilla.inl">
+      <Filter>modules</Filter>
+    </None>
+    <None Include="modules\gtypes_glib.inl">
+      <Filter>modules</Filter>
+    </None>
+    <None Include="modules\gtypes_gtk.inl">
+      <Filter>modules</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -120,7 +120,7 @@ static int ffi_lua_push_boolean(lua_State* L, gconstpointer pval, GFFIType* tp, 
 }
 
 static void ffi_lua_check_int(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((gint*)pval) = (gint)( opt ? luaL_checkinteger(L, idx) : luaL_optinteger(L, idx, 0) );
+	*((gint*)pval) = (gint)( opt ? luaL_optinteger(L, idx, 0) : luaL_checkinteger(L, idx) );
 }
 
 static int ffi_lua_push_int(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -129,7 +129,7 @@ static int ffi_lua_push_int(lua_State* L, gconstpointer pval, GFFIType* tp, gboo
 }
 
 static void ffi_lua_check_uint(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((guint*)pval) = (guint)( opt ? luaL_checkinteger(L, idx) : luaL_optinteger(L, idx, 0) );
+	*((guint*)pval) = (guint)( opt ? luaL_optinteger(L, idx, 0) : luaL_checkinteger(L, idx) );
 }
 
 static int ffi_lua_push_uint(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -138,7 +138,7 @@ static int ffi_lua_push_uint(lua_State* L, gconstpointer pval, GFFIType* tp, gbo
 }
 
 static void ffi_lua_check_int64(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((gint64*)pval) = (gint64)( opt ? luaL_checkinteger(L, idx) : luaL_optinteger(L, idx, 0) );
+	*((gint64*)pval) = (gint64)( opt ? luaL_optinteger(L, idx, 0) : luaL_checkinteger(L, idx) );
 }
 
 static int ffi_lua_push_int64(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -147,7 +147,7 @@ static int ffi_lua_push_int64(lua_State* L, gconstpointer pval, GFFIType* tp, gb
 }
 
 static void ffi_lua_check_uint64(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((guint64*)pval) = (guint64)( opt ? luaL_checkinteger(L, idx) : luaL_optinteger(L, idx, 0) );
+	*((guint64*)pval) = (guint64)( opt ? luaL_optinteger(L, idx, 0) : luaL_checkinteger(L, idx) );
 }
 
 static int ffi_lua_push_uint64(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -156,7 +156,7 @@ static int ffi_lua_push_uint64(lua_State* L, gconstpointer pval, GFFIType* tp, g
 }
 
 static void ffi_lua_check_float(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((gfloat*)pval) = (gfloat)( opt ? luaL_checknumber(L, idx) : luaL_optnumber(L, idx, 0) );
+	*((gfloat*)pval) = (gfloat)( opt ? luaL_optnumber(L, idx, 0) : luaL_checknumber(L, idx) );
 }
 
 static int ffi_lua_push_float(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -165,7 +165,7 @@ static int ffi_lua_push_float(lua_State* L, gconstpointer pval, GFFIType* tp, gb
 }
 
 static void ffi_lua_check_double(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((gdouble*)pval) = (gdouble)( opt ? luaL_checknumber(L, idx) : luaL_optnumber(L, idx, 0) );
+	*((gdouble*)pval) = (gdouble)( opt ? luaL_optnumber(L, idx, 0) : luaL_checknumber(L, idx));
 }
 
 static int ffi_lua_push_double(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -174,7 +174,7 @@ static int ffi_lua_push_double(lua_State* L, gconstpointer pval, GFFIType* tp, g
 }
 
 static void ffi_lua_check_string(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	*((const gchar**)pval) = (const gchar*)( opt ? luaL_checkstring(L, idx) : luaL_optstring(L, idx, NULL) );
+	*((const gchar**)pval) = (const gchar*)( opt ? luaL_optstring(L, idx, NULL) : luaL_checkstring(L, idx) );
 }
 
 static int ffi_lua_push_string(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {
@@ -234,7 +234,7 @@ static int ffi_lua_push_boxed(lua_State* L, gconstpointer pval, GFFIType* tp, gb
 }
 
 static void ffi_lua_check_object(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	GObject* v = opt ? glua_object_check(L, idx) : glua_object_test(L, idx);
+	GObject* v = opt ? glua_object_test(L, idx) : glua_object_check(L, idx);
 	if( !opt ) {
 		GType vtp = G_OBJECT_TYPE(v);
 		if( !g_type_is_a(vtp, tp->gtype) ) {
@@ -375,11 +375,12 @@ static int _lua_ffi_wrapper(lua_State* L) {
 	void** pvalues = (void**)(((guchar*)values) + args_ptr_size);	// for out or in-out argument
 	guchar* pv = ((guchar*)pvalues) + args_ptr_size;
 	size_t naret = 0;
+	int argidx = 0;
 	GFFIType* tp;
 	int nret;
 	int i;
-
-	//memset(stack, 0, stack_size);
+	if( up->args_size )
+		memset(pv, 0, up->args_size);
 
 	// fetch args:
 	for( i=0; i<narg; ++i ) {
@@ -389,7 +390,7 @@ static int _lua_ffi_wrapper(lua_State* L) {
 
 		if( up->amodes[i] & GFFI_ARG_MODE_IN ) {
 			values[i] = pvalues[i];
-			(*(tp->check))(L, i+1, pvalues[i], (up->amodes[i] & GFFI_ARG_MODE_OPT), tp);
+			(*(tp->check))(L, ++argidx, pvalues[i], (up->amodes[i] & GFFI_ARG_MODE_OPT), tp);
 		} else {
 			// basic type, use pointer as memory
 			values[i] = (void*)&(pvalues[i]);
@@ -442,6 +443,9 @@ static size_t _fetch_narg(GType* at, GFFIType* atypes[GFFI_FUNCTION_ARG_MAX], gu
 
 			if( *at==GFFI_PESUDO_TYPE_OUT_ARG ) {
 				amodes[n] |= GFFI_ARG_MODE_OUT;
+				continue;
+			} else if( *at==GFFI_PESUDO_TYPE_REF_OUT_ARG ) {
+				amodes[n] |= GFFI_ARG_MODE_OUT | GFFI_ARG_MODE_NEW;
 				continue;
 			} else if( *at==GFFI_PESUDO_TYPE_INOUT_ARG ) {
 				amodes[n] |= GFFI_ARG_MODE_INOUT;

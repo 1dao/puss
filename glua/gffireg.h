@@ -1,12 +1,16 @@
 // gffireg.h
 //
+#ifndef __PUSS_INC_GOBJECT_LUA_FFI_REG_H__
+#define __PUSS_INC_GOBJECT_LUA_FFI_REG_H__
+
 #include "gffi.h"
 
 // GType register methods utils
 
-#define out		GFFI_PESUDO_TYPE_OUT_ARG,
-#define inout	GFFI_PESUDO_TYPE_INOUT_ARG,
-#define opt		GFFI_PESUDO_TYPE_OPT_ARG,
+#define out		GFFI_PESUDO_TYPE_OUT_ARG, 
+#define refout	GFFI_PESUDO_TYPE_REF_OUT_ARG, 
+#define inout	GFFI_PESUDO_TYPE_INOUT_ARG, 
+#define opt		GFFI_PESUDO_TYPE_OPT_ARG, 
 
 #define gtype_reg_env_declare() \
 	size_t __gtype_reg_prefix_len = 0
@@ -43,4 +47,6 @@
 #define gtype_reg_boxed_new_use_c_struct0(gtype, func, ctype) \
 	glua_reg_c_struct0_boxed_type_new_method(L, gtype, sizeof(ctype)); \
 	_gtype_reg_setfield(func)
+
+#endif __PUSS_INC_GOBJECT_LUA_FFI_REG_H__
 

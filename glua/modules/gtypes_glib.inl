@@ -1,10 +1,8 @@
-// gtypes_glib.c
+// gtypes_glib.inl
 
-#include "glua.h"
+#include "../gffireg.h"
 
 #include <gio/gio.h>
-
-#include "gffireg.h"
 
 static int strv_get(lua_State* L) {
 	GValue* v = glua_value_check_type(L, 1, G_TYPE_STRV);
@@ -70,7 +68,7 @@ static luaL_Reg strv_methods[] =
 	, {NULL, NULL}
 	};
 
-void gtypes_glib_register(lua_State* L) {
+static void gtypes_glib_register(lua_State* L) {
 	gtype_reg_env_declare();
 
 	// glib boxed
@@ -85,20 +83,20 @@ void gtypes_glib_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_FILE, g_file_parse_name, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_FILE, g_file_dup, G_TYPE_FILE);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_equal, G_TYPE_FILE, G_TYPE_FILE);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_basename, G_TYPE_FILE);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_path, G_TYPE_FILE);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_uri, G_TYPE_FILE);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_parse_name, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_STRING, g_file_get_basename, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_STRING, g_file_get_path, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_STRING, g_file_get_uri, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_STRING, g_file_get_parse_name, G_TYPE_FILE);
 		gtype_reg_ffi(G_TYPE_FILE, g_file_get_parent, G_TYPE_FILE);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_parent, G_TYPE_FILE, G_TYPE_FILE);
 		gtype_reg_ffi(G_TYPE_FILE, g_file_get_child, G_TYPE_FILE, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_FILE, g_file_get_child_for_display_name, G_TYPE_FILE, G_TYPE_STRING, out G_TYPE_ERROR);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_prefix, G_TYPE_FILE, G_TYPE_FILE);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_relative_path, G_TYPE_FILE, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_STRING, g_file_get_relative_path, G_TYPE_FILE, G_TYPE_FILE);
 		gtype_reg_ffi(G_TYPE_FILE, g_file_resolve_relative_path, G_TYPE_FILE, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_is_native, G_TYPE_FILE);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_uri_scheme, G_TYPE_FILE, G_TYPE_STRING);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, g_file_get_uri_scheme, G_TYPE_FILE);
+		gtype_reg_ffi(G_TYPE_STRING, g_file_get_uri_scheme, G_TYPE_FILE);
 	gtype_reg_end();
 
 	gtype_reg_start(G_TYPE_FILE_ICON, g_file_icon);

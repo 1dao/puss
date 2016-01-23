@@ -1,11 +1,11 @@
 // gtypes_scintilla.inl
 
+#include "../gffi.h"
+
 #include <Scintilla.h>
 #include <SciLexer.h>
 #define GTK
 #include <ScintillaWidget.h>
-
-// #include "gffi.h"
 
 #define _sci_send(editor, msg, u, s)	scintilla_send_message(SCINTILLA(editor), (msg), (uptr_t)(u), (sptr_t)(s))
 

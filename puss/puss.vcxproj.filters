@@ -4,6 +4,31 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\bin\modules\puss\puss.lua" />
+    <None Include="..\bin\modules\main.lua">
+      <Filter>modules</Filter>
+    </None>
+    <None Include="..\bin\modules\glua_init.lua">
+      <Filter>modules</Filter>
+    </None>
+    <None Include="..\bin\modules\puss\source_editor.lua">
+      <Filter>modules\puss</Filter>
+    </None>
+    <None Include="..\bin\modules\puss\debug_console.lua">
+      <Filter>modules\puss</Filter>
+    </None>
+    <None Include="..\bin\modules\puss\puss_gtk2.lua">
+      <Filter>modules\puss</Filter>
+    </None>
+    <None Include="..\bin\modules\puss\puss_gtk3.lua">
+      <Filter>modules\puss</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="modules">
+      <UniqueIdentifier>{a129005b-4a20-45fd-b16e-3b7565a1995a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="modules\puss">
+      <UniqueIdentifier>{7393694d-e315-40a1-aa05-eab28fee27aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

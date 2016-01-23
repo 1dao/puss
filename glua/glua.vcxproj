@@ -108,14 +108,16 @@
   <ItemGroup>
     <ClCompile Include="glua.c" />
     <ClCompile Include="gffi.c" />
-    <ClCompile Include="gtypes_glib.c" />
-    <ClCompile Include="gtypes_gtk.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glua.h" />
     <ClInclude Include="gffi.h" />
     <ClInclude Include="gffireg.h" />
-    <ClInclude Include="gtklua.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="modules\gtypes_glib.inl" />
+    <None Include="modules\gtypes_gtk.inl" />
+    <None Include="modules\gtypes_scintilla.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

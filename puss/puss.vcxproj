@@ -191,7 +191,12 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\bin\modules\puss\puss.lua" />
+    <None Include="..\bin\modules\glua_init.lua" />
+    <None Include="..\bin\modules\main.lua" />
+    <None Include="..\bin\modules\puss\debug_console.lua" />
+    <None Include="..\bin\modules\puss\puss_gtk2.lua" />
+    <None Include="..\bin\modules\puss\puss_gtk3.lua" />
+    <None Include="..\bin\modules\puss\source_editor.lua" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\glua\glua.vcxproj">

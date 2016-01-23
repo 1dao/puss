@@ -1,13 +1,9 @@
-// gtypes_gtk.c
+// gtypes_gtk.inl
 
-#include "glua.h"
+#include "../gffireg.h"
 
 #include <assert.h>
-
-#define GTK_DISABLE_DEPRECATED
 #include <gtk/gtk.h>
-
-#include "gffireg.h"
 
 static void gtk_globals_register(lua_State* L) {
 	glua_push_capis_table(L);
@@ -87,7 +83,6 @@ static void gtk_boxed_register(lua_State* L) {
 
 	gtype_reg_start(GTK_TYPE_TEXT_ITER, gtk_text_iter);
 		gtype_reg_boxed_new_use_c_struct0(GTK_TYPE_TEXT_ITER, gtk_text_iter_new, GtkTextIter);
-		//gtype_reg_ffi_rnew(GTK_TYPE_TEXT_ITER, gtk_text_iter_copy, GTK_TYPE_TEXT_ITER);
 		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_offset, GTK_TYPE_TEXT_ITER);
 		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line, GTK_TYPE_TEXT_ITER);
 		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line_offset, GTK_TYPE_TEXT_ITER);
@@ -184,7 +179,9 @@ static void gtk_boxed_register(lua_State* L) {
 
 	gtype_reg_start(GTK_TYPE_TREE_PATH, gtk_tree_path); gtype_reg_end();
 
+#ifdef GTK_TYPE_ICON_SET
 	gtype_reg_start(GTK_TYPE_ICON_SET, gtk_icon_set); gtype_reg_end();
+#endif
 
 	gtype_reg_start(GTK_TYPE_TARGET_LIST, gtk_target_list); gtype_reg_end();
 }
@@ -242,7 +239,11 @@ static void gtk_interface_register(lua_State* L) {
 
 static void gtk_object_register(lua_State* L) {
 	gtype_reg_env_declare();
-
+	
+	gtype_reg_start(GDK_TYPE_WINDOW, gdk_window);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_window_raise, GDK_TYPE_WINDOW);
+	gtype_reg_end();
+	
 #ifdef GTK_TYPE_OBJECT
 	gtype_reg_start(GTK_TYPE_OBJECT, gtk_object); gtype_reg_end();
 #endif
@@ -283,6 +284,7 @@ static void gtk_object_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_window_activate_default, GTK_TYPE_WINDOW);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_modal, GTK_TYPE_WINDOW, G_TYPE_BOOLEAN);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_size, GTK_TYPE_WINDOW, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(GDK_TYPE_WINDOW, gtk_widget_get_window, GTK_TYPE_WINDOW);
 #if GTK_CHECK_VERSION(3,0,0)
 		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_geometry, GTK_TYPE_WINDOW, G_TYPE_INT, G_TYPE_INT);
 #endif
@@ -488,7 +490,7 @@ static void gtk_object_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor_on_cell, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_CELL_RENDERER, G_TYPE_BOOLEAN);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_get_cursor, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_get_path_at_pos, GTK_TYPE_TREE_VIEW, G_TYPE_INT, G_TYPE_INT, GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN, out G_TYPE_INT, out G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_get_path_at_pos, GTK_TYPE_TREE_VIEW, G_TYPE_INT, G_TYPE_INT, out GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN, out G_TYPE_INT, out G_TYPE_INT);
 
 #if GTK_CHECK_VERSION(3,4,0)
 		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_view_get_n_columns, GTK_TYPE_TREE_VIEW);
@@ -675,6 +677,7 @@ static void gtk_object_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_append, GTK_TYPE_LIST_STORE, GTK_TYPE_TREE_ITER);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_clear, GTK_TYPE_LIST_STORE);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_set_value, GTK_TYPE_LIST_STORE, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_list_store_remove, GTK_TYPE_LIST_STORE, GTK_TYPE_TREE_ITER);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_MOUNT_OPERATION, gtk_mount_operation); gtype_reg_end();
@@ -764,7 +767,25 @@ static void gtk_object_register(lua_State* L) {
 
 	gtype_reg_start(GTK_TYPE_TREE_MODEL_SORT, gtk_tree_model_sort); gtype_reg_end();
 
-	gtype_reg_start(GTK_TYPE_TREE_SELECTION, gtk_tree_selection); gtype_reg_end();
+	gtype_reg_start(GTK_TYPE_TREE_SELECTION, gtk_tree_selection);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_set_mode, GTK_TYPE_TREE_SELECTION, GTK_TYPE_SELECTION_MODE);
+		gtype_reg_ffi(GTK_TYPE_SELECTION_MODE, gtk_tree_selection_get_mode, GTK_TYPE_TREE_SELECTION);
+		gtype_reg_ffi(GTK_TYPE_TREE_VIEW, gtk_tree_selection_get_tree_view, GTK_TYPE_TREE_SELECTION);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_get_selected, GTK_TYPE_TREE_SELECTION, out GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
+
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_path, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_path, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_path_is_selected, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH);
+
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_iter, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_iter, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_iter_is_selected, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_ITER);
+
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_all, GTK_TYPE_TREE_SELECTION);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_all, GTK_TYPE_TREE_SELECTION);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_range, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_range, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_PATH);
+	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_STORE, gtk_tree_store);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_append, GTK_TYPE_TREE_STORE, GTK_TYPE_TREE_ITER, opt GTK_TYPE_TREE_ITER);
@@ -847,23 +868,6 @@ static int _lua_gtk_builder_add_from_string(lua_State* L) {
 	return 1;
 }
 
-static int _lua_gtk_builder_add_from_file(lua_State* L) {
-	GObject* obj = glua_object_check(L, 1);
-	GtkBuilder* builder = GTK_BUILDER(obj);
-	if( !builder )
-		return luaL_argerror(L, 1, "need GtkBuilder");
-	const char* fname = luaL_checkstring(L, 2);
-	GError* err = NULL;
-	guint res = gtk_builder_add_from_file(builder, fname, &err);
-	if( err ) {
-		lua_pushstring(L, err->message);
-		g_error_free(err);
-		return lua_error(L);
-	}
-	lua_pushinteger(L, (lua_Integer)res);
-	return 1;
-}
-
 static int _lua_gtk_builder_connect_signals(lua_State* L) {
 	GObject* obj = glua_object_check(L, 1);
 	GtkBuilder* builder = GTK_BUILDER(obj);
@@ -881,13 +885,13 @@ static void gtk_builder_register(lua_State* L) {
 	gtype_reg_start(GTK_TYPE_BUILDER, gtk_builder);
 		gtype_reg_ffi(G_TYPE_OBJECT, gtk_builder_get_object, GTK_TYPE_BUILDER, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_INT, gtk_builder_get_type_from_name, GTK_TYPE_BUILDER, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_builder_add_from_file, GTK_TYPE_BUILDER, G_TYPE_STRING, out G_TYPE_ERROR);
 		gtype_reg_lua(gtk_builder_add_from_string);
-		gtype_reg_lua(gtk_builder_add_from_file);
 		gtype_reg_lua(gtk_builder_connect_signals);
 	gtype_reg_end();
 }
 
-void gtypes_gtk_register(lua_State* L) {
+static void gtypes_gtk_register(lua_State* L) {
 	gtk_globals_register(L);
 	gtk_boxed_register(L);
 	gtk_interface_register(L);

@@ -2,11 +2,12 @@
 
 #ifdef _WIN32
 	#define _CRT_SECURE_NO_WARNINGS
+	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
 	#include <conio.h>
 
 	#ifdef _MSC_VER
-		#define inline	__inline
+		#define inline __inline
 	#endif
 #endif
 
@@ -18,9 +19,14 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
-#include "glua/gtklua.h"
-#include "glua/gffireg.h"
-#include "glua/scintilla/gtypes_scintilla.inl"
+#define GTK_DISABLE_DEPRECATED 1
+
+#include <glib.h>
+#include <gtk/gtk.h>
+
+#include "glua/modules/gtypes_glib.inl"
+#include "glua/modules/gtypes_gtk.inl"
+#include "glua/modules/gtypes_scintilla.inl"
 
 #ifdef G_OS_WIN32
 	static gchar* find_root_filepath(const char* argv0) {
@@ -84,9 +90,9 @@ static int lua_load_main_script(lua_State* L, const char* arg0) {
 		}
 	}
 
-	main_script = g_build_filename(root_path, "modules", "puss", "puss.lua", NULL);
+	main_script = g_build_filename(root_path, "modules", "main.lua", NULL);
 	if( g_file_get_contents_utf8(main_script, &cxt, &len, &err) ) {
-		res = luaL_loadbuffer(L, cxt, len, "puss");
+		res = luaL_loadbuffer(L, cxt, len, "main.lua");
 		if( res==LUA_OK ) {
 			lua_pushstring(L, root_path);
 		}
@@ -103,6 +109,26 @@ static int lua_load_main_script(lua_State* L, const char* arg0) {
 	return res;
 }
 
+static int lua_g_file_get_content(lua_State* L) {
+	const gchar* fname = luaL_checkstring(L, 1);
+	gchar* cnt = NULL;
+	gsize len = 0;
+	GError* err = NULL;
+
+	if( !g_file_get_contents(fname, &cnt, &len, &err) ) {
+		if( err ) {
+			lua_pushfstring(L, "get file(%s) content failed: %s\n", fname, err->message);
+			g_error_free(err);
+			return lua_error(L);
+		}
+		return luaL_error(L, "get file(%s) content failed!\n", fname);
+	}
+
+	lua_pushlstring(L, cnt, len);
+	g_free(cnt);
+	return 1;
+}
+
 int main(int argc, char* argv[]) {
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
@@ -117,6 +143,10 @@ int main(int argc, char* argv[]) {
 
 	glua_push_master_table(L);
 	lua_setglobal(L, "__glua__");
+
+	glua_push_capis_table(L);
+		lua_pushcfunction(L, lua_g_file_get_content);	lua_setfield(L, -2, "g_file_get_content");
+	lua_pop(L, 1);
 
 	// load main_script
 	// push root_path as first argument
