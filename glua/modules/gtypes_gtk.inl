@@ -54,116 +54,116 @@ static void gtk_boxed_register(lua_State* L) {
 	gtype_reg_env_declare();
 
 	gtype_reg_start(GDK_TYPE_EVENT, gdk_event);
-		gtype_reg_ffi(G_TYPE_UINT, gdk_event_get_time, GDK_TYPE_EVENT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_state, GDK_TYPE_EVENT, out GDK_TYPE_MODIFIER_TYPE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_coords, GDK_TYPE_EVENT, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_root_coords, GDK_TYPE_EVENT, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_axis, GDK_TYPE_EVENT, GDK_TYPE_AXIS_USE, out G_TYPE_DOUBLE);
-		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_screen, GDK_TYPE_EVENT, GDK_TYPE_SCREEN);
-		gtype_reg_ffi(GDK_TYPE_SCREEN, gdk_event_get_screen, GDK_TYPE_EVENT);
+		gtype_reg_ffi(G_TYPE_UINT, gdk_event_get_time, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_state, GTYPE_SELF, out GDK_TYPE_MODIFIER_TYPE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_coords, GTYPE_SELF, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_root_coords, GTYPE_SELF, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_axis, GTYPE_SELF, GDK_TYPE_AXIS_USE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_screen, GTYPE_SELF, GDK_TYPE_SCREEN);
+		gtype_reg_ffi(GDK_TYPE_SCREEN, gdk_event_get_screen, GTYPE_SELF);
 #if GTK_CHECK_VERSION(3,0,0)
-		gtype_reg_ffi(GDK_TYPE_WINDOW, gdk_event_get_window, GDK_TYPE_EVENT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_button, GDK_TYPE_EVENT, out G_TYPE_UINT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_click_count, GDK_TYPE_EVENT, out G_TYPE_UINT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_keyval, GDK_TYPE_EVENT, out G_TYPE_UINT);
-		gtype_reg_ffi_rename(G_TYPE_BOOLEAN, gdk_event_get_keycode, GDK_TYPE_EVENT, out G_TYPE_UINT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_scroll_direction, GDK_TYPE_EVENT, out GDK_TYPE_SCROLL_DIRECTION);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_scroll_deltas, GDK_TYPE_EVENT, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_axis, GDK_TYPE_EVENT, GDK_TYPE_AXIS_USE, out G_TYPE_DOUBLE);
-		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_device, GDK_TYPE_EVENT, GDK_TYPE_DEVICE);
-		gtype_reg_ffi(GDK_TYPE_DEVICE, gdk_event_get_device, GDK_TYPE_EVENT);
-		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_source_device, GDK_TYPE_EVENT, GDK_TYPE_DEVICE);
-		gtype_reg_ffi(GDK_TYPE_DEVICE, gdk_event_get_source_device, GDK_TYPE_EVENT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_triggers_context_menu, GDK_TYPE_EVENT);
-		gtype_reg_ffi(GDK_TYPE_EVENT_TYPE, gdk_event_get_event_type, GDK_TYPE_EVENT);
+		gtype_reg_ffi(GDK_TYPE_WINDOW, gdk_event_get_window, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_button, GTYPE_SELF, out G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_click_count, GTYPE_SELF, out G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_keyval, GTYPE_SELF, out G_TYPE_UINT);
+		gtype_reg_ffi_rename(G_TYPE_BOOLEAN, gdk_event_get_keycode, GTYPE_SELF, out G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_scroll_direction, GTYPE_SELF, out GDK_TYPE_SCROLL_DIRECTION);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_scroll_deltas, GTYPE_SELF, out G_TYPE_DOUBLE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_get_axis, GTYPE_SELF, GDK_TYPE_AXIS_USE, out G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_device, GTYPE_SELF, GDK_TYPE_DEVICE);
+		gtype_reg_ffi(GDK_TYPE_DEVICE, gdk_event_get_device, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_event_set_source_device, GTYPE_SELF, GDK_TYPE_DEVICE);
+		gtype_reg_ffi(GDK_TYPE_DEVICE, gdk_event_get_source_device, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gdk_event_triggers_context_menu, GTYPE_SELF);
+		gtype_reg_ffi(GDK_TYPE_EVENT_TYPE, gdk_event_get_event_type, GTYPE_SELF);
 #endif
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_PAPER_SIZE, gtk_paper_size); gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TEXT_ITER, gtk_text_iter);
-		gtype_reg_boxed_new_use_c_struct0(GTK_TYPE_TEXT_ITER, gtk_text_iter_new, GtkTextIter);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_offset, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line_offset, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line_index, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_visible_line_offset, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_visible_line_index, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_slice, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_text, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_visible_slice, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_visible_text, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(GDK_TYPE_PIXBUF, gtk_text_iter_get_pixbuf, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(GTK_TYPE_TEXT_CHILD_ANCHOR, gtk_text_iter_get_child_anchor, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_begins_tag, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_TAG);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_tag, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_TAG);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_toggles_tag, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_TAG);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_has_tag, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_TAG);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_editable, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_can_insert, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_starts_word, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_word, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_inside_word, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_starts_sentence, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_sentence, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_inside_sentence, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_starts_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_is_cursor_position, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_chars_in_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_bytes_in_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_get_attributes, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ATTRIBUTES);
-		gtype_reg_ffi(PANGO_TYPE_LANGUAGE, gtk_text_iter_get_language, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_is_end, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_is_start, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_char, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_char, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_chars, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_chars, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_lines, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_lines, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_word_end, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_word_start, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_word_ends, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_word_starts, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi( G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_line, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_lines, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_lines, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_word_end, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_word_start, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_word_ends, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_word_starts, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_sentence_end, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_sentence_start, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_sentence_ends, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_sentence_starts, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_cursor_position, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_cursor_position, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_cursor_positions, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_cursor_positions, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_cursor_position, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_cursor_position, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_cursor_positions, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_cursor_positions, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_offset, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_line, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_line_offset, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_line_index, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_forward_to_end, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_to_line_end, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_visible_line_offset, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_visible_line_index, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_to_tag_toggle, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_TAG);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_to_tag_toggle, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_TAG);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_search, GTK_TYPE_TEXT_ITER, G_TYPE_STRING, GTK_TYPE_TEXT_SEARCH_FLAGS, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_search, GTK_TYPE_TEXT_ITER, G_TYPE_STRING, GTK_TYPE_TEXT_SEARCH_FLAGS, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_equal, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_compare, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_in_range, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_order, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_boxed_new_use_c_struct0(GTYPE_SELF, gtk_text_iter_new, GtkTextIter);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_offset, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line_offset, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_line_index, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_visible_line_offset, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_visible_line_index, GTYPE_SELF);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_slice, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_text, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_visible_slice, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_iter_get_visible_text, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi(GDK_TYPE_PIXBUF, gtk_text_iter_get_pixbuf, GTYPE_SELF);
+		gtype_reg_ffi(GTK_TYPE_TEXT_CHILD_ANCHOR, gtk_text_iter_get_child_anchor, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_begins_tag, GTYPE_SELF, GTK_TYPE_TEXT_TAG);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_tag, GTYPE_SELF, GTK_TYPE_TEXT_TAG);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_toggles_tag, GTYPE_SELF, GTK_TYPE_TEXT_TAG);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_has_tag, GTYPE_SELF, GTK_TYPE_TEXT_TAG);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_editable, GTYPE_SELF, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_can_insert, GTYPE_SELF, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_starts_word, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_word, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_inside_word, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_starts_sentence, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_sentence, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_inside_sentence, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_starts_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_ends_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_is_cursor_position, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_chars_in_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_get_bytes_in_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_get_attributes, GTYPE_SELF, GTK_TYPE_TEXT_ATTRIBUTES);
+		gtype_reg_ffi(PANGO_TYPE_LANGUAGE, gtk_text_iter_get_language, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_is_end, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_is_start, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_char, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_char, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_chars, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_chars, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_lines, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_lines, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_word_end, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_word_start, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_word_ends, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_word_starts, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi( G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_line, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_lines, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_lines, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_word_end, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_word_start, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_word_ends, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_word_starts, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_sentence_end, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_sentence_start, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_sentence_ends, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_sentence_starts, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_cursor_position, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_cursor_position, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_cursor_positions, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_cursor_positions, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_cursor_position, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_cursor_position, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_visible_cursor_positions, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_visible_cursor_positions, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_offset, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_line, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_line_offset, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_line_index, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_forward_to_end, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_to_line_end, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_visible_line_offset, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_set_visible_line_index, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_to_tag_toggle, GTYPE_SELF, GTK_TYPE_TEXT_TAG);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_to_tag_toggle, GTYPE_SELF, GTK_TYPE_TEXT_TAG);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_forward_search, GTYPE_SELF, G_TYPE_STRING, GTK_TYPE_TEXT_SEARCH_FLAGS, GTYPE_SELF, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_backward_search, GTYPE_SELF, G_TYPE_STRING, GTK_TYPE_TEXT_SEARCH_FLAGS, GTYPE_SELF, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_equal, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT , gtk_text_iter_compare, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN , gtk_text_iter_in_range, GTYPE_SELF, GTYPE_SELF, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE , gtk_text_iter_order, GTYPE_SELF, GTYPE_SELF);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_REQUISITION, gtk_requisition); gtype_reg_end();
@@ -173,8 +173,8 @@ static void gtk_boxed_register(lua_State* L) {
 	gtype_reg_start(GTK_TYPE_BORDER, gtk_border); gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_ITER, gtk_tree_iter);
-		gtype_reg_boxed_new_use_c_struct0(GTK_TYPE_TREE_ITER, gtk_tree_iter_new, GtkTreeIter);
-		gtype_reg_ffi_rnew(GTK_TYPE_TREE_ITER, gtk_tree_iter_copy, GTK_TYPE_TREE_ITER);
+		gtype_reg_boxed_new_use_c_struct0(GTYPE_SELF, gtk_tree_iter_new, GtkTreeIter);
+		gtype_reg_ffi_rnew(GTYPE_SELF, gtk_tree_iter_copy, GTYPE_SELF);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_PATH, gtk_tree_path); gtype_reg_end();
@@ -206,22 +206,22 @@ static void gtk_interface_register(lua_State* L) {
 	gtype_reg_start(GTK_TYPE_FILE_CHOOSER, gtk_file_chooser); gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_MODEL, gtk_tree_model);
-		gtype_reg_ffi(GTK_TYPE_TREE_MODEL_FLAGS, gtk_tree_model_get_flags, GTK_TYPE_TREE_MODEL);
-		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_model_get_n_columns, GTK_TYPE_TREE_MODEL);
-		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_model_get_column_type, GTK_TYPE_TREE_MODEL, G_TYPE_INT);
+		gtype_reg_ffi(GTK_TYPE_TREE_MODEL_FLAGS, gtk_tree_model_get_flags, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_model_get_n_columns, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_model_get_column_type, GTYPE_SELF, G_TYPE_INT);
 
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_PATH);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter_from_string, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, G_TYPE_STRING);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_tree_model_get_string_from_iter, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter_first, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi_rnew(GTK_TYPE_TREE_PATH, gtk_tree_model_get_path, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_model_get_value, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_next, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_children, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_has_child, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_INT, gtk_tree_model_iter_n_children, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_nth_child, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_parent, GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter, GTYPE_SELF, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter_from_string, GTYPE_SELF, GTK_TYPE_TREE_ITER, G_TYPE_STRING);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_tree_model_get_string_from_iter, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_get_iter_first, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi_rnew(GTK_TYPE_TREE_PATH, gtk_tree_model_get_path, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_model_get_value, GTYPE_SELF, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_next, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_children, GTYPE_SELF, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_has_child, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_model_iter_n_children, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_nth_child, GTYPE_SELF, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_ITER, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_model_iter_parent, GTYPE_SELF, GTK_TYPE_TREE_ITER, GTK_TYPE_TREE_ITER);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_DRAG_SOURCE, gtk_tree_drag_source); gtype_reg_end();
@@ -241,7 +241,7 @@ static void gtk_object_register(lua_State* L) {
 	gtype_reg_env_declare();
 	
 	gtype_reg_start(GDK_TYPE_WINDOW, gdk_window);
-		gtype_reg_ffi(G_TYPE_NONE, gdk_window_raise, GDK_TYPE_WINDOW);
+		gtype_reg_ffi(G_TYPE_NONE, gdk_window_raise, GTYPE_SELF);
 	gtype_reg_end();
 	
 #ifdef GTK_TYPE_OBJECT
@@ -249,44 +249,44 @@ static void gtk_object_register(lua_State* L) {
 #endif
 
 	gtype_reg_start(GTK_TYPE_WIDGET, gtk_widget);
-		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_widget_destroy, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_unparent, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_hide, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show_all, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_draw, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_resize, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_widget_activate, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_reparent, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_focus, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_default, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_default, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_default, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_get_pointer, GTK_TYPE_WIDGET, out G_TYPE_INT, out G_TYPE_INT);
+		gtype_reg_ffi(GTYPE_SELF, gtk_widget_destroy, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_unparent, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_hide, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show_all, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_draw, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_resize, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_widget_activate, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_reparent, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_focus, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_default, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_default, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_default, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_get_pointer, GTYPE_SELF, out G_TYPE_INT, out G_TYPE_INT);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_CONTAINER, gtk_container);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_container_add, GTK_TYPE_CONTAINER, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_container_remove, GTK_TYPE_CONTAINER, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_container_set_focus_child, GTK_TYPE_CONTAINER, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_container_get_focus_child, GTK_TYPE_CONTAINER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_container_add, GTYPE_SELF, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_container_remove, GTYPE_SELF, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_container_set_focus_child, GTYPE_SELF, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_container_get_focus_child, GTYPE_SELF);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_BIN, gtk_bin);
-		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_bin_get_child, GTK_TYPE_BIN);
-		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_bin_get_child, GTK_TYPE_BIN);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_bin_get_child, GTYPE_SELF);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_bin_get_child, GTYPE_SELF);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_WINDOW, gtk_window);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_window_add_accel_group, GTK_TYPE_WINDOW, GTK_TYPE_ACCEL_GROUP);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_window_remove_accel_group, GTK_TYPE_WINDOW, GTK_TYPE_ACCEL_GROUP);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_window_activate_focus, GTK_TYPE_WINDOW);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_window_activate_default, GTK_TYPE_WINDOW);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_modal, GTK_TYPE_WINDOW, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_size, GTK_TYPE_WINDOW, G_TYPE_INT, G_TYPE_INT);
-		gtype_reg_ffi(GDK_TYPE_WINDOW, gtk_widget_get_window, GTK_TYPE_WINDOW);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_window_add_accel_group, GTYPE_SELF, GTK_TYPE_ACCEL_GROUP);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_window_remove_accel_group, GTYPE_SELF, GTK_TYPE_ACCEL_GROUP);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_window_activate_focus, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_window_activate_default, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_modal, GTYPE_SELF, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_size, GTYPE_SELF, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(GDK_TYPE_WINDOW, gtk_widget_get_window, GTYPE_SELF);
 #if GTK_CHECK_VERSION(3,0,0)
-		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_geometry, GTK_TYPE_WINDOW, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_window_set_default_geometry, GTYPE_SELF, G_TYPE_INT, G_TYPE_INT);
 #endif
 	gtype_reg_end();
 
@@ -314,9 +314,9 @@ static void gtk_object_register(lua_State* L) {
 
 #ifdef GTK_TYPE_APPLICATION_WINDOW
 	gtype_reg_start(GTK_TYPE_APPLICATION_WINDOW, gtk_application_window);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_application_window_set_show_menubar, GTK_TYPE_APPLICATION_WINDOW, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_window_get_show_menubar, GTK_TYPE_APPLICATION_WINDOW);
-		gtype_reg_ffi(G_TYPE_UINT, gtk_application_window_get_id, GTK_TYPE_APPLICATION_WINDOW);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_window_set_show_menubar, GTYPE_SELF, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_window_get_show_menubar, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_application_window_get_id, GTYPE_SELF);
 	gtype_reg_end();
 #endif
 
@@ -449,56 +449,56 @@ static void gtk_object_register(lua_State* L) {
 	gtype_reg_start(GTK_TYPE_MENU_SHELL, gtk_menu_shell); gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_NOTEBOOK, gtk_notebook);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_append_page, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_prepend_page, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_insert_page, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_remove_page, GTK_TYPE_NOTEBOOK, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_get_current_page, GTK_TYPE_NOTEBOOK);
-		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_notebook_get_nth_page, GTK_TYPE_NOTEBOOK, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_get_n_pages, GTK_TYPE_NOTEBOOK);
-		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_page_num, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_set_current_page, GTK_TYPE_NOTEBOOK, G_TYPE_INT);
-		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_notebook_get_tab_label, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_set_tab_label, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_set_tab_label_text, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET, G_TYPE_STRING);
-		gtype_reg_ffi(G_TYPE_STRING, gtk_notebook_get_tab_label_text, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_reorder_child, GTK_TYPE_NOTEBOOK, GTK_TYPE_WIDGET, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_append_page, GTYPE_SELF, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_prepend_page, GTYPE_SELF, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_insert_page, GTYPE_SELF, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_remove_page, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_get_current_page, GTYPE_SELF);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_notebook_get_nth_page, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_get_n_pages, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT, gtk_notebook_page_num, GTYPE_SELF, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_set_current_page, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_notebook_get_tab_label, GTYPE_SELF, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_set_tab_label, GTYPE_SELF, GTK_TYPE_WIDGET, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_set_tab_label_text, GTYPE_SELF, GTK_TYPE_WIDGET, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_STRING, gtk_notebook_get_tab_label_text, GTYPE_SELF, GTK_TYPE_WIDGET);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_notebook_reorder_child, GTYPE_SELF, GTK_TYPE_WIDGET, G_TYPE_INT);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_VIEW, gtk_tree_view);
 		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_tree_view_new, G_TYPE_INVALID);
 		gtype_reg_ffi(GTK_TYPE_WIDGET, gtk_tree_view_new_with_model, GTK_TYPE_TREE_MODEL);
-		gtype_reg_ffi(GTK_TYPE_TREE_SELECTION, gtk_tree_view_get_selection, GTK_TYPE_TREE_VIEW);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_columns_autosize, GTK_TYPE_TREE_VIEW);
+		gtype_reg_ffi(GTK_TYPE_TREE_SELECTION, gtk_tree_view_get_selection, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_columns_autosize, GTYPE_SELF);
 
-		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_append_column, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN);
-		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_remove_column, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN);
-		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_insert_column, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_INT);
-		gtype_reg_ffi(GTK_TYPE_TREE_VIEW_COLUMN, gtk_tree_view_get_column, GTK_TYPE_TREE_VIEW, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_move_column_after, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_append_column, GTYPE_SELF, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_remove_column, GTYPE_SELF, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_INT, gtk_tree_view_insert_column, GTYPE_SELF, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_INT);
+		gtype_reg_ffi(GTK_TYPE_TREE_VIEW_COLUMN, gtk_tree_view_get_column, GTYPE_SELF, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_move_column_after, GTYPE_SELF, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_TREE_VIEW_COLUMN);
 
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_scroll_to_point, GTK_TYPE_TREE_VIEW, G_TYPE_INT, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_scroll_to_cell, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN, G_TYPE_FLOAT, G_TYPE_FLOAT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_row_activated, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_all, GTK_TYPE_TREE_VIEW);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_collapse_all, GTK_TYPE_TREE_VIEW);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_to_path, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_row, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_collapse_row, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_row_expanded, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_scroll_to_point, GTYPE_SELF, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_scroll_to_cell, GTYPE_SELF, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN, G_TYPE_FLOAT, G_TYPE_FLOAT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_row_activated, GTYPE_SELF, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_all, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_collapse_all, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_to_path, GTYPE_SELF, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_expand_row, GTYPE_SELF, GTK_TYPE_TREE_PATH, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_collapse_row, GTYPE_SELF, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_row_expanded, GTYPE_SELF, GTK_TYPE_TREE_PATH);
 
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor_on_cell, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_CELL_RENDERER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_get_cursor, GTK_TYPE_TREE_VIEW, GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_get_path_at_pos, GTK_TYPE_TREE_VIEW, G_TYPE_INT, G_TYPE_INT, out GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN, out G_TYPE_INT, out G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor, GTYPE_SELF, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_set_cursor_on_cell, GTYPE_SELF, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_VIEW_COLUMN, GTK_TYPE_CELL_RENDERER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_view_get_cursor, GTYPE_SELF, GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_view_get_path_at_pos, GTYPE_SELF, G_TYPE_INT, G_TYPE_INT, out GTK_TYPE_TREE_PATH, out GTK_TYPE_TREE_VIEW_COLUMN, out G_TYPE_INT, out G_TYPE_INT);
 
 #if GTK_CHECK_VERSION(3,4,0)
-		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_view_get_n_columns, GTK_TYPE_TREE_VIEW);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_tree_view_get_n_columns, GTYPE_SELF);
 #endif
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TEXT_VIEW, gtk_text_view);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_view_scroll_to_iter, GTK_TYPE_TEXT_VIEW, GTK_TYPE_TEXT_ITER, G_TYPE_DOUBLE, G_TYPE_BOOLEAN, G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_view_scroll_to_iter, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_DOUBLE, G_TYPE_BOOLEAN, G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 	gtype_reg_end();
 
 #ifdef GTK_TYPE_TABLE
@@ -674,10 +674,10 @@ static void gtk_object_register(lua_State* L) {
 	gtype_reg_start(GTK_TYPE_IM_MULTICONTEXT, gtk_im_multicontext); gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_LIST_STORE, gtk_list_store);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_append, GTK_TYPE_LIST_STORE, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_clear, GTK_TYPE_LIST_STORE);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_set_value, GTK_TYPE_LIST_STORE, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_list_store_remove, GTK_TYPE_LIST_STORE, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_append, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_clear, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_list_store_set_value, GTYPE_SELF, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_list_store_remove, GTYPE_SELF, GTK_TYPE_TREE_ITER);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_MOUNT_OPERATION, gtk_mount_operation); gtype_reg_end();
@@ -701,58 +701,58 @@ static void gtk_object_register(lua_State* L) {
 #endif
 
 	gtype_reg_start(GTK_TYPE_TEXT_BUFFER, gtk_text_buffer);
-		gtype_reg_ffi(G_TYPE_INT, gtk_text_buffer_get_line_count, GTK_TYPE_TEXT_BUFFER);
-		gtype_reg_ffi(G_TYPE_INT, gtk_text_buffer_get_char_count, GTK_TYPE_TEXT_BUFFER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_set_text, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_STRING, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_at_cursor, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_insert_interactive, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_insert_interactive_at_cursor, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_range, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_insert_range_interactive, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_delete, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_delete_interactive, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_backspace, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_buffer_get_text, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_buffer_get_slice, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_pixbuf, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GDK_TYPE_PIXBUF);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_child_anchor, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_CHILD_ANCHOR);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_add_mark, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_MARK, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi_rnew(GTK_TYPE_TEXT_MARK, gtk_text_buffer_create_mark, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_move_mark, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_MARK, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_delete_mark, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_MARK);
-		gtype_reg_ffi(GTK_TYPE_TEXT_MARK, gtk_text_buffer_get_mark, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_move_mark_by_name, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_delete_mark_by_name, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING);
-		gtype_reg_ffi(GTK_TYPE_TEXT_MARK, gtk_text_buffer_get_insert, GTK_TYPE_TEXT_BUFFER);
-		gtype_reg_ffi(GTK_TYPE_TEXT_MARK, gtk_text_buffer_get_selection_bound, GTK_TYPE_TEXT_BUFFER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_place_cursor, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_select_range, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_apply_tag, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_TAG, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_tag, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_TAG, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_apply_tag_by_name, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_tag_by_name, GTK_TYPE_TEXT_BUFFER, G_TYPE_STRING, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_all_tags, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_line_offset, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_INT, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_line_index, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_INT, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_offset, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_line, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_start_iter, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_end_iter, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_bounds, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_mark, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_MARK);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_child_anchor, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_CHILD_ANCHOR);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_get_modified, GTK_TYPE_TEXT_BUFFER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_set_modified, GTK_TYPE_TEXT_BUFFER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_add_selection_clipboard, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_CLIPBOARD);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_selection_clipboard, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_CLIPBOARD);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_cut_clipboard, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_CLIPBOARD, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_copy_clipboard, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_CLIPBOARD);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_paste_clipboard, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_CLIPBOARD, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_get_selection_bounds, GTK_TYPE_TEXT_BUFFER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_delete_selection, GTK_TYPE_TEXT_BUFFER, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_begin_user_action, GTK_TYPE_TEXT_BUFFER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_end_user_action, GTK_TYPE_TEXT_BUFFER);
+		gtype_reg_ffi(G_TYPE_INT, gtk_text_buffer_get_line_count, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT, gtk_text_buffer_get_char_count, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_set_text, GTYPE_SELF, G_TYPE_STRING, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_STRING, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_at_cursor, GTYPE_SELF, G_TYPE_STRING, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_insert_interactive, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_insert_interactive_at_cursor, GTYPE_SELF, G_TYPE_STRING, G_TYPE_INT, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_range, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_insert_range_interactive, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_delete, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_delete_interactive, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_backspace, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_buffer_get_text, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, gtk_text_buffer_get_slice, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_pixbuf, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GDK_TYPE_PIXBUF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_insert_child_anchor, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_CHILD_ANCHOR);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_add_mark, GTYPE_SELF, GTK_TYPE_TEXT_MARK, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi_rnew(GTK_TYPE_TEXT_MARK, gtk_text_buffer_create_mark, GTYPE_SELF, G_TYPE_STRING, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_move_mark, GTYPE_SELF, GTK_TYPE_TEXT_MARK, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_delete_mark, GTYPE_SELF, GTK_TYPE_TEXT_MARK);
+		gtype_reg_ffi(GTK_TYPE_TEXT_MARK, gtk_text_buffer_get_mark, GTYPE_SELF, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_move_mark_by_name, GTYPE_SELF, G_TYPE_STRING, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_delete_mark_by_name, GTYPE_SELF, G_TYPE_STRING);
+		gtype_reg_ffi(GTK_TYPE_TEXT_MARK, gtk_text_buffer_get_insert, GTYPE_SELF);
+		gtype_reg_ffi(GTK_TYPE_TEXT_MARK, gtk_text_buffer_get_selection_bound, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_place_cursor, GTYPE_SELF, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_select_range, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_apply_tag, GTYPE_SELF, GTK_TYPE_TEXT_TAG, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_tag, GTYPE_SELF, GTK_TYPE_TEXT_TAG, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_apply_tag_by_name, GTYPE_SELF, G_TYPE_STRING, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_tag_by_name, GTYPE_SELF, G_TYPE_STRING, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_all_tags, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_line_offset, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_line_index, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_INT, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_offset, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_line, GTYPE_SELF, GTK_TYPE_TEXT_ITER, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_start_iter, GTYPE_SELF, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_end_iter, GTYPE_SELF, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_bounds, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_mark, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_MARK);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_get_iter_at_child_anchor, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_CHILD_ANCHOR);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_get_modified, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_set_modified, GTYPE_SELF, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_add_selection_clipboard, GTYPE_SELF, GTK_TYPE_CLIPBOARD);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_remove_selection_clipboard, GTYPE_SELF, GTK_TYPE_CLIPBOARD);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_cut_clipboard, GTYPE_SELF, GTK_TYPE_CLIPBOARD, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_copy_clipboard, GTYPE_SELF, GTK_TYPE_CLIPBOARD);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_paste_clipboard, GTYPE_SELF, GTK_TYPE_CLIPBOARD, GTK_TYPE_TEXT_ITER, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_get_selection_bounds, GTYPE_SELF, GTK_TYPE_TEXT_ITER, GTK_TYPE_TEXT_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_text_buffer_delete_selection, GTYPE_SELF, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_begin_user_action, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_text_buffer_end_user_action, GTYPE_SELF);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TEXT_CHILD_ANCHOR, gtk_text_child_anchor); gtype_reg_end();
@@ -768,30 +768,30 @@ static void gtk_object_register(lua_State* L) {
 	gtype_reg_start(GTK_TYPE_TREE_MODEL_SORT, gtk_tree_model_sort); gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_SELECTION, gtk_tree_selection);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_set_mode, GTK_TYPE_TREE_SELECTION, GTK_TYPE_SELECTION_MODE);
-		gtype_reg_ffi(GTK_TYPE_SELECTION_MODE, gtk_tree_selection_get_mode, GTK_TYPE_TREE_SELECTION);
-		gtype_reg_ffi(GTK_TYPE_TREE_VIEW, gtk_tree_selection_get_tree_view, GTK_TYPE_TREE_SELECTION);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_get_selected, GTK_TYPE_TREE_SELECTION, out GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_set_mode, GTYPE_SELF, GTK_TYPE_SELECTION_MODE);
+		gtype_reg_ffi(GTK_TYPE_SELECTION_MODE, gtk_tree_selection_get_mode, GTYPE_SELF);
+		gtype_reg_ffi(GTK_TYPE_TREE_VIEW, gtk_tree_selection_get_tree_view, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_get_selected, GTYPE_SELF, out GTK_TYPE_TREE_MODEL, GTK_TYPE_TREE_ITER);
 
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_path, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_path, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_path_is_selected, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_path, GTYPE_SELF, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_path, GTYPE_SELF, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_path_is_selected, GTYPE_SELF, GTK_TYPE_TREE_PATH);
 
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_iter, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_iter, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_iter_is_selected, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_iter, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_iter, GTYPE_SELF, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_selection_iter_is_selected, GTYPE_SELF, GTK_TYPE_TREE_ITER);
 
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_all, GTK_TYPE_TREE_SELECTION);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_all, GTK_TYPE_TREE_SELECTION);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_range, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_PATH);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_range, GTK_TYPE_TREE_SELECTION, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_all, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_all, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_select_range, GTYPE_SELF, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_PATH);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_selection_unselect_range, GTYPE_SELF, GTK_TYPE_TREE_PATH, GTK_TYPE_TREE_PATH);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_TREE_STORE, gtk_tree_store);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_append, GTK_TYPE_TREE_STORE, GTK_TYPE_TREE_ITER, opt GTK_TYPE_TREE_ITER);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_clear, GTK_TYPE_TREE_STORE);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_set_value, GTK_TYPE_TREE_STORE, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_store_remove, GTK_TYPE_TREE_STORE, GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_append, GTYPE_SELF, GTK_TYPE_TREE_ITER, opt GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_clear, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_set_value, GTYPE_SELF, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_store_remove, GTYPE_SELF, GTK_TYPE_TREE_ITER);
 	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_WINDOW_GROUP, gtk_window_group); gtype_reg_end();
@@ -800,22 +800,22 @@ static void gtk_object_register(lua_State* L) {
 
 #ifdef GTK_TYPE_APPLICATION
 	gtype_reg_start(GTK_TYPE_APPLICATION, gtk_application);
-		gtype_reg_ffi(GTK_TYPE_APPLICATION, gtk_application_new, G_TYPE_STRING, G_TYPE_APPLICATION_FLAGS);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_application_add_window, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_application_remove_window, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW);
+		gtype_reg_ffi(GTYPE_SELF, gtk_application_new, G_TYPE_STRING, G_TYPE_APPLICATION_FLAGS);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_add_window, GTYPE_SELF, GTK_TYPE_WINDOW);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_remove_window, GTYPE_SELF, GTK_TYPE_WINDOW);
 
-		gtype_reg_ffi(G_TYPE_MENU_MODEL, gtk_application_get_app_menu, GTK_TYPE_APPLICATION);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_application_set_app_menu, GTK_TYPE_APPLICATION, G_TYPE_MENU_MODEL);
+		gtype_reg_ffi(G_TYPE_MENU_MODEL, gtk_application_get_app_menu, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_set_app_menu, GTYPE_SELF, G_TYPE_MENU_MODEL);
 
-		gtype_reg_ffi(G_TYPE_MENU_MODEL, gtk_application_get_menubar, GTK_TYPE_APPLICATION);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_application_set_menubar, GTK_TYPE_APPLICATION, G_TYPE_MENU_MODEL);
+		gtype_reg_ffi(G_TYPE_MENU_MODEL, gtk_application_get_menubar, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_set_menubar, GTYPE_SELF, G_TYPE_MENU_MODEL);
 
-		gtype_reg_ffi(G_TYPE_UINT, gtk_application_inhibit, GTK_TYPE_APPLICATION, GTK_TYPE_WINDOW, GTK_TYPE_APPLICATION_INHIBIT_FLAGS, G_TYPE_STRING);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_application_uninhibit, GTK_TYPE_APPLICATION, G_TYPE_UINT);
-		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_is_inhibited, GTK_TYPE_APPLICATION, GTK_TYPE_APPLICATION_INHIBIT_FLAGS);
+		gtype_reg_ffi(G_TYPE_UINT, gtk_application_inhibit, GTYPE_SELF, GTK_TYPE_WINDOW, GTK_TYPE_APPLICATION_INHIBIT_FLAGS, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_application_uninhibit, GTYPE_SELF, G_TYPE_UINT);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_application_is_inhibited, GTYPE_SELF, GTK_TYPE_APPLICATION_INHIBIT_FLAGS);
 
-		gtype_reg_ffi(GTK_TYPE_WINDOW, gtk_application_get_window_by_id, GTK_TYPE_APPLICATION, G_TYPE_UINT);
-		gtype_reg_ffi(GTK_TYPE_WINDOW, gtk_application_get_active_window, GTK_TYPE_APPLICATION);
+		gtype_reg_ffi(GTK_TYPE_WINDOW, gtk_application_get_window_by_id, GTYPE_SELF, G_TYPE_UINT);
+		gtype_reg_ffi(GTK_TYPE_WINDOW, gtk_application_get_active_window, GTYPE_SELF);
 	gtype_reg_end();
 #endif
 }

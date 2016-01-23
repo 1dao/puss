@@ -57,10 +57,10 @@
     <Import Project="..\..\gtk+-3.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="..\..\gtk+-2.props" />
+    <Import Project="..\..\gtk+-3.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="..\..\gtk+-2.props" />
+    <Import Project="..\..\gtk+-3.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>

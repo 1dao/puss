@@ -13,14 +13,18 @@
 #define opt		GFFI_PESUDO_TYPE_OPT_ARG, 
 
 #define gtype_reg_env_declare() \
+	GType __gtype_current = 0; \
 	size_t __gtype_reg_prefix_len = 0
 
 #define gtype_reg_start(gtype, prefix) \
+	__gtype_current = gtype; \
+	__gtype_reg_prefix_len = sizeof(#prefix); \
 	glua_push_capis_table(L); \
-	glua_new_gtype_index_table(L, gtype, #prefix); \
-	__gtype_reg_prefix_len = sizeof(#prefix)
+	glua_new_gtype_index_table(L, __gtype_current, #prefix)
 
 #define gtype_reg_end() lua_pop(L, 2)
+
+#define GTYPE_SELF __gtype_current
 
 #define _gtype_reg_setfield(func) do {\
 		lua_pushvalue(L, -1); \
