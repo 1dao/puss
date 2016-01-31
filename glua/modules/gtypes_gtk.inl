@@ -250,12 +250,20 @@ static void gtk_object_register(lua_State* L) {
 
 	gtype_reg_start(GTK_TYPE_WIDGET, gtk_widget);
 		gtype_reg_ffi(GTYPE_SELF, gtk_widget_destroy, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_destroyed, GTYPE_SELF, out GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_unparent, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_hide, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show_now, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_show_all, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_map, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_unmap, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_realize, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_unrealize, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_draw, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_draw_area, GTYPE_SELF, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_resize, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_queue_resize_no_redraw, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_widget_activate, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_reparent, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_widget_grab_focus, GTYPE_SELF);
@@ -665,7 +673,36 @@ static void gtk_object_register(lua_State* L) {
 
 	gtype_reg_start(GTK_TYPE_ICON_FACTORY, gtk_icon_factory); gtype_reg_end();
 
-	gtype_reg_start(GTK_TYPE_ICON_THEME, gtk_icon_theme); gtype_reg_end();
+	gtype_reg_start(GTK_TYPE_ICON_THEME, gtk_icon_theme);
+		gtype_reg_ffi(GTYPE_SELF, gtk_icon_theme_get_default);
+		gtype_reg_ffi(GTYPE_SELF, gtk_icon_theme_get_for_screen, GDK_TYPE_SCREEN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_set_screen, GTYPE_SELF, GDK_TYPE_SCREEN);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_set_search_path, GTYPE_SELF, G_TYPE_STRV, G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_get_search_path, GTYPE_SELF, out G_TYPE_STRV, out G_TYPE_INT);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_append_search_path, GTYPE_SELF, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_prepend_search_path, GTYPE_SELF, G_TYPE_STRING);
+	#if GTK_CHECK_VERSION(3,14,0)
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_add_resource_path, GTYPE_SELF, G_TYPE_STRING);
+	#endif
+		gtype_reg_ffi(G_TYPE_NONE, gtk_icon_theme_set_custom_theme, GTYPE_SELF, G_TYPE_STRING);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_icon_theme_has_icon, GTYPE_SELF, G_TYPE_STRING);
+		gtype_reg_ffi(GTK_TYPE_ICON_INFO, gtk_icon_theme_lookup_icon, GTYPE_SELF, G_TYPE_STRING, G_TYPE_INT, GTK_TYPE_ICON_LOOKUP_FLAGS);
+		gtype_reg_ffi(GTK_TYPE_ICON_INFO, gtk_icon_theme_choose_icon, GTYPE_SELF, G_TYPE_STRV, G_TYPE_INT, GTK_TYPE_ICON_LOOKUP_FLAGS);
+		gtype_reg_ffi(GDK_TYPE_PIXBUF, gtk_icon_theme_load_icon, GTYPE_SELF, G_TYPE_STRING, G_TYPE_INT, GTK_TYPE_ICON_LOOKUP_FLAGS, opt out G_TYPE_ERROR);
+		gtype_reg_ffi(GTK_TYPE_ICON_INFO, gtk_icon_theme_lookup_by_gicon, GTYPE_SELF, G_TYPE_ICON, G_TYPE_INT, GTK_TYPE_ICON_LOOKUP_FLAGS);
+	gtype_reg_end();
+
+	gtype_reg_start(GTK_TYPE_ICON_INFO, gtk_icon_info);
+		gtype_reg_ffi(GTYPE_SELF, gtk_icon_info_copy, GTYPE_SELF);
+		gtype_reg_ffi(GTYPE_SELF, gtk_icon_info_new_for_pixbuf, GTYPE_SELF, GDK_TYPE_PIXBUF);
+		gtype_reg_ffi(G_TYPE_INT, gtk_icon_info_get_base_size, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_INT, gtk_icon_info_get_base_scale, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_STRING, gtk_icon_info_get_filename, GTYPE_SELF);
+		gtype_reg_ffi(GDK_TYPE_PIXBUF, gtk_icon_info_get_builtin_pixbuf, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_icon_info_is_symbolic, GTYPE_SELF);
+		gtype_reg_ffi(GDK_TYPE_PIXBUF, gtk_icon_info_load_icon, GTYPE_SELF, out G_TYPE_ERROR);
+		gtype_reg_ffi(G_TYPE_STRING, gtk_icon_info_get_display_name, GTYPE_SELF);
+	gtype_reg_end();
 
 	gtype_reg_start(GTK_TYPE_IM_CONTEXT, gtk_im_context); gtype_reg_end();
 
@@ -789,8 +826,9 @@ static void gtk_object_register(lua_State* L) {
 
 	gtype_reg_start(GTK_TYPE_TREE_STORE, gtk_tree_store);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_append, GTYPE_SELF, GTK_TYPE_TREE_ITER, opt GTK_TYPE_TREE_ITER);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_prepend, GTYPE_SELF, GTK_TYPE_TREE_ITER, opt GTK_TYPE_TREE_ITER);
 		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_clear, GTYPE_SELF);
-		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_set_value, GTYPE_SELF, GTK_TYPE_TREE_ITER, G_TYPE_INT, G_TYPE_VALUE);
+		gtype_reg_ffi(G_TYPE_NONE, gtk_tree_store_set_value, GTYPE_SELF, GTK_TYPE_TREE_ITER, G_TYPE_INT, opt G_TYPE_VALUE);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, gtk_tree_store_remove, GTYPE_SELF, GTK_TYPE_TREE_ITER);
 	gtype_reg_end();
 

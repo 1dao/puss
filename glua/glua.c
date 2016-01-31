@@ -13,7 +13,7 @@ static const char*	GOBJECT_CAPIS_TABLE_NAME   = "__gobject_capis__";
 static const char*	GOBJECT_TYPES_TABLE_NAME   = "__gobject_types__";
 static const char*	GOBJECT_G_TYPES_TABLE_NAME = "__gobject_gtypes__";
 
-static const char*	GOBJECT_LUA_NAME = "__glua__";
+static const char*	GOBJECT_LUA_NAME = "__GOBJECT__";
 static const char*	GVALUE_LUA_NAME = "__GVALUE__";
 static const char*	GPARAMSPEC_LUA_NAME = "__GPARAMSPEC__";
 static const char*	GSIGNAL_HANDLE_LUA_NAME = "__GSIGNAL_HANDLE__";
@@ -283,6 +283,42 @@ static GParamSpec* lua_gparamspec_test(lua_State* L, int idx) {
 
 static void lua_param_gvalue_push(lua_State* L, const GValue* v) {
 	lua_gparamspec_push(L, g_value_get_param(v));
+}
+
+static gboolean userdata_typeof(lua_State* L, int idx, const char* type) {
+	gboolean res = FALSE;
+	if( lua_getmetatable(L, idx) ) {
+		luaL_getmetatable(L, type);
+		res = (gboolean)lua_rawequal(L,-2,-1);
+		lua_pop(L, 2);
+	}
+	return res;
+}
+
+GValue* glua_value_convert(lua_State* L, int idx) {
+	GValue* v = NULL;
+	switch( lua_type(L, idx) ) {
+	case LUA_TNONE:
+	case LUA_TNIL:
+		break;
+	case LUA_TBOOLEAN:	v=glua_value_new(L, G_TYPE_BOOLEAN); g_value_set_boolean(v, (gboolean)lua_toboolean(L, idx));	lua_replace(L, idx);	break;
+	case LUA_TNUMBER:	v=glua_value_new(L, G_TYPE_DOUBLE);	g_value_set_double(v, lua_tonumber(L, idx));				lua_replace(L, idx);	break;
+	case LUA_TSTRING:	v=glua_value_new(L, G_TYPE_STRING);	g_value_set_string(v, lua_tostring(L, idx));				lua_replace(L, idx);	break;
+	case LUA_TUSERDATA:
+		if( userdata_typeof(L, idx, GVALUE_LUA_NAME) ) {
+			v = (GValue*)lua_touserdata(L, idx);
+		} else if( userdata_typeof(L, idx, GOBJECT_LUA_NAME) ) {
+			GObjectLua* ud = lua_touserdata(L, idx);
+			v = glua_value_new(L, G_TYPE_OBJECT);
+			g_value_set_object(v, ud->obj);
+			lua_replace(L, idx);
+		}
+		break;
+	default:
+		break;
+	}
+
+	return v;
 }
 
 GValue* glua_value_check(lua_State* L, int idx) {

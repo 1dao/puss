@@ -45,23 +45,38 @@ local modules = {}
 
 function puss_load_module(module_name)
 	local m = modules[module_name]
-	if not m then
-		local module_env_metatable = { __module_name__ = module_name }
-		m = {}
-		setmetatable(m, module_env_metatable)
-		modules[module_name] = m
+	if m then return m.__module_exports__ end
 
-		module_env_metatable.__index = function(t,k)
-			return rawget(module_env_metatable,k) or global_env[k]
-		end
+	local module_exports = {}
+	local module_env_metatable = { __module_name__ = module_name, __module_exports__ = module_exports }
+	m = {}
+	setmetatable(m, module_env_metatable)
+	modules[module_name] = m
 
-		module_env_metatable.dofile = function(fname)
-			puss_do_script( string.format('%s/%s', module_name, fname), m )
-		end
-
-		m.dofile( string.format('%s.lua', module_name) )
+	module_env_metatable.__index = function(t,k)
+		return rawget(module_exports,k) or rawget(module_env_metatable,k) or global_env[k]
 	end
-	return m
+
+	module_env_metatable.export = function(name, func)
+		m.__module_exports__[name] = func
+	end
+
+	module_env_metatable.dofile = function(fname)
+		puss_do_script( string.format('%s/%s', module_name, fname), m )
+	end
+
+	module_env_metatable.load_glade = function(ui_file)
+		local builder = gtk_builder_new()
+		if GTK_MAJOR_VERSION==3 then
+			builder:add_from_file( string.format('%s/modules/%s/%s-gtk3.glade', root_path, module_name, ui_file or module_name) )
+		else
+			builder:add_from_file( string.format('%s/modules/%s/%s-gtk2.glade', root_path, module_name, ui_file or module_name) )
+		end
+		return builder
+	end
+
+	m.dofile( string.format('%s.lua', module_name) )
+	return module_exports
 end
 
 puss_do_script('glua_init.lua')

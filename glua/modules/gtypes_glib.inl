@@ -127,6 +127,7 @@ static void gtypes_glib_register(lua_State* L) {
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_is_native, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_has_uri_scheme, GTYPE_SELF, G_TYPE_STRING);
 		gtype_reg_ffi(G_TYPE_STRING, g_file_get_uri_scheme, GTYPE_SELF);
+		gtype_reg_ffi(G_TYPE_FILE_ENUMERATOR, g_file_enumerate_children, GTYPE_SELF, G_TYPE_STRING, G_TYPE_FILE_QUERY_INFO_FLAGS, opt G_TYPE_CANCELLABLE, opt out G_TYPE_ERROR);
 	gtype_reg_end();
 
 	gtype_reg_start(G_TYPE_FILE_ICON, g_file_icon);
@@ -221,6 +222,7 @@ static void gtypes_glib_register(lua_State* L) {
 	gtype_reg_end();
 
 	gtype_reg_start(G_TYPE_FILE_ENUMERATOR, g_file_enumerator);
+		gtype_reg_ffi(G_TYPE_FILE_INFO, g_file_enumerator_next_file, GTYPE_SELF, opt G_TYPE_CANCELLABLE, opt out G_TYPE_ERROR);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_enumerator_is_closed, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_BOOLEAN, g_file_enumerator_has_pending, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_NONE, g_file_enumerator_set_pending, GTYPE_SELF, G_TYPE_BOOLEAN);
@@ -231,7 +233,7 @@ static void gtypes_glib_register(lua_State* L) {
 	gtype_reg_start(G_TYPE_MOUNT, g_mount);
 		gtype_reg_ffi(G_TYPE_FILE, g_mount_get_root, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_FILE, g_mount_get_default_location, GTYPE_SELF);
-		gtype_reg_ffi(G_TYPE_STRING, g_mount_get_name, GTYPE_SELF);
+		gtype_reg_ffi_rnew(G_TYPE_STRING, g_mount_get_name, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_ICON, g_mount_get_icon, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_ICON, g_mount_get_symbolic_icon, GTYPE_SELF);
 		gtype_reg_ffi(G_TYPE_STRING, g_mount_get_uuid, GTYPE_SELF);

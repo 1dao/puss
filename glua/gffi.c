@@ -195,8 +195,12 @@ static int ffi_lua_push_pointer(lua_State* L, gconstpointer pval, GFFIType* tp, 
 }
 
 static void ffi_lua_check_gvalue(lua_State* L, int idx, gpointer pval, gboolean opt, GFFIType* tp) {
-	GValue* v = opt ? glua_value_test(L, idx) : glua_value_check(L, idx);
-	*((GValue**)pval) = v ? v : glua_value_new(L, G_TYPE_INVALID);
+	GValue* v = glua_value_convert(L, idx);
+	if( v==NULL ) {
+		if( !opt )
+			luaL_error(L, "convert to GValue failed!");
+	}
+	*((GValue**)pval) = v ? v : glua_value_new(L, G_TYPE_NONE);
 }
 
 static int ffi_lua_push_gvalue(lua_State* L, gconstpointer pval, GFFIType* tp, gboolean isnew) {

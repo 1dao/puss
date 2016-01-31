@@ -28,6 +28,7 @@ void		glua_new_gtype_index_table(lua_State* L, GType type, const char* prefix);
 void		glua_reg_gtype_index_table(lua_State* L, GType type, const char* prefix, const luaL_Reg* methods);
 void		glua_reg_c_struct0_boxed_type_new_method(lua_State* L, GType type, gsize struct_size);
 
+GValue*		glua_value_convert(lua_State* L, int idx);
 GValue*		glua_value_check(lua_State* L, int idx);
 GValue*		glua_value_test(lua_State* L, int idx);
 GValue*		glua_value_check_type(lua_State* L, int idx, GType type);

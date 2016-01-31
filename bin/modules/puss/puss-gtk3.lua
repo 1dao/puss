@@ -3,11 +3,11 @@
 
 local glua = __glua__
 
-local function puss_main_window_open(ui_file)
+local function puss_main_window_open()
 	assert( main_builder==nil, 'not support open twice!' )
-	main_builder = gtk_builder_new()
-	main_builder:add_from_file( string.format('%s/%s', puss_fetch_root_path(), ui_file) )
-	main_window = main_builder:get_object('main_window')
+	assert( main_builder==nil, 'not support open twice!' )
+	__module_exports__.main_builder = load_glade()
+	__module_exports__.main_window = main_builder:get_object('main_window')
 	if os.getenv('PUSS_DEBUG') then
 		puss_debug_panel_open()
 	end
@@ -19,7 +19,7 @@ end
 local function puss_app_activate(...)
 	print('activate', ...)
 	if not main_window then
-		puss_main_window_open('modules/puss/puss_main_window_gtk3.ui')
+		puss_main_window_open()
 		app:add_window(main_window)
 
 		local editor = puss_editor_new('noname')
@@ -40,7 +40,7 @@ end
 local function puss_app_open(app, files, nfiles, hint)
 	print('open', app, files, nfiles, hint, #hint)
 	if not main_window then
-		puss_main_window_open('modules/puss/puss_main_window_gtk3.ui')
+		puss_main_window_open()
 		app:add_window(main_window)
 	end
 

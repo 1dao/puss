@@ -175,9 +175,12 @@ int main(int argc, char* argv[]) {
 	lua_close(L);
 
 #ifdef _WIN32
-	if( getenv("PUSS_DEBUG") ) {
-		fprintf(stderr, "press any key to exit...\n");
-		_getch();
+	{
+		const char* debug_level = getenv("PUSS_DEBUG");
+		if( atoi(debug_level) > 5 ) {
+			fprintf(stderr, "press any key to exit...\n");
+			_getch();
+		}
 	}
 #endif
 	return 0;
