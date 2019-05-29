@@ -1,188 +1,179 @@
 // main.c
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
-	#include <Windows.h>
-	#include <conio.h>
-
-	#ifdef _MSC_VER
-		#define inline __inline
-	#endif
+	#include <windows.h>
 #endif
 
-#include <assert.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include "puss_plugin.inl"
+#include "puss_debug.inl"
 
-#define GTK_DISABLE_DEPRECATED 1
+#define PUSS_DEFAULT_SCRIPT_FILE "default.lua"
 
-#include <glib.h>
-#include <gtk/gtk.h>
-
-#include "glua/modules/gtypes_glib.inl"
-#include "glua/modules/gtypes_gtk.inl"
-#include "glua/modules/gtypes_scintilla.inl"
-
-#ifdef G_OS_WIN32
-	static gchar* find_root_filepath(const char* argv0) {
-		gchar buf[4096];
-		int len = GetModuleFileNameA(0, buf, 4096);
-		return g_locale_to_utf8(buf, len, NULL, NULL, NULL);
+static const char* puss_args_lookup(int argc, char** argv, const char* key) {
+	size_t len = strlen(key);
+	int i;
+	for( i=1; i<argc; ++i ) {
+		const char* arg = argv[i];
+		if( strncmp(arg, key, len)!=0 )
+			continue;
+		if( arg[len]=='\0' )
+			return arg+len;
+		if( arg[len]=='=' )
+			return arg+len+1;
 	}
-
-	G_MODULE_EXPORT int main(int argc, char* argv[]);
-
-#else
-	static gchar* find_root_filepath(const char* argv0) {
-		gchar* pwd;
-		gchar* prj;
-		gchar* realpath;
-		gchar* filepath = g_find_program_in_path(argv0);
-
-		if( !filepath ) {
-			g_printerr(_("ERROR : can not find puss in $PATH\n"));
-			return 0;
-		}
-
-		if( !g_path_is_absolute(filepath) ) {
-			pwd = g_get_current_dir();
-			prj = g_build_filename(pwd, filepath, NULL);
-			g_free(pwd);
-			g_free(filepath);
-			filepath = prj;
-		}
-
-		if( g_file_test(filepath, G_FILE_TEST_IS_SYMLINK) ) {
-			realpath = g_file_read_link(filepath, 0);
-			g_free(filepath);
-			filepath = realpath;
-		}
-
-		if( !g_file_test(filepath, G_FILE_TEST_EXISTS) ) {
-			g_printerr(_("ERROR : can not find puss directory!\n"));
-			g_printerr(_("        can not use indirect search path in $PATH!\n"));
-			g_free(filepath);
-			return 0;
-		}
-
-		return filepath;
-	}
-
-#endif
-
-static int lua_load_main_script(lua_State* L, const char* arg0) {
-	int res = 0;
-	gsize len = 0;
-	gchar* cxt = NULL;
-	GError* err = NULL;
-	gchar* main_script = NULL;
-	gchar* root_path = find_root_filepath(arg0);
-	size_t i = strlen(root_path);
-	for( --i; i>0; --i ) {
-		if( root_path[i]=='\\' || root_path[i]=='/' ) {
-			root_path[i] = '\0';
-			break;
-		}
-	}
-
-	main_script = g_build_filename(root_path, "modules", "main.lua", NULL);
-	if( g_file_get_contents_utf8(main_script, &cxt, &len, &err) ) {
-		res = luaL_loadbuffer(L, cxt, len, "main.lua");
-		if( res==LUA_OK ) {
-			lua_pushstring(L, root_path);
-		}
-
-	} else {
-		lua_pushfstring(L, "load main script error : %s\n", err->message);
-		g_error_free(err);
-		res = 1;
-	}
-
-	g_free(cxt);
-	g_free(main_script);
-	g_free(root_path);
-	return res;
+	return NULL;
 }
 
-static int lua_g_file_get_content(lua_State* L) {
-	const gchar* fname = luaL_checkstring(L, 1);
-	gchar* cnt = NULL;
-	gsize len = 0;
-	GError* err = NULL;
+static const char* puss_push_parse_args(lua_State* L, int* is_script_file, int argc, char** argv) {
+	int script_arg = 0;
+	int is_exec = 0;
+	lua_Integer n = 0;
+	int i;
 
-	if( !g_file_get_contents(fname, &cnt, &len, &err) ) {
-		if( err ) {
-			lua_pushfstring(L, "get file(%s) content failed: %s\n", fname, err->message);
-			g_error_free(err);
-			return lua_error(L);
+	lua_newtable(L);
+	for( i=argc-1; i>0; --i ) {
+		if( argv[i][0] != '-' ) {
+			script_arg = i;
+		} else if( strcmp(argv[i], "-e")==0 || strcmp(argv[i], "--execute")==0 ) {
+			if( (i+1) < argc ) {
+				script_arg = i;
+				is_exec = 1;
+				break;
+			}
 		}
-		return luaL_error(L, "get file(%s) content failed!\n", fname);
 	}
 
-	lua_pushlstring(L, cnt, len);
-	g_free(cnt);
+	for( i=1; i<argc; ++i ) {
+		if( i==script_arg ) {
+			if( is_exec ) {
+				++i;
+			}
+			continue;
+		}
+		lua_pushstring(L, argv[i]);
+		lua_rawseti(L, -2, ++n);
+	}
+
+	if( is_exec ) {
+		*is_script_file = 0;
+		return argv[script_arg + 1];
+	}
+
+	*is_script_file = 1;
+	return script_arg==0 ? NULL : argv[script_arg];
+}
+
+static int puss_dummy_main(lua_State* L) {
+	fprintf(stderr, "not find function __main__() in lua _G!");
+	return 0;
+}
+
+#ifdef _WIN32
+	static int puss_error_handle_win(lua_State* L) {
+		luaL_requiref(L, LUA_DBLIBNAME, luaopen_debug, 0);
+		if( lua_istable(L, -1) && lua_getfield(L, -1, "traceback")==LUA_TFUNCTION ) {
+			lua_pushvalue(L, 1);
+			lua_call(L, 1, 1);
+		} else {
+			lua_settop(L, 1);
+		}
+		MessageBoxA(NULL, lua_tostring(L, -1), "PussError", MB_OK|MB_ICONERROR);
+		lua_settop(L, 1);
+		return 1;
+	}
+#endif
+
+static const char* _push_script_filename(lua_State* L, const char* script) {
+	return script ? lua_pushstring(L, script) : lua_pushfstring(L, "%s/" PUSS_DEFAULT_SCRIPT_FILE, __puss_config__.app_path);
+}
+
+static int puss_init(lua_State* L) {
+	int is_script_file = 0;
+	const char* script = NULL;
+
+	puss_lua_get(L, PUSS_KEY_PUSS);
+	script = puss_push_parse_args(L, &is_script_file, __puss_config__.app_argc, __puss_config__.app_argv);
+	lua_setfield(L, -2, "_args");			// puss._args
+	lua_pushboolean(L, is_script_file);
+	lua_setfield(L, -2, "_is_script_file");	// puss._is_script_file
+	script = is_script_file ? _push_script_filename(L, script) : lua_pushstring(L, script);
+	lua_setfield(L, -2, "_script");			// puss._script
+
+	if( is_script_file ) {
+		lua_getfield(L, -1, "dofile");
+		lua_getfield(L, -2, "_script");
+		lua_call(L, 1, 0);
+		if( lua_getglobal(L, "__main__")!=LUA_TFUNCTION ) {
+			lua_pop(L, 1);
+			lua_pushcfunction(L, puss_dummy_main);
+		}
+	} else if( luaL_loadbuffer(L, script, strlen(script), "<-e>") ) {
+		lua_error(L);
+	}
+	// fprintf( stderr, "puss_init() return: %s\n", lua_typename(L, lua_type(L, -1)) );
 	return 1;
 }
 
 int main(int argc, char* argv[]) {
-	lua_State* L = luaL_newstate();
-	luaL_openlibs(L);
-
-	gtk_init(&argc, &argv);
-
-	gffi_init();
-		gtypes_glib_register(L);
-		gtypes_gtk_register(L);
-		gtypes_scintilla_register(L);
-	glua_enum_types_register(L);
-
-	glua_push_master_table(L);
-	lua_setglobal(L, "__glua__");
-
-	glua_push_capis_table(L);
-		lua_pushcfunction(L, lua_g_file_get_content);	lua_setfield(L, -2, "g_file_get_content");
-	lua_pop(L, 1);
-
-	// load main_script
-	// push root_path as first argument
-	// 
-	if( lua_load_main_script(L, argv[0]) ) {
-		g_error("load script error : %s", lua_tostring(L, -1));
-		lua_pop(L, 1);
-
-	} else {
-		// push argv as strv
-		{
-			gchar** v = g_new0(gchar*, argc+1);
-			int i = 0;
-			for( ; i<argc; ++i ) {
-				v[i] = g_strdup(argv[i]);
-			}
-			glua_value_push_boxed(L, G_TYPE_STRV, v, TRUE);
-		}
-
-		if( glua_pcall(L, 2, 0) ) {
-			g_error("pcall error : %s", lua_tostring(L, -1));
-			lua_pop(L, 1);
-		}
-	}
-
-	lua_close(L);
-
+	lua_State* L = NULL;
+	int reboot_as_debug_level = 0;
+	const char* debug_level = puss_args_lookup(argc, argv, "--debug");
 #ifdef _WIN32
-	{
-		const char* debug_level = getenv("PUSS_DEBUG");
-		if( atoi(debug_level) > 5 ) {
-			fprintf(stderr, "press any key to exit...\n");
-			_getch();
-		}
+	const char* console_mode = puss_args_lookup(argc, argv, "--console");
+#endif
+	puss_config_init(argc, argv);
+	__puss_config_debug_level__ = (debug_level==NULL) ? 0 : (*debug_level=='\0' ? 1 : (int)strtol(debug_level, NULL, 10));
+	__puss_config__.state_new = puss_lua_debugger_newstate;
+	__puss_config__.plugin_loader_reg = puss_plugin_loader_reg;
+
+restart_label:
+#ifdef _WIN32
+	if( console_mode || (reboot_as_debug_level)) {
+		AllocConsole();
+		freopen("CONIN$", "r+t", stdin);
+		freopen("CONOUT$", "w+t", stdout);
+		freopen("CONOUT$", "w+t", stderr);
 	}
 #endif
+	reboot_as_debug_level = (__puss_config_debug_level__==0);
+
+	L = puss_lua_newstate();
+	lua_settop(L, 0);
+
+	puss_lua_get(L, PUSS_KEY_ERROR_HANDLE);
+#ifdef _WIN32
+	if( !console_mode ) {
+		lua_pop(L, 1);
+		lua_pushcfunction(L, puss_error_handle_win);
+	}
+#endif
+
+	lua_pushcfunction(L, puss_init);
+	if( lua_pcall(L, 0, 1, 1) )	// init
+		return 1;
+	if( lua_pcall(L, 0, 1, 1) )	// main
+		return 2;
+	if( reboot_as_debug_level ) {
+		puss_lua_get(L, PUSS_KEY_PUSS);
+		lua_getfield(L, -1, "_reboot_as_debug_level");
+		__puss_config_debug_level__ = (int)lua_tointeger(L, -1);
+		lua_pop(L, 2);
+		reboot_as_debug_level = __puss_config_debug_level__ ? 1 : 0;
+	}
+	lua_close(L);
+
+	if( reboot_as_debug_level )
+		goto restart_label;
+
 	return 0;
 }
 

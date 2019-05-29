@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <PussRoot>$(MSBuildThisFileDirectory)</PussRoot>
+    <_PussProjectName>$(ProjectName)-$(Configuration.ToLower())</_PussProjectName>
+    <PussProjectName>$(_PussProjectName.Replace("-release", ""))</PussProjectName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutDir>$(PussRoot)bin\plugins\</OutDir>
+    <IntDir>$(SolutionDir)objs\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+    <TargetName>$(PussProjectName)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(PussRoot)3rd\;$(PussRoot)include\;$(PussRoot)objs\gen\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="PussRoot">
+      <Value>$(PussRoot)</Value>
+    </BuildMacro>
+    <BuildMacro Include="_PussProjectName">
+      <Value>$(_PussProjectName)</Value>
+    </BuildMacro>
+    <BuildMacro Include="PussProjectName">
+      <Value>$(PussProjectName)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
