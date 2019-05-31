@@ -407,7 +407,7 @@ void ViewStyle::ClearStyles() {
 			styles[i].ClearTo(styles[STYLE_DEFAULT]);
 		}
 	}
-	styles[STYLE_LINENUMBER].back = Platform::Chrome();
+	//styles[STYLE_LINENUMBER].back = Platform::Chrome();
 
 	// Set call tip fore/back to match the values previously set for call tips
 	styles[STYLE_CALLTIP].back = ColourDesired(0xff, 0xff, 0xff);

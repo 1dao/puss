@@ -104,6 +104,7 @@ __exports.start_search = function(text)
 	current_sel = 0
 	if text and #text > 0 then
 		current_key, current_progress, results_reset, results = text, '', true, {}
+		inbuf:strcpy(current_key)
 	else
 		text = nil
 	end

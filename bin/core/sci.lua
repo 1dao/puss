@@ -12,6 +12,7 @@ end
 
 STYLE_COLOR_MAP.light =
 	{ ['bg'] = RGB('#FFFFFC')
+	, ['caret'] = RGB('#000000')
 	, ['sel'] = RGB('#84B6DB')
 	, ['caret_line'] = RGB('#A4D6FB')
 	, ['marker_fore'] = RGB('#008080')
@@ -25,9 +26,31 @@ STYLE_COLOR_MAP.light =
 	, ['preprocessor'] = RGB('#800080')
 	, ['operator'] = RGB('#007F00')
 	, ['label'] = RGB('#00FF00')
+	, ['margin_back']=RGB('#FFFFFC')
+	, ['line_num']=RGB('#000000')
 	}
 
-STYLE_COLOR_MAP.dark = STYLE_COLOR_MAP.light
+STYLE_COLOR_MAP.dark = 
+	{ ['bg'] = 			RGB('#131c28')
+	, ['caret']	=		RGB('#FFFFFF')
+	, ['sel'] = 		RGB('#F8FAFD')
+	, ['caret_line'] = 	RGB('#42557B')
+	, ['marker_fore'] = RGB('#008080')
+	, ['marker_back'] = RGB('#c00020')
+	, ['text'] = 		RGB('#FFFFFF')
+	, ['comment'] = 	RGB('#6d7187')
+	, ['identifier'] = 	RGB('#FFFFFF')
+	, ['number'] = 		RGB('#AE81FF')
+	, ['word'] = 		RGB('#F92672')
+	, ['string'] = 		RGB('#fff171')
+	, ['preprocessor']= RGB('#C679DD')
+	, ['operator'] = 	RGB('#FFFFFF')
+	, ['label'] = 		RGB('#C679DD')
+	, ['margin_back'] = RGB('#131c28')
+	, ['sel_back'] =	RGB('#42557B')
+	, ['line_num'] =	RGB('#8793ad')
+	}
+STYLE_COLOR_MAP.monokai = STYLE_COLOR_MAP.dark
 
 local function do_auto_indent_impl(sv, mode)
 	sv:set(SCN_UPDATEUI, nil)
@@ -333,6 +356,8 @@ local function do_reset_styles(sv, lang)
 			sv:StyleSetFore(k, colmap[v])
 		end
 	end
+	sv:StyleSetFore(STYLE_LINENUMBER, colmap['line_num'])
+	sv:StyleSetFore(STYLE_FOLDDISPLAYTEXT, colmap['line_num'])
 
 	sv:SetTabWidth(setting.tab_width)
 
@@ -345,7 +370,12 @@ local function do_reset_styles(sv, lang)
 		sv:SetCaretLineVisible(false)
 	end
 	sv:SetCaretLineVisibleAlways(true)
+	sv:SetCaretFore(colmap['caret'])
 
+	if colmap['sel_back'] then
+		sv:SetSelBack(true, colmap['sel_back'])
+	end
+	
 	sv:SetAdditionalSelectionTyping(true)
 	sv:SetMouseSelectionRectangularSwitch(true)
 	sv:SetVirtualSpaceOptions(SCVS_RECTANGULARSELECTION)
@@ -354,20 +384,26 @@ local function do_reset_styles(sv, lang)
 	sv:SetTabIndents(true)
 	sv:SetIndentationGuides(SC_IV_LOOKBOTH)
 
+
 	-- linenum
 	sv:SetMarginTypeN(0, SC_MARGIN_NUMBER)
 	sv:SetMarginWidthN(0, 0)
-	sv:SetMarginSensitiveN(0, true)
+	sv:SetMarginSensitiveN(0, true)	
+	sv:SetMarginBackN(0, colmap['margin_back'])		
 
 	-- bp color
 	sv:SetMarginTypeN(1, SC_MARGIN_SYMBOL)
 	sv:SetMarginMaskN(1, 0x01)
 	sv:SetMarginWidthN(1, 0)
 	sv:SetMarginSensitiveN(1, true)
+	sv:SetMarginBackN(1, colmap['margin_back'])		
 
 	sv:MarkerSetFore(0, colmap['marker_fore'])
 	sv:MarkerSetBack(0, colmap['marker_back'])
 	sv:MarkerDefine(0, SC_MARK_ROUNDRECT)
+
+	-- sv:SetFoldMarginColor(true, RGB('#00FF00'));
+	-- sv:SetFoldMarginHighlightColor(true, RGB('#00FF00'));
 
 	-- fold
 	sv:SetProperty('fold', '1')
@@ -376,7 +412,8 @@ local function do_reset_styles(sv, lang)
 	sv:SetMarginMaskN(2, SC_MASK_FOLDERS)
 	sv:SetMarginWidthN(2, 0)
 	sv:SetAutomaticFold(SC_AUTOMATICFOLD_CLICK)
-
+	sv:SetMarginBackN(2, colmap['margin_back'])		
+	
 	sv:MarkerDefine(SC_MARKNUM_FOLDER, SC_MARK_CIRCLEPLUS) 
 	sv:MarkerDefine(SC_MARKNUM_FOLDEROPEN, SC_MARK_CIRCLEMINUS)
 	sv:MarkerDefine(SC_MARKNUM_FOLDEREND,  SC_MARK_CIRCLEPLUSCONNECTED)
@@ -385,7 +422,7 @@ local function do_reset_styles(sv, lang)
 	sv:MarkerDefine(SC_MARKNUM_FOLDERSUB, SC_MARK_VLINE)
 	sv:MarkerDefine(SC_MARKNUM_FOLDERTAIL, SC_MARK_LCORNERCURVE)
 	sv:SetFoldFlags(16|4, 0)
-
+	
 	sv:set(SCN_CHARADDED, setting.on_char_added)
 
 	sv:IndicSetStyle(INDICATOR_FINDTEXT, INDIC_FULLBOX)

@@ -64,6 +64,8 @@ local function main_menu()
 		imgui.Separator()
 		if shotcuts.menu_item('page/close_all') then pages.close_all() end
 		if shotcuts.menu_item('page/save_all') then pages.save_all() end
+		imgui.Separator()
+		if shotcuts.menu_item('page/open_workspace') then pages.open_workspace() end	
 		imgui.EndMenu()
 	end
 	if imgui.BeginMenu('Edit') then
@@ -244,13 +246,29 @@ __exports.init = function()
 			if name:match('^.+%.[tT][tT][fF]$') then
 				local lang = name:match('^.-%.(%w+)%.%w+$')
 				imgui.AddFontFromFileTTF(string.format('%s/%s', font_path, name), 14, lang)
+				print(string.format('%s/%s', font_path, name))
 			end
 		end
 	end)
 	imgui.update(show_main_window)
 
-	filebrowser.append_folder(puss.filename_format(puss._path .. '/core', true), fs_list)
-
+	local puss_system = puss.load_plugin('puss_system')
+	local ctx = diskfs.load('G:/olg/olg.code-workspace')
+	if ctx then
+		local folders = cjson.decode(ctx).folders
+		if folders then
+			for k,v in ipairs(folders) do
+				if v.path:find(':') then
+					filebrowser.append_folder(puss.filename_format(v.path, true), fs_list)
+				else
+					filebrowser.append_folder(puss.filename_format('G:/olg/'..v.path, true), fs_list)
+				end
+			end
+		end
+	else
+		filebrowser.append_folder(puss.filename_format(puss._path .. '/core', true), fs_list)
+	end
+	
 	if puss.debug and (not puss.debug()) then puss.debug(true, nil, title) end
 end
 

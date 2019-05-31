@@ -459,6 +459,9 @@
     </ClCompile>
     <ClCompile Include="imgui_impl_glfw.cpp" />
     <ClCompile Include="imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imguifs\imguifilesystem.cpp">
+      <Filter>imguifs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scintilla_imgui.h" />
@@ -659,6 +662,12 @@
     </ClInclude>
     <ClInclude Include="imgui_impl_glfw.h" />
     <ClInclude Include="imgui_impl_opengl3.h" />
+    <ClInclude Include="imguifs\dirent_portable.h">
+      <Filter>imguifs</Filter>
+    </ClInclude>
+    <ClInclude Include="imguifs\imguifilesystem.h">
+      <Filter>imguifs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="imgui">
@@ -681,6 +690,9 @@
     </Filter>
     <Filter Include="scintilla3\src">
       <UniqueIdentifier>{d448ffea-0036-4c7b-ac41-74a4d6275b19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imguifs">
+      <UniqueIdentifier>{18ad78f1-744d-4916-9853-41dafd99ad07}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

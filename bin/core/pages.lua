@@ -4,6 +4,10 @@ local shotcuts = puss.import('core.shotcuts')
 
 _pages = _pages or {}
 _index = _index or setmetatable({}, {__mode='v'})
+
+_dialog = _dialog or imgui.CreateFileDialog()
+_dialog_opend = nil
+
 local pages = _pages
 local index = _index
 local selected_page_label = nil
@@ -16,6 +20,7 @@ local TABSBAR_FLAGS = ( ImGuiTabBarFlags_Reorderable
 
 shotcuts.register('page/save_all', 'Save all pages', 'S', true, true, false, false)
 shotcuts.register('page/close_all', 'Close all pages', 'W', true, true, false, false)
+shotcuts.register('page/open_workspace', 'open work space', 'O', true, true, false, false)
 
 __exports.update = function()
     if not imgui.BeginTabBar('PussMainTabsBar', TABSBAR_FLAGS) then return end
@@ -71,6 +76,18 @@ __exports.update = function()
 
 	if shotcuts.is_pressed('page/save_all') then save_all() end
 	if shotcuts.is_pressed('page/close_all') then close_all() end
+
+	if shotcuts.is_pressed('page/open_workspace') then 
+		_dialog:choose_file_dialog(true)
+		_dialog_opend = true
+	elseif _dialog_opend then
+		local filepath = _dialog:choose_file_dialog(false)
+		if filepath and #filepath > 0 then
+			_dialog_opend = nil
+		end
+		--_dialog:choose_file_dialog(true)
+		--_dialog:choose_file_dialog(false)
+	end
 end
 
 __exports.create = function(label, module)
@@ -141,4 +158,9 @@ __exports.close_all = function()
 		imgui.SetTabItemClosed(page.label)
 		table.remove(pages, i)
 	end
+end
+
+__exports.open_workspace = function()
+	_dialog_opend = true
+	return _dialog:choose_file_dialog(true)
 end

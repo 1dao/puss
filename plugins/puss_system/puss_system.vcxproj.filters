@@ -4,5 +4,27 @@
     <ClCompile Include="puss_module_system.c" />
     <ClCompile Include="puss_socket.c" />
     <ClCompile Include="puss_debugapi.c" />
+    <ClCompile Include="..\..\3rd\lua-cjson\fpconv.c">
+      <Filter>lua_cjson</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rd\lua-cjson\lua_cjson.c">
+      <Filter>lua_cjson</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rd\lua-cjson\strbuf.c">
+      <Filter>lua_cjson</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="lua_cjson">
+      <UniqueIdentifier>{5c4b49ec-b716-433a-b58b-09439f59bfb6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\3rd\lua-cjson\fpconv.h">
+      <Filter>lua_cjson</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\3rd\lua-cjson\strbuf.h">
+      <Filter>lua_cjson</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

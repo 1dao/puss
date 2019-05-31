@@ -3,6 +3,8 @@
 local pages = puss.import('core.pages')
 local sci = puss.import('core.sci')
 local shotcuts = puss.import('core.shotcuts')
+local msearch = puss.import('core.search')
+
 local hook = _hook or function(event, ...) end
 
 _inbuf = _inbuf or imgui.CreateByteArray(4*1024)
@@ -16,6 +18,7 @@ shotcuts.register('docs/find', 'Find in file', 'F', true, false, false, false)
 shotcuts.register('docs/jump', 'Jump in file', 'G', true, false, false, false)
 shotcuts.register('docs/replace', 'Replace in file', 'H', true, false, false, false)
 shotcuts.register('docs/quick_find', 'Quick find in file', 'F3', nil, nil, false, false)
+shotcuts.register('docs/findall', 'search in project', 'F', true,  true, false, false)
 
 local function do_save_page(page)
 	page.unsaved = page.sv:GetModify()
@@ -285,6 +288,14 @@ dialog_modes['docs/quick_find'] = function(page, active)
 		local search_prev = imgui.IsKeyDown(PUSS_IMGUI_KEY_LEFT_SHIFT) or imgui.IsKeyDown(PUSS_IMGUI_KEY_RIGHT_SHIFT)
 		do_search(sv, text, search_prev)
 	end)
+end
+
+dialog_modes['docs/findall'] = function(page, active)
+	if not active then return end
+
+	active_find_text(page)
+
+	msearch.start_search(inbuf:str())
 end
 
 function tabs_page_draw(page, active_page)

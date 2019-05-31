@@ -22,6 +22,11 @@ PUSS_PLUGIN_EXPORT int __puss_plugin_init__(lua_State* L, PussInterface* puss) {
 
 	puss_socket_reg(L);
 	puss_debugapi_reg(L);
+	
+	// cjson
+	luaopen_cjson(L);
+	lua_pop(L, 1);
+
 	return 1;
 }
 
