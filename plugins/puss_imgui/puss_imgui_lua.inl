@@ -696,8 +696,7 @@ static luaL_Reg imgui_lua_apis[] =
 	, {"CreateScintilla", im_scintilla_create}
 	, {"GetScintillaLexers", im_scintilla_lexers}
 	
-	,{ "CreateFileDialog", file_dialog_create }
-	//,{ "OpenFileDialog", file_dialog_create }
+	, { "CreateFileDialog", file_dialog_create }
 
 	, {"GetStyleVar", imgui_get_style_var}
 	, {"GetIO", imgui_getio}

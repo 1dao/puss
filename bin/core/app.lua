@@ -74,7 +74,9 @@ local function main_menu()
 		imgui.EndMenu()
 	end
 	if imgui.BeginMenu('Setting') then
-		imgui.ShowStyleSelector('Style')
+		if imgui.ShowStyleSelector('Style') then
+			puss.reload()
+		end
 		active, value = imgui.DragFloat('UI Scale', imgui.GetIO('FontGlobalScale'), 0.005, 0.5, 2.0, "%.1f")
 		if active then imgui.SetIO('FontGlobalScale', value) end
 		docs.setting()

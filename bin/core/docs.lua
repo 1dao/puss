@@ -137,7 +137,7 @@ local view_reset_style = true
 local DOC_DRAW_MODE = _DOC_DRAW_MODE or 2
 local DOC_SHOW_LINENUM = _DOC_SHOW_LINENUM ~= false
 local DOC_SHOW_BP = _DOC_SHOW_BP ~= false
-local DOC_FOLD_MODE = _DOC_FOLD_MODE or false
+local DOC_FOLD_MODE = _DOC_FOLD_MODE or true
 local DOC_WIN_FLAGS
 local DOC_SCROLLBAR_SIZE
 

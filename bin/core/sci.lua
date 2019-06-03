@@ -27,6 +27,7 @@ STYLE_COLOR_MAP.light =
 	, ['operator'] = RGB('#007F00')
 	, ['label'] = RGB('#00FF00')
 	, ['margin_back']=RGB('#FFFFFC')
+	, ['fold_back'] = RGB('#FFFFFF')
 	, ['line_num']=RGB('#000000')
 	}
 
@@ -47,6 +48,7 @@ STYLE_COLOR_MAP.dark =
 	, ['operator'] = 	RGB('#FFFFFF')
 	, ['label'] = 		RGB('#C679DD')
 	, ['margin_back'] = RGB('#131c28')
+	, ['fold_back'] = 	RGB('#131c28')
 	, ['sel_back'] =	RGB('#42557B')
 	, ['line_num'] =	RGB('#8793ad')
 	}
@@ -402,8 +404,8 @@ local function do_reset_styles(sv, lang)
 	sv:MarkerSetBack(0, colmap['marker_back'])
 	sv:MarkerDefine(0, SC_MARK_ROUNDRECT)
 
-	-- sv:SetFoldMarginColor(true, RGB('#00FF00'));
-	-- sv:SetFoldMarginHighlightColor(true, RGB('#00FF00'));
+	sv:SetFoldMarginColour(true, colmap['fold_back'])
+	sv:SetFoldMarginHiColour(true, colmap['fold_back'])
 
 	-- fold
 	sv:SetProperty('fold', '1')
