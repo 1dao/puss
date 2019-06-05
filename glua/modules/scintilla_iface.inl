@@ -1158,6 +1158,7 @@ static void sci_values_push(lua_State* L, int t) {
 	lua_pushnumber(L, 25); lua_setfield(L, -2, "SCE_C_USERLITERAL");
 	lua_pushnumber(L, 26); lua_setfield(L, -2, "SCE_C_TASKMARKER");
 	lua_pushnumber(L, 27); lua_setfield(L, -2, "SCE_C_ESCAPESEQUENCE");
+	lua_pushnumber(L, 28); lua_setfield(L, -2, "SCE_C_FUNC_NAME");
 	lua_pushnumber(L, 0); lua_setfield(L, -2, "SCE_D_DEFAULT");
 	lua_pushnumber(L, 1); lua_setfield(L, -2, "SCE_D_COMMENT");
 	lua_pushnumber(L, 2); lua_setfield(L, -2, "SCE_D_COMMENTLINE");

@@ -196,6 +196,7 @@ language_builders.cpp = function(setting)
 		, [SCE_C_USERLITERAL] = 'text'
 		, [SCE_C_TASKMARKER] = 'text'
 		, [SCE_C_ESCAPESEQUENCE] = 'text'
+		, [SCE_C_FUNC_NAME] = 'func_name'
 		}
 
 	local indent_map =

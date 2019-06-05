@@ -461,6 +461,7 @@ LexicalClass lexicalClasses[] = {
 	25, "SCE_C_USERLITERAL", "literal", "User defined literals",
 	26, "SCE_C_TASKMARKER", "comment taskmarker", "Task Marker",
 	27, "SCE_C_ESCAPESEQUENCE", "literal string escapesequence", "Escape sequence",
+	28, "SCE_C_FUNC_NAME", "c function name string escapesequence", "function name",
 };
 
 }
@@ -902,6 +903,8 @@ void SCI_METHOD LexerCPP::Lex(Sci_PositionU startPos, Sci_Position length, int i
 						sc.ChangeState(SCE_C_WORD2|activitySet);
 					} else if (keywords4.InList(s)) {
 						sc.ChangeState(SCE_C_GLOBALCLASS|activitySet);
+					} else if (sc.ch == '(') {
+						sc.ChangeState(SCE_C_FUNC_NAME | activitySet);
 					} else {
 						int subStyle = classifierIdentifiers.ValueFor(s);
 						if (subStyle >= 0) {
