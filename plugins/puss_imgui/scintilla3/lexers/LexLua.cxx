@@ -324,7 +324,7 @@ static void ColouriseLuaDoc(
 						newStyle = SCE_LUA_WORD6;
 					} else if (keywords7.InList(s)) {
 						newStyle = SCE_LUA_WORD7;
-					} else if (keywords8.InList(s)) {
+					} else if (c == '(') {
 						newStyle = SCE_LUA_WORD8;
 					}
 					if (newStyle != SCE_LUA_IDENTIFIER) {

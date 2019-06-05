@@ -29,6 +29,7 @@ STYLE_COLOR_MAP.light =
 	, ['margin_back']=RGB('#FFFFFC')
 	, ['fold_back'] = RGB('#FFFFFF')
 	, ['line_num']=RGB('#000000')
+	, ['func_name'] = 	RGB('#A6E22E')
 	}
 
 STYLE_COLOR_MAP.dark = 
@@ -45,12 +46,13 @@ STYLE_COLOR_MAP.dark =
 	, ['word'] = 		RGB('#F92672')
 	, ['string'] = 		RGB('#fff171')
 	, ['preprocessor']= RGB('#C679DD')
-	, ['operator'] = 	RGB('#FFFFFF')
+	, ['operator'] = 	RGB('#ffbd37')
 	, ['label'] = 		RGB('#C679DD')
 	, ['margin_back'] = RGB('#131c28')
 	, ['fold_back'] = 	RGB('#131c28')
 	, ['sel_back'] =	RGB('#42557B')
 	, ['line_num'] =	RGB('#8793ad')
+	, ['func_name'] = 	RGB('#A6E22E')
 	}
 STYLE_COLOR_MAP.monokai = STYLE_COLOR_MAP.dark
 
@@ -116,7 +118,7 @@ language_builders.lua = function(setting)
 		, [SCE_LUA_WORD5] = 'word'
 		, [SCE_LUA_WORD6] = 'word'
 		, [SCE_LUA_WORD7] = 'word'
-		, [SCE_LUA_WORD8] = 'word'
+		, [SCE_LUA_WORD8] = 'func_name'
 		, [SCE_LUA_LABEL] = 'label'
 		}
 
