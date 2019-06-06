@@ -6,6 +6,7 @@ local shotcuts = puss.import('core.shotcuts')
 local msearch = puss.import('core.search')
 
 local hook = _hook or function(event, ...) end
+local search_window_show = _search_window_show or function() end
 
 _inbuf = _inbuf or imgui.CreateByteArray(4*1024)
 _rebuf = _rebuf or imgui.CreateByteArray(4*1024)
@@ -18,7 +19,7 @@ shotcuts.register('docs/find', 'Find in file', 'F', true, false, false, false)
 shotcuts.register('docs/jump', 'Jump in file', 'G', true, false, false, false)
 shotcuts.register('docs/replace', 'Replace in file', 'H', true, false, false, false)
 shotcuts.register('docs/quick_find', 'Quick find in file', 'F3', nil, nil, false, false)
-shotcuts.register('docs/findall', 'search in project', 'F', true,  true, false, false)
+shotcuts.register('docs/findall', 'search in project', 'F', true,  false, true, false)
 
 local function do_save_page(page)
 	page.unsaved = page.sv:GetModify()
@@ -82,7 +83,7 @@ end
 local DOC_LABEL = '##SourceView'
 
 local function page_call(page, cb, ...)
-	imgui.BeginChild(DOC_LABEL)
+	imgui.BeginChild(page.label)
 		page.sv(cb, ...)
 	imgui.EndChild()
 end
@@ -293,6 +294,8 @@ end
 dialog_modes['docs/findall'] = function(page, active)
 	if not active then return end
 
+	search_window_show()
+
 	active_find_text(page)
 
 	msearch.start_search(inbuf:str())
@@ -300,22 +303,22 @@ end
 
 function tabs_page_draw(page, active_page)
 	if (not page.saving) and shotcuts.is_pressed('docs/save') then do_save_page(page) end
-	if shotcuts.is_pressed('docs/close') then page.open = false end
+	if shotcuts.is_pressed('docs/close') and page.sv:GetFocus() then page.open = false end
 	puss.trace_pcall(hook, 'docs_page_before_draw', page)
 	if page.saving then draw_saving_bar(page) end
 
 	if active_page then
 		view_reset_style = true
 		sci.reset_styles(page.sv, page.lang)
-		page.sv:dirty_scroll()
+		--page.sv:dirty_scroll()
 		imgui.SetNextWindowFocus()
 	end
 
-	imgui.BeginChild(DOC_LABEL, nil, nil, false, DOC_WIN_FLAGS)
+	imgui.BeginChild(page.label, nil, nil, false, DOC_WIN_FLAGS)
 	local sv = page.sv
-	if view_set_focus then
-		view_set_focus = false
-		imgui.SetWindowFocus()
+	if page.view_set_focus then
+		page.view_set_focus = false
+		--imgui.SetWindowFocus()
 	end
 
 	local draw_mode = DOC_FOLD_MODE and 1 or DOC_DRAW_MODE
@@ -373,6 +376,8 @@ function tabs_page_close(page)
 		page.saving_tips = 'file not saved, need save ?'
 		page.saving = true
 		page.open = true
+	else
+		
 	end
 end
 
@@ -426,17 +431,18 @@ end
 
 __exports.open = function(file, line, search_text)
 	if not file then
-		view_set_focus = true
+		--view_set_focus = true
 		return
 	end
 
 	local filepath, name, label, page = lookup_page(file)
 	if page then
+		imgui.SetWindowFocus(label)
 		if line then page.scroll_to_line, page.scroll_to_search_text = line, search_text end
 		if label ~= pages.selected() then
 			pages.active(label)
 		else
-			view_set_focus = true
+			pages.view_set_focus = true
 		end
 		return
 	end
@@ -482,9 +488,12 @@ __exports.margin_set = function(file, line, value)
 	page.sv(on_margin_set, filepath, line, value)
 end
 
-__exports.setup = function(new_hook)
+__exports.setup = function(new_hook, show_window_hook)
 	_hook = new_hook or hook
+	_search_window_show = show_window_hook or _search_window_show
+
 	hook = _hook
+	search_window_show = _search_window_show
 end
 
 __exports.edit_menu_click = function(name)

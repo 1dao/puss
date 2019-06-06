@@ -23,9 +23,15 @@ shotcuts.register('page/close_all', 'Close all pages', 'W', true, true, false, f
 shotcuts.register('page/open_workspace', 'open work space', 'O', true, true, false, false)
 
 __exports.update = function()
-    if not imgui.BeginTabBar('PussMainTabsBar', TABSBAR_FLAGS) then return end
+	-- set active
+	local active = next_active_page_label
+	if active then
+		next_active_page_label = nil
+	end
 
-	-- destroy closed tabs
+	local dockspace_id = imgui.GetID('PussMainTabsBar');
+    imgui.DockSpace(dockspace_id);
+
 	for i=#pages,1,-1 do
 		local page = pages[i]
 		if not page.was_open then
@@ -34,38 +40,44 @@ __exports.update = function()
 			index[page.label] = nil
 			if selected_page_label==page.label then selected_page_label = nil end
 			imgui.SetTabItemClosed(page.label)
+			if i == #pages then
+				local fp = pages[i-1]
+				if fp then
+					fp.sv:SetFocus(true)
+					selected_page_label = fp.label
+				end
+			elseif pages[i+1] then
+				pages[i+1].sv:SetFocus(true)
+				selected_page_label = pages[i+1].label
+			end
 			table.remove(pages, i)
+			break
 		end
 	end
-
-	-- set active
-	local active = next_active_page_label
-	if active then
-		next_active_page_label = nil
-		-- local page = index[active]
-		-- if page then imgui.SetTabItemSelected(active) end
-	end
-
+	
 	-- draw tabs
 	local selected
 	for i, page in ipairs(pages) do
+    	imgui.SetNextWindowDockID(dockspace_id, ImGuiCond_Once);
 		local label = page.label
 		page.was_open = page.open
-		local flags = ImGuiTabItemFlags_NoPushId
-		if page.unsaved then flags = flags | ImGuiTabItemFlags_UnsavedDocument end
-		if active and label==active then flags = flags | ImGuiTabItemFlags_SetSelected end
-		selected, page.open = imgui.BeginTabItem(label, page.open, flags)
-		if selected then
-			local last = selected_page_label
-			selected_page_label = label
-			local draw = page.module.tabs_page_draw
-			if draw then imgui.protect_pcall(draw, page, last~=label) end
-			imgui.EndTabItem()
+		local flags = 0
+		if page.unsaved then flags = flags | ImGuiWindowFlags_UnsavedDocument end
+		if active and label==active then 
+			imgui.SetNextWindowFocus()
 		end
+
+		local visible = imgui.Begin(label, page.open, flags)
+		if visible then
+			local last = selected_page_label
+			local draw = page.module.tabs_page_draw
+
+			if draw then imgui.protect_pcall(draw, page, last~=label) end
+		end
+		page.is_visible = visible
+		imgui.End()
 	end
-
-	imgui.EndTabBar()
-
+	
 	-- close tabs
 	for i, page in ipairs(pages) do
 		if not page.open then
@@ -76,7 +88,7 @@ __exports.update = function()
 
 	if shotcuts.is_pressed('page/save_all') then save_all() end
 	if shotcuts.is_pressed('page/close_all') then close_all() end
-
+	if shotcuts.is_pressed('page/close') then close() end
 	if shotcuts.is_pressed('page/open_workspace') then 
 		_dialog:choose_file_dialog(true)
 		_dialog_opend = true
@@ -85,8 +97,6 @@ __exports.update = function()
 		if filepath and #filepath > 0 then
 			_dialog_opend = nil
 		end
-		--_dialog:choose_file_dialog(true)
-		--_dialog:choose_file_dialog(false)
 	end
 end
 
@@ -121,6 +131,7 @@ end
 __exports.close = function()
 	local page = index[selected_page_label]
 	if not page then return end
+	
 	page.open = false
 end
 

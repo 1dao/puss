@@ -47,7 +47,7 @@ end
 docs.setup(function(event, ...)
 	local f = _ENV[event]
 	if f then return f(...) end
-end)
+end, function() show_search_window = true end)
 
 local function fs_list(dir, callback)
 	callback(true, puss.file_list(dir, true))	-- list file & convert name to utf8
@@ -129,6 +129,11 @@ end
 
 local EDITOR_WINDOW_FLAGS = ( ImGuiWindowFlags_NoScrollbar
 	| ImGuiWindowFlags_NoScrollWithMouse
+	| ImGuiWindowFlags_NoTitleBar
+	| ImGuiWindowFlags_NoCollapse
+	| ImGuiWindowFlags_NoResize
+	| ImGuiWindowFlags_NoScrollWithMouse
+	| ImGuiWindowFlags_NoNavFocus
 	)
 
 local function editor_window()
@@ -282,3 +287,4 @@ __exports.update = function()
 	imgui.update(do_update)
 	return run_sign
 end
+
