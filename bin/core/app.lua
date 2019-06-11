@@ -252,7 +252,7 @@ __exports.init = function()
 		for _, name in ipairs(files) do
 			if name:match('^.+%.[tT][tT][fF]$') then
 				local lang = name:match('^.-%.(%w+)%.%w+$')
-				imgui.AddFontFromFileTTF(string.format('%s/%s', font_path, name), 14, lang)
+				imgui.AddFontFromFileTTF(string.format('%s/%s', font_path, name), 18, lang)
 				print(string.format('%s/%s', font_path, name))
 			end
 		end

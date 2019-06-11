@@ -45,10 +45,12 @@ __exports.update = function()
 				if fp then
 					fp.sv:SetFocus(true)
 					selected_page_label = fp.label
+					next_active_page_label = fp.label
 				end
 			elseif pages[i+1] then
 				pages[i+1].sv:SetFocus(true)
 				selected_page_label = pages[i+1].label
+				next_active_page_label = pages[i+1].label
 			end
 			table.remove(pages, i)
 			break
@@ -69,10 +71,8 @@ __exports.update = function()
 
 		local visible = imgui.Begin(label, page.open, flags)
 		if visible then
-			local last = selected_page_label
 			local draw = page.module.tabs_page_draw
-
-			if draw then imgui.protect_pcall(draw, page, last~=label) end
+			if draw then imgui.protect_pcall(draw, page, active and label==active) end
 		end
 		page.is_visible = visible
 		imgui.End()
@@ -110,6 +110,7 @@ __exports.create = function(label, module)
 end
 
 __exports.active = function(label)
+	selected_page_label = label
 	next_active_page_label = label
 end
 

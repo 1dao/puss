@@ -131,8 +131,6 @@ local DIALOG_LABEL = '##DocPopup'
 local dialog_modes = {}
 local dialog_active = false
 local dialog_focused = false
-local dialog_show
-local view_set_focus
 local view_reset_style = true
 
 local DOC_DRAW_MODE = _DOC_DRAW_MODE or 2
@@ -151,7 +149,7 @@ local function check_dialog_mode(page)
 	for k,v in pairs(dialog_modes) do
 		if op==k or shotcuts.is_pressed(k) then
 			dialog_active, dialog_focused = true, false
-			dialog_show = v
+			page.dialog_show = v
 			imgui.OpenPopup(DIALOG_LABEL)
 			break
 		end
@@ -163,7 +161,7 @@ local function show_dialog_begin(page, label)
 	local w = imgui.GetWindowWidth()
 	imgui.SetNextWindowPos(x + w - DOC_SCROLLBAR_SIZE, y, ImGuiCond_Always, 1, 0)
 	if not imgui.BeginPopup(DIALOG_LABEL) then
-		dialog_show = nil
+		page.dialog_show = nil
 		return false
 	end
 	if imgui.IsShortcutPressed(PUSS_IMGUI_KEY_ESCAPE) then imgui.CloseCurrentPopup() end
@@ -205,7 +203,7 @@ dialog_modes['docs/jump'] = function(page, active)
 		if imgui.InputText('##JumpText', inbuf, ImGuiInputTextFlags_AutoSelectAll|ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CharsDecimal) then
 			local line = tonumber(inbuf:str())
 			if line then
-				dialog_show = nil	-- hide dialog
+				page.dialog_show = nil	-- hide dialog
 				page.scroll_to_line, page.scroll_to_search_text = line-1, nil
 				imgui.CloseCurrentPopup()
 			end
@@ -310,19 +308,12 @@ function tabs_page_draw(page, active_page)
 	if active_page then
 		view_reset_style = true
 		sci.reset_styles(page.sv, page.lang)
-		--page.sv:dirty_scroll()
 		imgui.SetNextWindowFocus()
 	end
 
 	imgui.BeginChild(page.label, nil, nil, false, DOC_WIN_FLAGS)
 	local sv = page.sv
-	if page.view_set_focus then
-		page.view_set_focus = false
-		--imgui.SetWindowFocus()
-	end
-
 	local draw_mode = DOC_FOLD_MODE and 1 or DOC_DRAW_MODE
-
 	if view_reset_style then
 		view_reset_style = false
 		_DOC_DRAW_MODE = DOC_DRAW_MODE
@@ -356,13 +347,13 @@ function tabs_page_draw(page, active_page)
 	page.unsaved = sv:GetModify()
 	puss.trace_pcall(hook, 'docs_page_after_draw', page)
 
-	-- if imgui.IsWindowFocused(ImGuiFocusedFlags_ChildWindows) then check_dialog_mode(page) end
-	check_dialog_mode(page)
+	if imgui.IsWindowFocused(ImGuiFocusedFlags_ChildWindows) then check_dialog_mode(page) end
+	--check_dialog_mode(page)
 
-	if dialog_show then
+	if page.dialog_show then
 		local active = dialog_active
 		dialog_active = false
-		dialog_show(page, active)
+		page.dialog_show(page, active)
 	end
 	imgui.EndChild()
 end
@@ -431,7 +422,6 @@ end
 
 __exports.open = function(file, line, search_text)
 	if not file then
-		--view_set_focus = true
 		return
 	end
 
@@ -441,8 +431,6 @@ __exports.open = function(file, line, search_text)
 		if line then page.scroll_to_line, page.scroll_to_search_text = line, search_text end
 		if label ~= pages.selected() then
 			pages.active(label)
-		else
-			pages.view_set_focus = true
 		end
 		return
 	end
