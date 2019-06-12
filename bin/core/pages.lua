@@ -5,9 +5,9 @@ local shotcuts = puss.import('core.shotcuts')
 _pages = _pages or {}
 _index = _index or setmetatable({}, {__mode='v'})
 
-_dialog = _dialog or imgui.CreateFileDialog()
-_dialog_opend = nil
+_hook = _hook or nil
 
+local hook = _hook
 local pages = _pages
 local index = _index
 local selected_page_label = nil
@@ -20,7 +20,11 @@ local TABSBAR_FLAGS = ( ImGuiTabBarFlags_Reorderable
 
 shotcuts.register('page/save_all', 'Save all pages', 'S', true, true, false, false)
 shotcuts.register('page/close_all', 'Close all pages', 'W', true, true, false, false)
-shotcuts.register('page/open_workspace', 'open work space', 'O', true, true, false, false)
+
+__exports.setup = function(new_hook)
+	_hook = new_hook or hook
+	hook = _hook
+end
 
 __exports.update = function()
 	-- set active
@@ -89,21 +93,12 @@ __exports.update = function()
 	if shotcuts.is_pressed('page/save_all') then save_all() end
 	if shotcuts.is_pressed('page/close_all') then close_all() end
 	if shotcuts.is_pressed('page/close') then close() end
-	if shotcuts.is_pressed('page/open_workspace') then 
-		_dialog:choose_file_dialog(true)
-		_dialog_opend = true
-	elseif _dialog_opend then
-		local filepath = _dialog:choose_file_dialog(false)
-		if filepath and #filepath > 0 then
-			_dialog_opend = nil
-		end
-	end
 end
 
-__exports.create = function(label, module)
+__exports.create = function(label, module, filepath)
 	local page = index[label]
 	if page then return page end
-	local page = {label=label, module=module, was_open=true, open=true}
+	local page = {label=label, filepath=filepath, module=module, was_open=true, open=true}
 	table.insert(pages, page)
 	index[label] = page
 	return page
@@ -134,6 +129,8 @@ __exports.close = function()
 	if not page then return end
 	
 	page.open = false
+	
+	if hook then hook() end
 end
 
 __exports.save_all = function(check_only)
@@ -154,6 +151,16 @@ __exports.save_all = function(check_only)
 	return all_saved
 end
 
+__exports.fetch_all = function()
+	local files = {}
+	for _, page in ipairs(pages) do
+		if page.open then
+			table.insert(files, page.label)
+		end
+	end
+	return files
+end
+
 __exports.close_all = function()
 	for i=#pages,1,-1 do
 		local page = pages[i]
@@ -170,9 +177,6 @@ __exports.close_all = function()
 		imgui.SetTabItemClosed(page.label)
 		table.remove(pages, i)
 	end
-end
-
-__exports.open_workspace = function()
-	_dialog_opend = true
-	return _dialog:choose_file_dialog(true)
+	
+	if hook then hook() end
 end

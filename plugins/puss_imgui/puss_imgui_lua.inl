@@ -635,53 +635,6 @@ static int im_scintilla_lexers(lua_State* L) {
 	return 1;
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////
-
-#define IMGUI_FILE_DIALOG	"PussImguiFileDialog"
-#include "imguifs/imguifilesystem.h"
-
-static int file_dialog_tostring(lua_State* L) {
-	ImGuiFs::Dialog* ud = (ImGuiFs::Dialog*)luaL_checkudata(L, 1, IMGUI_FILE_DIALOG);
-	lua_pushfstring(L, "FileDialog(%p)", ud);
-	return 1;
-}
-
-static int file_dialog_choose(lua_State* L) {
-	ImGuiFs::Dialog* ud = (ImGuiFs::Dialog*)luaL_checkudata(L, 1, IMGUI_FILE_DIALOG);
-	lua_pushstring(L, ud->chooseFileDialog(lua_toboolean(L, 2) ? true : false));//
-	return 1;
-}
-
-static int file_dialog_destroy(lua_State* L) {
-	ImGuiFs::Dialog* ud = (ImGuiFs::Dialog*)luaL_checkudata(L, 1, IMGUI_FILE_DIALOG);
-	ud->~Dialog();
-
-	return 0;
-}
-
-static luaL_Reg file_dialog_methods[] =
-{ { "__tostring", file_dialog_tostring }
-,{ "choose_file_dialog", file_dialog_choose }
-,{ "__gc", file_dialog_destroy }
-,{ NULL, NULL }
-};
-
-static int file_dialog_create(lua_State* L) {
-	ImGuiFs::Dialog* ud = (ImGuiFs::Dialog*)lua_newuserdata(L, sizeof(ImGuiFs::Dialog));
-	//new ((void*)ud) ImGuiFs::Dialog(false, false, false, false, false, false);
-	ud->init();
-	if (luaL_newmetatable(L, IMGUI_FILE_DIALOG)) {
-		luaL_setfuncs(L, file_dialog_methods, 0);
-		lua_pushvalue(L, -1);
-		lua_setfield(L, -2, "__index");
-	}
-	lua_setmetatable(L, -2);
-	return 1;
-}
-
-////////////////////////////////////////////////////////////////////////////////////
-
 static luaL_Reg imgui_lua_apis[] =
 	{ {"set_error_handle", imgui_set_error_handle_lua}
 	, {"protect_pcall", imgui_protect_pcall_lua}
@@ -696,8 +649,6 @@ static luaL_Reg imgui_lua_apis[] =
 	, {"CreateScintilla", im_scintilla_create}
 	, {"GetScintillaLexers", im_scintilla_lexers}
 	
-	, { "CreateFileDialog", file_dialog_create }
-
 	, {"GetStyleVar", imgui_get_style_var}
 	, {"GetIO", imgui_getio}
 	, {"SetIO", imgui_setio}

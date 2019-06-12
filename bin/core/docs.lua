@@ -383,7 +383,7 @@ local function on_margin_click(sv, modifiers, pos, margin)
 end
 
 local function new_doc(label, lang, filepath)
-	local page = pages.create(label, _ENV)
+	local page = pages.create(label, _ENV, filepath)
 	local sv = sci.create(lang)
 	-- sv:SetViewWS(SCWS_VISIBLEALWAYS)
 	sv:set('page', page)

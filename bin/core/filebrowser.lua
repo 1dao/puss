@@ -25,6 +25,9 @@ root_dir : dir {
 
 _root_version = _root_version or 0
 _root_folders = _root_folders or {}
+_hook = _hook or nil
+
+local hook = _hook
 local root_folders = _root_folders
 
 local ftbuf = imgui.CreateByteArray(1024, 'lua c h inl cpp hpp cxx hxx')
@@ -43,6 +46,11 @@ local current_selected_label
 local current_expand_need
 local current_expand_file
 
+__exports.setup = function(new_hook)
+	_hook = new_hook or hook
+	hook = _hook
+end
+
 __exports.check_fetch_folders = function(ver)
 	if ver==_root_version then return ver end
 
@@ -55,6 +63,8 @@ end
 
 __exports.append_folder = function(path, async_list_dir)
 	path = puss.filename_format(path, true)
+	if not puss.stat(path) then return end
+	
 	for i,v in ipairs(root_folders) do
 		if path==v.path then return end
 	end
@@ -67,23 +77,42 @@ __exports.append_folder = function(path, async_list_dir)
 		}
 	table.insert(root_folders, dir)
 	_root_version = _root_version + 1
+	
+	if hook then hook() end
 end
 
 __exports.remove_folder = function(path)
 	path = puss.filename_format(path, true)
 	for i,v in ipairs(root_folders) do
 		if path==v.path then
-			table.remote(root_folders, i)
+			table.remove(root_folders, i)
 			_root_version = _root_version + 1
 			break
 		end
 	end
+	
+	if hook then hook() end
 end
 
 __exports.remove_folders = function()
 	root_folders = {}
 	_root_folders = root_folders
 	_root_version = _root_version + 1
+	if hook then hook() end
+end
+
+__exports.fetch_folders = function()
+	local folders = {}
+	for _, dir in ipairs(root_folders) do
+		local tmp = {}
+		for k, v in pairs(dir) do 
+			if type(v) ~= 'function' then
+				tmp[k] = v
+			end
+		end
+		table.insert(folders, tmp)
+	end
+	return folders
 end
 
 local function check_filter(filepath, filters)
@@ -224,7 +253,9 @@ __exports.update = function(async_list_dir)
 		if imgui.Button('Add Path') then append_folder(puss.filename_format(ptbuf:str(), true), async_list_dir) end
 		imgui.SameLine()
 		imgui.PushItemWidth(-1)
-		imgui.InputText('##PathText', ptbuf)
+		if imgui.InputText('##PathText', ptbuf, ImGuiInputTextFlags_EnterReturnsTrue) then
+			append_folder(puss.filename_format(ptbuf:str(), true), async_list_dir)
+		end
 		imgui.PopItemWidth()
 	end
 
@@ -256,6 +287,9 @@ __exports.update = function(async_list_dir)
 			imgui.PopID()
 		end
 	end
-	if remove_id then table.remove(root_folders, remove_id) end
+	if remove_id then 
+		table.remove(root_folders, remove_id) 
+		if hook then hook() end
+	end
 	imgui.EndChild()
 end

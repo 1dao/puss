@@ -13,6 +13,8 @@ local search = puss.import('core.search')
 
 local run_sign = true
 
+workspace_file = workspace_file or nil
+
 show_imgui_demos = show_imgui_demos or false
 show_imgui_metrics = show_imgui_metrics or false
 
@@ -49,6 +51,12 @@ docs.setup(function(event, ...)
 	if f then return f(...) end
 end, function() show_search_window = true end)
 
+local function save_workspace()
+	diskfs.save(workspace_file, cjson.encode({folders=filebrowser.fetch_folders(), files=pages.fetch_all()}))
+end
+pages.setup(save_workspace)
+filebrowser.setup(save_workspace)
+
 local function fs_list(dir, callback)
 	callback(true, puss.file_list(dir, true))	-- list file & convert name to utf8
 end
@@ -65,7 +73,6 @@ local function main_menu()
 		if shotcuts.menu_item('page/close_all') then pages.close_all() end
 		if shotcuts.menu_item('page/save_all') then pages.save_all() end
 		imgui.Separator()
-		if shotcuts.menu_item('page/open_workspace') then pages.open_workspace() end	
 		imgui.EndMenu()
 	end
 	if imgui.BeginMenu('Edit') then
@@ -252,28 +259,31 @@ __exports.init = function()
 		for _, name in ipairs(files) do
 			if name:match('^.+%.[tT][tT][fF]$') then
 				local lang = name:match('^.-%.(%w+)%.%w+$')
-				imgui.AddFontFromFileTTF(string.format('%s/%s', font_path, name), 18, lang)
-				print(string.format('%s/%s', font_path, name))
+				imgui.AddFontFromFileTTF(string.format('%s/%s', font_path, name), 16, lang)
+				--print(string.format('%s/%s', font_path, name))
 			end
 		end
 	end)
 	imgui.update(show_main_window)
 
 	local puss_system = puss.load_plugin('puss_system')
-	local ctx = diskfs.load('G:/olg/olg.code-workspace')
-	if ctx then
-		local folders = cjson.decode(ctx).folders
-		if folders then
-			for k,v in ipairs(folders) do
-				if v.path:find(':') then
-					filebrowser.append_folder(puss.filename_format(v.path, true), fs_list)
-				else
-					filebrowser.append_folder(puss.filename_format('G:/olg/'..v.path, true), fs_list)
-				end
-			end
-		end
+	local filepath = puss._path..'/default.code-workspace'	
+	if not puss.stat(filepath) then	
+		assert(diskfs.save(filepath, cjson.encode({})), filepath ..' save failed...')
+	end
+	
+	local workspace = cjson.decode(diskfs.load(filepath))
+	if workspace.workspace_file and puss.stat(workspace.workspace_file) then
+		workspace = cjson.decode(diskfs.load(workspace.workspace_file))
+		workspace_file = workspace.workspace_file
 	else
-		filebrowser.append_folder(puss.filename_format(puss._path .. '/core', true), fs_list)
+		workspace_file = filepath
+	end
+	
+	if workspace and workspace.folders then
+		for k,v in ipairs(workspace.folders) do
+			filebrowser.append_folder(puss.filename_format(v.path, true), fs_list)
+		end
 	end
 	
 	if puss.debug and (not puss.debug()) then puss.debug(true, nil, title) end
