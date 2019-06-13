@@ -32,6 +32,8 @@ local root_folders = _root_folders
 
 local ftbuf = imgui.CreateByteArray(1024, 'lua c h inl cpp hpp cxx hxx')
 local ptbuf = imgui.CreateByteArray(1024, puss._path)
+local wtbuf = imgui.CreateByteArray(1024, puss._path..'/default.code-workspace')
+
 local suffix_filter = {}
 
 local function refresh_suffix_filter()
@@ -61,7 +63,7 @@ __exports.check_fetch_folders = function(ver)
 	return _root_version, res
 end
 
-__exports.append_folder = function(path, async_list_dir)
+__exports.append_folder = function(path, async_list_dir, is_quiet)
 	path = puss.filename_format(path, true)
 	if not puss.stat(path) then return end
 	
@@ -78,7 +80,7 @@ __exports.append_folder = function(path, async_list_dir)
 	table.insert(root_folders, dir)
 	_root_version = _root_version + 1
 	
-	if hook then hook() end
+	if not is_quiet and hook then hook() end
 end
 
 __exports.remove_folder = function(path)
@@ -113,6 +115,10 @@ __exports.fetch_folders = function()
 		table.insert(folders, tmp)
 	end
 	return folders
+end
+
+__exports.set_workspace_file = function(filename)
+	wtbuf:strcpy(filename)
 end
 
 local function check_filter(filepath, filters)
@@ -223,6 +229,7 @@ end
 
 local open_setting = false
 local open_add_dir = false
+local open_wordspace_save = false
 
 __exports.update = function(async_list_dir)
 	if panel then
@@ -235,9 +242,17 @@ __exports.update = function(async_list_dir)
 	end
 	if icons.button('Setting', 'setting', 24, 'close setting panel', open_setting and 0.4 or 1) then open_setting = not open_setting end
 	imgui.SameLine()
-	if icons.button('Add', 'add', 24, 'add new folder', open_add_dir and 0.4 or 1) then open_add_dir = not open_add_dir end
+	if icons.button('Add', 'add', 24, 'add new folder', open_add_dir and 0.4 or 1) then 
+		open_add_dir = not open_add_dir 
+		open_wordspace_save = false
+	end
 	imgui.SameLine()
 	if icons.button('Refresh', 'refresh', 24, 'refresh all folders') then refresh_folders() end
+	imgui.SameLine()
+	if icons.button('SaveWorkSpace', 'file', 24, 'save workspace') then 
+		open_add_dir = false
+		open_wordspace_save = not open_wordspace_save 
+	end
 
 	if open_setting then
 		imgui.Separator()
@@ -255,6 +270,20 @@ __exports.update = function(async_list_dir)
 		imgui.PushItemWidth(-1)
 		if imgui.InputText('##PathText', ptbuf, ImGuiInputTextFlags_EnterReturnsTrue) then
 			append_folder(puss.filename_format(ptbuf:str(), true), async_list_dir)
+		end
+		imgui.PopItemWidth()
+	end
+	if open_wordspace_save then
+		imgui.Separator()
+		if imgui.Button('Save WorkspaceFile') then 
+			if hook then hook(puss.filename_format(wtbuf:str(), true)) end
+			open_wordspace_save = not open_wordspace_save 
+		end
+		imgui.SameLine()
+		imgui.PushItemWidth(-1)
+		if imgui.InputText('##WorkspaceText', wtbuf, ImGuiInputTextFlags_EnterReturnsTrue) then
+			if hook then hook(puss.filename_format(wtbuf:str(), true)) end
+			open_wordspace_save = not open_wordspace_save
 		end
 		imgui.PopItemWidth()
 	end

@@ -51,8 +51,15 @@ docs.setup(function(event, ...)
 	if f then return f(...) end
 end, function() show_search_window = true end)
 
-local function save_workspace()
-	diskfs.save(workspace_file, cjson.encode({folders=filebrowser.fetch_folders(), files=pages.fetch_all()}))
+local function save_workspace(filepath)
+	if filepath and filepath== workspace_file then return end
+
+	workspace_file = filepath or workspace_file
+	diskfs.save(workspace_file, cjson.encode({ folders=filebrowser.fetch_folders()
+		, files=pages.fetch_all()}))
+	if filepath then
+		diskfs.save(puss._path..'/default.code-workspace', cjson.encode({workspace_file=filepath}))
+	end
 end
 pages.setup(save_workspace)
 filebrowser.setup(save_workspace)
@@ -273,18 +280,20 @@ __exports.init = function()
 	end
 	
 	local workspace = cjson.decode(diskfs.load(filepath))
-	if workspace.workspace_file and puss.stat(workspace.workspace_file) then
-		workspace = cjson.decode(diskfs.load(workspace.workspace_file))
+	if workspace.workspace_file and workspace.workspace_file ~= filepath and puss.stat(workspace.workspace_file) then
 		workspace_file = workspace.workspace_file
+		workspace = cjson.decode(diskfs.load(workspace.workspace_file))
 	else
 		workspace_file = filepath
 	end
 	
 	if workspace and workspace.folders then
 		for k,v in ipairs(workspace.folders) do
-			filebrowser.append_folder(puss.filename_format(v.path, true), fs_list)
+			filebrowser.append_folder(puss.filename_format(v.path, true), fs_list, true)
 		end
 	end
+
+	filebrowser.set_workspace_file(workspace_file)--puss.filename_format(workspace_file, true))
 	
 	if puss.debug and (not puss.debug()) then puss.debug(true, nil, title) end
 end
