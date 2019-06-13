@@ -307,7 +307,6 @@ function tabs_page_draw(page, active_page)
 
 	if active_page then
 		view_reset_style = true
-		sci.reset_styles(page.sv, page.lang)
 		imgui.SetNextWindowFocus()
 	end
 
@@ -324,6 +323,7 @@ function tabs_page_draw(page, active_page)
 		DOC_WIN_FLAGS = (draw_mode==1) and ImGuiWindowFlags_AlwaysHorizontalScrollbar or (ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar)
 		DOC_SCROLLBAR_SIZE = (draw_mode==1) and imgui.GetStyleVar(ImGuiStyleVar_ScrollbarSize) or 72
 
+		sci.reset_styles(sv)
 		sci.reset_show_linenum(sv, DOC_SHOW_LINENUM)
 		sci.reset_show_bp(sv, DOC_SHOW_BP)
 		sci.reset_fold_mode(sv, DOC_FOLD_MODE)
@@ -488,7 +488,10 @@ __exports.edit_menu_click = function(name)
 	edit_menu_clicked = name
 end
 
-__exports.setting = function()
+__exports.setting = function(style_changed)
+	if style_changed then
+		view_reset_style = true
+	end
 	local active, value
 	active, value = imgui.Checkbox('LineNum', DOC_SHOW_LINENUM)
 	if active then

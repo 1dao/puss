@@ -11,12 +11,17 @@ local function RGB(col)
 end
 
 STYLE_COLOR_MAP.light =
-	{ ['bg'] = RGB('#FFFFFC')
-	, ['caret'] = RGB('#000000')
+	{ ['bg'] = RGB('#FFFFFC')	
 	, ['sel'] = RGB('#84B6DB')
 	, ['caret_line'] = RGB('#A4D6FB')
+	, ['thumnail_marker'] = RGB('#FF8000')
+	, ['thumnail_bar'] = RGB('#E8E8E8')
+	, ['thumnail_view_border'] = RGB('#000000')
+	, ['thumnail_view'] = RGB('#FFFFFF')
+	, ['thumnail_sel_fore'] = RGB('#0000FF')
+	, ['thumnail_sel_back'] = RGB('#E8E8E0')
 	, ['marker_fore'] = RGB('#008080')
-	, ['marker_back'] = RGB('#c00020')
+	, ['marker_back'] = RGB('#C00020')
 	, ['text'] = RGB('#000000')
 	, ['comment'] = RGB('#9F9F9F')
 	, ['identifier'] = RGB('#000000')
@@ -34,9 +39,14 @@ STYLE_COLOR_MAP.light =
 
 STYLE_COLOR_MAP.dark = 
 	{ ['bg'] = 			RGB('#131c28')
-	, ['caret']	=		RGB('#FFFFFF')
-	, ['sel'] = 		RGB('#F8FAFD')
+	, ['sel'] = 		RGB('#00FF00')
 	, ['caret_line'] = 	RGB('#42557B')
+	, ['thumnail_marker'] = RGB('#ff8000')
+	, ['thumnail_bar'] = RGB('#303030')
+	, ['thumnail_view_border'] = RGB('#000000')
+	, ['thumnail_view'] = RGB('#606060')
+	, ['thumnail_sel_fore'] = RGB('#0090FF')
+	, ['thumnail_sel_back'] = RGB('#303030')
 	, ['marker_fore'] = RGB('#008080')
 	, ['marker_back'] = RGB('#c00020')
 	, ['text'] = 		RGB('#FFFFFF')
@@ -338,8 +348,6 @@ do
 	end
 end
 
-_STYLE_VER = (_STYLE_VER or 0) + 1
-
 local function fetch_sytel_col_map()
 	local r,g,b = imgui.GetStyleColorVec4(ImGuiCol_Text)
 	local dark = ((r+g+b)/3 > 0.5)
@@ -366,6 +374,7 @@ local function do_reset_styles(sv, lang)
 
 	sv:SetTabWidth(setting.tab_width)
 
+	sv:SetCaretFore(colmap['text'])
 	sv:SetSelBack(true, colmap['sel'])
 
 	if setting.caret_line then
@@ -375,7 +384,7 @@ local function do_reset_styles(sv, lang)
 		sv:SetCaretLineVisible(false)
 	end
 	sv:SetCaretLineVisibleAlways(true)
-	sv:SetCaretFore(colmap['caret'])
+	--sv:SetCaretFore(colmap['caret'])
 
 	if colmap['sel_back'] then
 		sv:SetSelBack(true, colmap['sel_back'])
@@ -395,7 +404,9 @@ local function do_reset_styles(sv, lang)
 	sv:SetMarginWidthN(0, 0)
 	sv:SetMarginSensitiveN(0, true)	
 	sv:SetMarginBackN(0, colmap['margin_back'])		
-
+	--sv:StyleSetBack(STYLE_LINENUMBER, colmap['margin_back'])
+	--sv:StyleSetFore(STYLE_LINENUMBER, imgui.GetColorU32(ImGuiCol_Text))
+	
 	-- bp color
 	sv:SetMarginTypeN(1, SC_MARGIN_SYMBOL)
 	sv:SetMarginMaskN(1, 0x01)
@@ -428,19 +439,25 @@ local function do_reset_styles(sv, lang)
 	sv:MarkerDefine(SC_MARKNUM_FOLDERTAIL, SC_MARK_LCORNERCURVE)
 	sv:SetFoldFlags(16|4, 0)
 	
+	sv:SetFoldMarginColour(true, imgui.GetColorU32(ImGuiCol_WindowBg))
+
 	sv:set(SCN_CHARADDED, setting.on_char_added)
 
 	sv:IndicSetStyle(INDICATOR_FINDTEXT, INDIC_FULLBOX)
 
-	sv:set('sci.style', _STYLE_VER)
+	-- thumbnail
+	sv:StyleSetFore(STYLE_EXT_THUMBNAIL_BAR, colmap['thumnail_marker'])
+	sv:StyleSetBack(STYLE_EXT_THUMBNAIL_BAR, colmap['thumnail_bar'])
+	sv:StyleSetFore(STYLE_EXT_THUMBNAIL_VIEW, colmap['thumnail_view_border'])
+	sv:StyleSetBack(STYLE_EXT_THUMBNAIL_VIEW, colmap['thumnail_view'])
+	sv:StyleSetFore(STYLE_EXT_THUMBNAIL_SEL, colmap['thumnail_sel_fore'])
+	sv:StyleSetBack(STYLE_EXT_THUMBNAIL_SEL, colmap['thumnail_sel_back'])
+
 	sv:set('sci.lang', lang)
 end
 
 __exports.reset_styles = function(sv, lang)
-	-- print('check reset_styles', sv:get('sci.style'), _STYLE_VER, sv:get('sci.lang'), lang)
-	if sv:get('sci.style')==_STYLE_VER and sv:get('sci.lang')==lang then return end
-	-- print('reset_styles', _STYLE_VER, lang)
-	sv(do_reset_styles, lang)
+	sv(do_reset_styles, lang or sv:get('sci.lang'))
 end
 
 __exports.find_text_fill_all_indicator = function(sv, text)
